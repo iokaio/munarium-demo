@@ -13,7 +13,7 @@
     <None Update="appsettings.Secrets.json;appsettings.Local.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     <!-- The demo's only local persistence: the visitor registry / allow-deny
          store (DemoStore.cs). -->
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <!-- Explicit bump past the GHSA-2m69-gcr7-jv3q advisory in the transitive
          SQLitePCLRaw 2.1.x that Microsoft.Data.Sqlite still pins. -->
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />

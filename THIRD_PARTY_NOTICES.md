@@ -22,8 +22,8 @@ The resolved NuGet graph is recorded in `src/Demo.Web/packages.lock.json`.
 | Package | License |
 |---|---|
 | `DnsClient/1.8.0` | Apache-2.0 |
-| `Microsoft.Data.Sqlite/9.0.8` | MIT |
-| `Microsoft.Data.Sqlite.Core/9.0.8` | MIT |
+| `Microsoft.Data.Sqlite/10.0.12` | MIT |
+| `Microsoft.Data.Sqlite.Core/10.0.12` | MIT |
 | `SQLite/3.53.4` | Public domain |
 | `SQLitePCLRaw.bundle_e_sqlite3/3.0.5` | Apache-2.0 |
 | `SQLitePCLRaw.config.e_sqlite3/3.0.5` | Apache-2.0 |
