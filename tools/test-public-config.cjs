@@ -41,9 +41,15 @@ const { once } = require('node:events');
   }
   let app;
   try {
-    for (const extra of [{ DEMO_GATE_SECRET: 'weak' }, { DEMO_ADMIN_PASSWORD: 'weak', DEMO_ADMIN_USER: 'operator' }]) {
+    for (const [extra, expectedError] of [
+      [{ DEMO_GATE_SECRET: 'weak' }, /Production requires a randomly generated DEMO_GATE_SECRET/],
+      [{ DEMO_ADMIN_PASSWORD: 'weak', DEMO_ADMIN_USER: 'operator' }, /Production admin passwords must contain at least 16 characters/],
+    ]) {
       const result = await start(extra);
-      try { assert(!result.base && result.child.exitCode !== 0, 'Weak Production configuration must fail at startup'); }
+      try {
+        assert(!result.base && result.child.exitCode !== 0, 'Weak Production configuration must fail at startup');
+        assert.match(result.log, expectedError, 'Startup must reject the intended weak configuration');
+      }
       finally { await stop(result.child); }
     }
     app = await start(); assert(app.base, app.log);
