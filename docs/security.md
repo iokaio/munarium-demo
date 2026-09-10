@@ -8,6 +8,12 @@ Visitor access uses an email and reusable generated login code. The database ret
 
 Collection clearances and compartments are enforced by Munarium Server. UI persona controls are a demonstration of that contract; hiding a button is not an authorization boundary. Keep the management endpoint and database on private networks.
 
+Every admitted visitor can select any configured data-room persona, including
+the clean team. The backend mints the scope for that selection; it does not map
+the visitor's identity to an organization-approved role. To adapt this demo for
+confidential business data, derive the permitted persona and clearance from your
+own authenticated authorization policy before minting a capability.
+
 Run one web replica. Turn counters, failed-login counters, and global revocation cutoff are in memory and reset on restart. Blocking records and code hashes persist in SQLite. Rotating the gate secret invalidates existing cookies, code hashes, and pseudonymous IDs, so plan reissuance and attribution changes.
 
 Use TLS and explicitly trusted ingress addresses in Production. Development can log delivery codes and bypass visitor admission; it is intended for loopback use. Set provider budgets and appropriate data retention. Follow [SECURITY.md](../SECURITY.md) for private vulnerability reporting.

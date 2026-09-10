@@ -1,6 +1,11 @@
 # Corpus loading and recovery
 
-The supported sequence is verify, extract, upload, build indexes, approve cutover, and verify queries. `python tools/setup.py load --provider ollama --approve` orchestrates it for the bundled data. Omit `--approve` to stop at the first pending cutover for review.
+The supported sequence is verify input hashes, extract, upload, build indexes,
+approve cutover, and verify the application. `python tools/setup.py load --provider
+ollama --approve` orchestrates the steps through cutover for bundled data. Run
+`setup.py verify` for collection/count checks and `verify_demo.py` for functional
+checks as described below. Omit `--approve` to stop at the first pending cutover
+for review.
 
 The loader preflights every logical filename against exactly one expected prefix, hashes source documents, creates a Server bulk session, uploads needed chunks, and finalizes. A completed bulk session proves storage; inspect extraction and indexing run results separately. Support's PDF and DOCX inputs exercise the converter path.
 
@@ -16,3 +21,20 @@ Search uses the runbook's configured expansion provider; load with `--provider o
 to keep the complete path local. `--family` selects the chat provider.
 Cloud families require the same explicit opt-in and can incur provider charges.
 The output is functional evidence, not a reproduction of historical quality scores.
+
+The verification tool uses browser corpus IDs (`revolution`, `dataroom`,
+`advisory`, etc.), while setup uses manifest IDs (`history`, `dd`, `fin`, etc.).
+It also uses model families `claude` and `gpt` where setup uses providers
+`anthropic` and `openai`. See [the corpus mapping](../guides/corpora.md#corpus-names-and-browser-routes).
+For a support-only installation:
+
+```console
+python tools/setup.py verify --corpus support
+python tools/verify_demo.py --corpus support --allow-model-calls --family ollama
+```
+
+`verify_demo.py` defaults to `http://127.0.0.1:5310`; pass `--base-url` for other
+ports or hosts. For a gated installation, supply an authorized visitor cookie
+privately in `DEMO_VERIFY_COOKIE`. Completed run IDs remain in `.local/`; rerunning
+setup reuses them rather than automatically creating a new indexing run for
+changed assets. Plan an explicit new run when rebuilding changed content.

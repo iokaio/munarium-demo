@@ -7,3 +7,7 @@ To add a corpus, define its input provenance and rights, a unique logical filena
 Provider IDs used by the current UI are `demo-anthropic`, `demo-openai`, `demo-openrouter`, and `demo-ollama`. Change installed models and provider tiers together, and check the catalog and readiness contracts. Unconfigured providers should not appear as usable choices. Model selection applies to query expansion and answer generation on the compatible Server release.
 
 Keep expected answers separate from ingested sources. Test persona restrictions in both search and chat, including a denied case, before deploying a new collection policy.
+
+For business data, assign allowed scopes from authenticated user permissions in
+the backend. The bundled persona selector lets any visitor choose any role; it
+demonstrates Server enforcement of a chosen scope, not permission to assume it.
