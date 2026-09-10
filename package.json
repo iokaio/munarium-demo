@@ -3,6 +3,6 @@
   "private": true,
   "license": "Apache-2.0",
   "devDependencies": {
-    "playwright": "1.55.1"
+    "playwright": "1.63.0"
   }
 }
