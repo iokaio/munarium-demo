@@ -31,12 +31,14 @@ const { once } = require('node:events');
     child.stdout.on('data', b => { log += b; }); child.stderr.on('data', b => { log += b; });
     for (let n = 0; n < 150; n++) {
       const base = log.match(/Now listening on: (http:\/\/127\.0\.0\.1:\d+)/)?.[1];
-      if (base || child.exitCode !== null) return { child, base, log };
+      if (base || child.exitCode !== null || child.signalCode !== null) return { child, base, log };
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     child.kill(); throw new Error('Local test application did not start');
   }
-  async function stop(child) { if (child.exitCode === null) { child.kill(); await once(child, 'exit'); } }
+  async function stop(child) {
+    if (child.exitCode === null && child.signalCode === null) { child.kill(); await once(child, 'exit'); }
+  }
   let app;
   try {
     for (const extra of [{ DEMO_GATE_SECRET: 'weak' }, { DEMO_ADMIN_PASSWORD: 'weak', DEMO_ADMIN_USER: 'operator' }]) {
