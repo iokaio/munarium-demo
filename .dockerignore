@@ -1,0 +1,22 @@
+**/bin/
+**/obj/
+**/data/
+**/appsettings.Secrets.json
+**/*.db
+**/*.db-*
+**/*.sqlite*
+.git/
+.env
+.env.*
+artifacts/
+src/Demo.Web/wwwroot/downloads/runbooks/*.yaml
+# Corpus packs and loading tools are operator inputs, not web-image assets.
+/data/
+
+.local/
+node_modules/
+**/appsettings.Local.json
+**/*.pem
+**/*.pfx
+**/*.tfstate*
+**/*.tfplan*

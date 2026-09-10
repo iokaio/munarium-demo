@@ -1,0 +1,32 @@
+bin/
+obj/
+*.user
+# populated at build/deploy time by Dockerfile COPY / run-local.ps1
+src/Demo.Web/wwwroot/downloads/runbooks/*.yaml
+
+# The demo web app's local visitor store (DemoStore) — never committed.
+src/Demo.Web/data/
+
+# Secrets the owner adds by hand (SendGrid API key) — never committed.
+src/Demo.Web/appsettings.Secrets.json
+
+# Reconstruct from the checksummed corpus packs; keep loader output private.
+/data/corpora/
+bulkload-*.jsonl
+__pycache__/
+
+.env
+.env.*
+!.env.example
+.local/
+artifacts/
+node_modules/
+appsettings.Local.json
+*.sqlite*
+*.db
+*.db-*
+*.tfstate*
+*.tfplan*
+*.pfx
+*.pem
+*.log

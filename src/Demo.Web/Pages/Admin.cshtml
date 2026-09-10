@@ -1,0 +1,261 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@inject Demo.Web.Services.DemoIdentity Identity
+@model Demo.Web.Pages.AdminModel
+@{
+    ViewData["Title"] = "Demo administration";
+    ViewData["Description"] = "Munarium demo administration.";
+}
+
+<section class="section bg-light dm-gate-section" id="main-content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="@(Model.Authed ? "col-lg-10" : "col-lg-5 col-md-8")">
+                <div class="text-center mb-3 mt-2">
+                    <img src="@Identity.LogoUrl" alt="@Identity.Name" height="36" class="dm-gate-logo">
+                    <span class="align-middle ms-2 h4 fw-light text-dark">@Identity.Name</span>
+                </div>
+                <article class="about-box about-light paper-card p-4 dm-gate-card">
+                    <h4 class="fw-light mb-2 text-dark">Demo administration</h4>
+                    @if (Model.Error is not null)
+                    {
+                        <div class="alert alert-warning f-14 py-2">@Model.Error</div>
+                    }
+                    @if (Model.Notice is not null)
+                    {
+                        <div class="alert alert-success f-14 py-2">@Model.Notice</div>
+                    }
+                    @if (Model.IssuedCode is not null)
+                    {
+                        <div class="alert alert-info f-14 py-2">
+                            Login code for <strong>@Model.IssuedCodeEmail</strong>:
+                            <code class="fs-6">@Model.IssuedCode</code>
+                            — shown once; the store keeps only a hash.
+                        </div>
+                    }
+                    @if (!Model.Authed)
+                    {
+                        @if (!Model.LoginConfigured)
+                        {
+                            <p class="text-muted f-14 mb-0">
+                                Admin login is not configured on this deployment
+                                (DEMO_ADMIN_USER / DEMO_ADMIN_PASSWORD are unset).
+                            </p>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="Login">
+                                <div class="mb-2">
+                                    <input asp-for="Username" class="form-control dm-gate-input"
+                                           placeholder="Username" maxlength="64" autocomplete="username" autofocus />
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input asp-for="Password" type="password" class="form-control dm-gate-input"
+                                           placeholder="Password" maxlength="128" autocomplete="current-password" />
+                                    <button type="submit" class="btn dm-send">Sign in</button>
+                                </div>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <p class="text-muted f-14 mb-0">
+                                Visitor emails appear on this page only — nowhere else in the
+                                demo or the backend. Sessions last 30 minutes.
+                            </p>
+                            <form method="post" asp-page-handler="Logout" class="mb-0">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Log out</button>
+                            </form>
+                        </div>
+
+                        @if (Model.UsageError is not null)
+                        {
+                            <div class="alert alert-warning f-13 py-2">@Model.UsageError</div>
+                        }
+
+                        <h5 class="text-dark fw-light text-uppercase mt-2">Visitors</h5>
+                        <p class="f-12 text-muted mb-2">
+                            Interactions, turns and tokens are the server's <strong>all-time</strong>
+                            counts per pseudonym (only the Frontier column is today's); last seen
+                            is the last gate login, not the last request. The row badged
+                            <span class="badge bg-secondary">battery</span> is
+                            <span class="dm-doc-id">@Model.BatteryEmail</span>, the address the
+                            chip batteries sign in with — its usage is scripted, not a person's.
+                        </p>
+                        @if (Model.Identities.Count == 0)
+                        {
+                            <p class="text-muted f-14">No registered visitors yet.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm f-13 align-middle">
+                                    <thead><tr>
+                                        <th>Email</th><th>Code</th><th>Last seen (UTC)</th>
+                                        <th class="text-end">Interactions</th>
+                                        <th class="text-end">Turns</th>
+                                        <th class="text-end">Tokens in / out</th>
+                                        <th class="text-end">Frontier today</th>
+                                        <th class="text-end">Caps t/f</th>
+                                        <th></th>
+                                    </tr></thead>
+                                    <tbody>
+                                    @foreach (var row in Model.Identities)
+                                    {
+                                        <tr class="@(row.Visitor.Blocked ? "table-danger" : "")">
+                                            <td>
+                                                <span class="dm-doc-id">@row.Visitor.Email</span>
+                                                @if (row.Visitor.Blocked)
+                                                {
+                                                    <span class="badge bg-danger ms-1">blocked</span>
+                                                }
+                                                @if (row.Battery)
+                                                {
+                                                    <span class="badge bg-secondary ms-1"
+                                                          title="the address demo-corpus-check.ps1 signs in with; scripted traffic">battery</span>
+                                                }
+                                            </td>
+                                            <td>@(row.Visitor.HasPasscode ? "✓" : "–")</td>
+                                            <td class="text-muted">@row.Visitor.LastSeen</td>
+                                            <td class="text-end">@row.Interactions.ToString("N0")</td>
+                                            <td class="text-end">@row.Turns.ToString("N0")</td>
+                                            <td class="text-end">@row.TokensIn.ToString("N0") / @row.TokensOut.ToString("N0")</td>
+                                            <td class="text-end">@row.FrontierToday</td>
+                                            <td class="text-end">@(row.Visitor.TurnCap?.ToString() ?? "–")/@(row.Visitor.FrontierCap?.ToString() ?? "–")</td>
+                                            <td class="text-end">
+                                                @if (row.Visitor.Blocked)
+                                                {
+                                                    <form method="post" asp-page-handler="UnblockEmail" class="d-inline mb-0">
+                                                        <input type="hidden" name="Email" value="@row.Visitor.Email" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-success py-0">Unblock</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form method="post" asp-page-handler="BlockEmail" class="d-inline mb-0">
+                                                        <input type="hidden" name="Email" value="@row.Visitor.Email" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0">Block</button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        <div class="row mt-3">
+                            <div class="col-lg-6 mb-3">
+                                <h6 class="text-dark fw-light text-uppercase">Set caps for an email</h6>
+                                <form method="post" asp-page-handler="SetCaps" class="d-flex gap-2 flex-wrap">
+                                    <input asp-for="Email" class="form-control form-control-sm" style="max-width: 16rem" placeholder="email" />
+                                    <input asp-for="TurnCap" type="number" min="1" class="form-control form-control-sm" style="max-width: 6.5rem" placeholder="turns/d" />
+                                    <input asp-for="FrontierCap" type="number" min="0" class="form-control form-control-sm" style="max-width: 6.5rem" placeholder="frontier" />
+                                    <button type="submit" class="btn dm-send btn-sm">Set</button>
+                                </form>
+                                <p class="f-12 text-muted mb-0 mt-1">Blank fields reset to the defaults (50 turns/day; 2 frontier per collection/day).</p>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <h6 class="text-dark fw-light text-uppercase">Issue a login code</h6>
+                                <form method="post" asp-page-handler="IssueCode" class="d-flex gap-2 mb-2">
+                                    <input name="Email" class="form-control form-control-sm" style="max-width: 16rem" placeholder="email" />
+                                    <button type="submit" class="btn dm-send btn-sm">Issue</button>
+                                </form>
+                                <p class="f-12 text-muted mb-2 mt-1">
+                                    Shown once above, no email sent — for handing a code out
+                                    directly (and for <span class="dm-doc-id">@Model.BatteryEmail</span>,
+                                    the address the chip batteries sign in with). Rotates any
+                                    earlier code.
+                                </p>
+                                <h6 class="text-dark fw-light text-uppercase">Legacy access codes</h6>
+                                <form method="post" asp-page-handler="BlockCode" class="d-flex gap-2 mb-1">
+                                    <input asp-for="Slug" class="form-control form-control-sm" style="max-width: 14rem" placeholder="code or slug" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Block</button>
+                                </form>
+                                @if (Model.Codes.Count > 0)
+                                {
+                                    <p class="f-12 text-muted mb-0">
+                                        Seen:
+                                        @foreach (var (slug, blocked, _) in Model.Codes)
+                                        {
+                                            <span class="me-2 @(blocked ? "text-danger text-decoration-line-through" : "")">@slug</span>
+                                        }
+                                    </p>
+                                    <form method="post" asp-page-handler="UnblockCode" class="d-flex gap-2 mt-1">
+                                        <input name="Slug" class="form-control form-control-sm" style="max-width: 14rem" placeholder="unblock slug" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Unblock</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+
+                        @if (Model.Unattributed.Count > 0)
+                        {
+                            <details class="mb-3">
+                                <summary class="f-13 text-muted">
+                                    Unattributed usage (@Model.Unattributed.Count rows — legacy codes,
+                                    anonymous visitors, service traffic)
+                                </summary>
+                                <div class="table-responsive mt-2">
+                                    <table class="table table-sm f-13">
+                                        <thead><tr>
+                                            <th>Uid</th><th class="text-end">Interactions</th>
+                                            <th class="text-end">Turns</th>
+                                            <th class="text-end">Tokens in / out</th>
+                                        </tr></thead>
+                                        <tbody>
+                                        @foreach (var r in Model.Unattributed)
+                                        {
+                                            <tr>
+                                                <td><span class="dm-doc-id">@StatsModel.ShortUid(r.Key)</span></td>
+                                                <td class="text-end">@r.Interactions.ToString("N0")</td>
+                                                <td class="text-end">@r.Turns.ToString("N0")</td>
+                                                <td class="text-end">@r.CompletionInputTokens.ToString("N0") / @r.CompletionOutputTokens.ToString("N0")</td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                        }
+
+                        <h6 class="text-dark fw-light text-uppercase mt-2">Gate controls</h6>
+                        <ul class="f-13 text-muted">
+                            <li>Revoke-all cutoff:
+                                <strong>@(Model.RevokedBefore is { } cutoff
+                                    ? cutoff.ToString("u") + " — cookies issued before this are invalid"
+                                    : "none set this process")</strong></li>
+                            <li>Age ceiling:
+                                <strong>@(Model.MaxAge is { } a
+                                    ? a.TotalHours.ToString("0.#") + " hour(s) after issue"
+                                    : "none — midnight UTC only")</strong></li>
+                        </ul>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <form method="post" asp-page-handler="RevokeAll" class="mb-0">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Invalidate ALL visitor cookies now
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="MaxAge" class="d-flex gap-2 align-items-center mb-0">
+                                <input asp-for="MaxAgeHours" type="number" min="0" step="0.5"
+                                       class="form-control form-control-sm" style="max-width: 7rem"
+                                       placeholder="hours" />
+                                <button type="submit" class="btn dm-send btn-sm">Set age ceiling</button>
+                            </form>
+                        </div>
+                        <p class="f-12 text-muted mb-0 mt-2">
+                            Blocks, caps and registrations persist in the demo's own store;
+                            the revoke-all cutoff and age ceiling are in-memory (a restart
+                            clears them; DEMO_GATE_MAX_AGE_HOURS seeds the ceiling).
+                        </p>
+                    }
+                </article>
+                <p class="text-center text-muted f-13 mt-3">
+                    This page is not linked from anywhere. Do not share its URL.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

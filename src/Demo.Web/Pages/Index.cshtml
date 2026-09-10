@@ -1,0 +1,41 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Explore Munarium";
+    ViewData["Description"] = "Explore six collections, compare models, and follow the evidence behind each answer.";
+    ViewData["NavActive"] = "home";
+    var collections = new[] {
+        new { Path = "revolution", Icon = "mdi-bank", Theme = "01 / Scale", Title = "American Revolution Archive", Description = "Explore letters, newspapers, maps, and first-person accounts from the Library of Congress. Follow the evidence through a vast, imperfect historical record.", Data = "66,739 documents · 58 collections · Historical sources" },
+        new { Path = "support", Icon = "mdi-lifebuoy", Theme = "02 / Reconciliation", Title = "Support Knowledge Base", Description = "Connect release notes, support tickets, policies, and contracts. Discover when an old answer has been superseded by a newer record.", Data = "~1,500 documents · 10 source systems · Synthetic" },
+        new { Path = "dataroom", Icon = "mdi-shield-lock-outline", Theme = "03 / Governance", Title = "M&A Data Room", Description = "Investigate a fictional acquisition. Switch between buyer associate, counsel, and clean team to see how access changes the available evidence.", Data = "613 documents · 3 access personas · Synthetic" },
+        new { Path = "advisory", Icon = "mdi-finance", Theme = "04 / Change over time", Title = "Wealth Advisory Record", Description = "Trace ten years of a family's financial record. Find the signed constraints, changing priorities, and effective dates that govern an answer.", Data = "1,233 documents · 14 collections · Synthetic" },
+        new { Path = "patents", Icon = "mdi-file-certificate-outline", Theme = "05 / Contradiction", Title = "Patent Prosecution Record", Description = "Compare patent claims, prior art, and examiner findings. Test generated draft assessments against the public record they are meant to describe.", Data = "37 applications · 129 cited grants · USPTO records" },
+        new { Path = "intel", Icon = "mdi-radar", Theme = "06 / Identity", Title = "Threat Intelligence Reports", Description = "Reconcile different names for the same adversary. Follow vendor disagreements while keeping shared tools separate from shared identity.", Data = "64 reports · 4 vendor feeds · Synthetic" }
+    };
+}
+<partial name="_Nav" />
+<main class="dm-home" id="main-content">
+    <header class="dm-home-hero">
+        <div><p class="dm-eyebrow">Munarium / Interactive evaluation</p><h1>Ask better questions.<br />Keep the evidence.</h1></div>
+        <div class="dm-intro">
+            <p>Six collections. Different models. One place to explore how an answer is built from the record — and where that record stops.</p>
+            <p>Choose a collection, ask a question, and inspect its sources. Compare providers and model tiers without leaving the conversation.</p>
+            <a class="dm-inline-link" href="https://ioka.io">Meet Munarium <i class="mdi mdi-arrow-top-right" aria-hidden="true"></i></a>
+        </div>
+    </header>
+    <div class="dm-collection-heading"><h2>Choose your collection.</h2><span>Six ways to explore governed memory</span></div>
+    <div class="dm-collection-grid">
+        @foreach (var collection in collections)
+        {
+            <article class="dm-collection-card">
+                <div class="dm-card-top"><i class="mdi @collection.Icon" aria-hidden="true"></i><span>@collection.Theme</span></div>
+                <h3><a href="/@collection.Path">@collection.Title</a></h3>
+                <p>@collection.Description</p>
+                <p class="dm-card-data">@collection.Data</p>
+                <a class="dm-card-link" href="/@collection.Path" aria-label="Explore @collection.Title">Explore collection <i class="mdi mdi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+        }
+    </div>
+    <div class="dm-home-note"><strong>Read the source. Check the answer.</strong><span>Each response includes its model and available evidence. Verification checks citations; it does not guarantee that every interpretation is correct.</span></div>
+</main>

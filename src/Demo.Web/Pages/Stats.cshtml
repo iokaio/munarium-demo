@@ -1,0 +1,194 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.StatsModel
+@using Demo.Web.Pages
+@inject Dictionary<string, CorpusConfig> Corpora
+@{
+    ViewData["Title"] = "Demo Usage";
+    ViewData["Description"] = "Read-only usage, spend, and traffic rollups from the munarium server's reports API.";
+    ViewData["NavActive"] = "stats";
+}
+
+<partial name="_Nav" />
+
+<section class="section bg-about bg-light-about bg-light dm-page" id="main-content">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="title-heading mb-4">
+                    <h3 class="text-dark mb-1 fw-light text-uppercase">Full disclosure, operator edition</h3>
+                    <h2 class="text-dark mb-2 fw-light text-uppercase">Demo Usage</h2>
+                    <div class="title-border-simple position-relative" style="height: 19px" aria-hidden="true"></div>
+                    <p class="text-muted f-15 mt-2">
+                        Everything on this page comes from the munarium server's management reports API —
+                        the same uid-attributed interaction trail every governed call writes. Visitors
+                        appear only as anonymous pseudonyms in that trail, and this page shows
+                        aggregates only. The raw server dashboards are at
+                        <a href="/admin/console">/admin/console</a> (view-only passthrough).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @foreach (var err in Model.Errors)
+        {
+            <div class="alert alert-warning f-14">@err</div>
+        }
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <h5 class="text-dark fw-light text-uppercase">Model spend</h5>
+                @if (Model.Cost is { Rows.Length: > 0 } cost)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm f-14">
+                            <thead><tr>
+                                <th>Provider / model</th><th class="text-end">Turns</th>
+                                <th class="text-end">Overridden</th>
+                                <th class="text-end">Tokens in</th><th class="text-end">Tokens out</th>
+                            </tr></thead>
+                            <tbody>
+                            @foreach (var r in cost.Rows)
+                            {
+                                <tr>
+                                    <td><span class="badge dm-badge-model">@r.Provider / @r.Model</span></td>
+                                    <td class="text-end">@StatsModel.Num(r.Turns)</td>
+                                    <td class="text-end">@StatsModel.Num(r.OverriddenTurns)</td>
+                                    <td class="text-end">@StatsModel.Num(r.InputTokens)</td>
+                                    <td class="text-end">@StatsModel.Num(r.OutputTokens)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.Cost is not null)
+                {
+                    <p class="text-muted f-14">No completions recorded yet.</p>
+                }
+            </div>
+
+        </div>
+
+        <div class="row">
+            @* Per-identity usage moved OFF this page 2026-09-01: individual
+               visitors' usage is private and lives only on the admin panel.
+               This page shows aggregates. *@
+
+            <div class="col-lg-12 mb-4">
+                <h5 class="text-dark fw-light text-uppercase">Sessions — last 7 days</h5>
+                @if (Model.Sessions is { Buckets.Length: > 0 } sessions)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm f-14">
+                            <thead><tr>
+                                <th>Bucket</th><th class="text-end">Sessions opened</th>
+                                <th class="text-end">Turns</th><th class="text-end">Active visitors</th>
+                            </tr></thead>
+                            <tbody>
+                            @foreach (var b in sessions.Buckets.Where(b => b.SessionsOpened > 0 || b.Turns > 0))
+                            {
+                                <tr>
+                                    <td>@StatsModel.Bucket(b.Bucket)</td>
+                                    <td class="text-end">@StatsModel.Num(b.SessionsOpened)</td>
+                                    <td class="text-end">@StatsModel.Num(b.Turns)</td>
+                                    <td class="text-end">@StatsModel.Num(b.ActiveUids)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.Sessions is not null)
+                {
+                    <p class="text-muted f-14">No sessions in the window.</p>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <h5 class="text-dark fw-light text-uppercase">Traffic — last 24 hours</h5>
+                @if (Model.Timeseries is { Buckets.Length: > 0 } ts)
+                {
+                    var active = ts.Buckets.Where(b => b.Requests > 0).ToList();
+                    if (active.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm f-14">
+                                <thead><tr>
+                                    <th>Bucket</th><th class="text-end">Requests</th>
+                                    <th class="text-end">4xx</th><th class="text-end">5xx</th>
+                                    <th class="text-end">p50</th><th class="text-end">p95</th>
+                                </tr></thead>
+                                <tbody>
+                                @foreach (var b in active)
+                                {
+                                    <tr>
+                                        <td>@StatsModel.Bucket(b.Bucket)</td>
+                                        <td class="text-end">@StatsModel.Num(b.Requests)</td>
+                                        <td class="text-end">@StatsModel.Num(b.Errors4xx)</td>
+                                        <td class="text-end">@StatsModel.Num(b.Errors5xx)</td>
+                                        <td class="text-end">@StatsModel.Ms(b.P50LatencyMs)</td>
+                                        <td class="text-end">@StatsModel.Ms(b.P95LatencyMs)</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted f-14">No requests in the window.</p>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <h5 class="text-dark fw-light text-uppercase">Usage by corpus</h5>
+                @if (Model.UsageByRunbook is { Rows.Length: > 0 } byRunbook)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm f-14">
+                            <thead><tr>
+                                <th>Corpus</th><th class="text-end">Interactions</th>
+                                <th class="text-end">Turns</th>
+                                <th class="text-end">Tokens in / out</th>
+                                <th class="text-end">Avg latency</th>
+                            </tr></thead>
+                            <tbody>
+                            @foreach (var r in byRunbook.Rows)
+                            {
+                                <tr>
+                                    @* The rollup keys on the runbook; show the corpus title a
+                                       visitor would recognise, with the runbook name kept beside
+                                       it (a runbook with no registered corpus shows raw). *@
+                                    <td>
+                                        @Corpora.TitleForRunbook(r.Key)
+                                        @if (Corpora.TitleForRunbook(r.Key) != r.Key)
+                                        {
+                                            <br /><small class="text-muted">@r.Key</small>
+                                        }
+                                    </td>
+                                    <td class="text-end">@StatsModel.Num(r.Interactions)</td>
+                                    <td class="text-end">@StatsModel.Num(r.Turns)</td>
+                                    <td class="text-end">@StatsModel.Num(r.CompletionInputTokens) / @StatsModel.Num(r.CompletionOutputTokens)</td>
+                                    <td class="text-end">@StatsModel.Ms(r.AvgLatencyMs)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.UsageByRunbook is not null)
+                {
+                    <p class="text-muted f-14">No traffic recorded yet.</p>
+                }
+            </div>
+        </div>
+
+    </div>
+</section>

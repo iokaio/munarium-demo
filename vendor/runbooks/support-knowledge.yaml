@@ -1,0 +1,151 @@
+# SPDX-License-Identifier: Apache-2.0
+# support_knowledge — one seeded world scattered across ten source systems,
+# reassembled as a compartmentalized retrieval application.
+#
+# The experiment: support_knowledge — ~1,500 documents emitted
+# by a seeded world-model generator into ten disparate systems, with planted
+# stale-KB-vs-release-note conflicts and a 50-question graded set. Measured
+# live: haiku 34/50 baseline -> 47/50 via declarative fixes alone; sonnet-5
+# 50/50 at $1.06. A second round measured the same world through four memory
+# architectures ($5.98 total): consistency reconciliation is model-invariant
+# here (finding_recall 8/8 at precision 1.000 on BOTH models over 210
+# sources), and a 4,380-document scale test still held 46/50.
+#
+# Server mapping: the ten systems are the compartment boundary, because in a
+# real deployment they have ten different owners. Public-facing knowledge (KB,
+# forum, release notes) is level 0; customer tickets and the bug tracker are
+# level 1; chat, postmortems and the mail archive are level 2; signed customer
+# contracts are level 3 behind `legal`. Note the media types: DOCX policies
+# and PDF SLAs bind by content type as well as prefix, which is how the
+# converter path gets exercised end to end.
+#
+#   mmctl apply -f runbooks/shapes/knowledge-sources.yaml
+#   mmctl apply -f runbooks/experiments/support-knowledge.yaml
+#   mmctl run support-knowledge --watch
+apiVersion: munarium.ioka.io/v1
+kind: Runbook
+metadata: { name: support-knowledge, version: 5 }
+spec:
+  # Where this runbook's documents live. The blob path IS the ingest
+  # filename, so every collection binding below sits under this prefix —
+  # `mmctl runbook validate` errors if one does not.
+  sources:
+    container: sources
+    prefix: "support/"
+  collections:
+    - name: kb-helphub
+      shape: knowledge-sources@1
+      accessLevel: 0
+      sources: { filenamePrefix: "support/helphub/", mediaTypes: [text/markdown] }
+    - name: community-forum
+      shape: knowledge-sources@1
+      accessLevel: 0
+      sources: { filenamePrefix: "support/community/", mediaTypes: [text/plain] }
+    - name: release-notes
+      shape: knowledge-sources@1
+      accessLevel: 0
+      sources: { filenamePrefix: "support/buildforge/", mediaTypes: [text/markdown] }
+    - name: support-tickets-deskway
+      shape: knowledge-sources@1
+      accessLevel: 1
+      compartments: [support]
+      sources: { filenamePrefix: "support/deskway/", mediaTypes: [text/plain] }
+    - name: bug-tracker
+      shape: knowledge-sources@1
+      accessLevel: 1
+      compartments: [engineering]
+      sources: { filenamePrefix: "support/bugtrail/", mediaTypes: [text/plain] }
+    - name: incident-postmortems
+      shape: knowledge-sources@1
+      accessLevel: 2
+      compartments: [engineering]
+      sources: { filenamePrefix: "support/statusdesk/", mediaTypes: [text/markdown] }
+    - name: engineering-chat
+      shape: knowledge-sources@1
+      accessLevel: 2
+      compartments: [engineering]
+      sources: { filenamePrefix: "support/chatops/", mediaTypes: [text/plain] }
+    - name: mail-archive
+      shape: knowledge-sources@1
+      accessLevel: 2
+      compartments: [support, legal]
+      sources: { filenamePrefix: "support/mailarchive/", mediaTypes: [text/plain] }
+    - name: policy-documents
+      shape: knowledge-sources@1
+      accessLevel: 2
+      compartments: [legal]
+      sources:
+        filenamePrefix: "support/docvault/"
+        mediaTypes:
+          - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    - name: customer-contracts
+      shape: knowledge-sources@1
+      accessLevel: 3
+      compartments: [legal]
+      sources: { filenamePrefix: "support/contractstore/", mediaTypes: [application/pdf] }
+
+  # The Matrix register dataViews that briefly lived here (2026-08-30 to
+  # 2026-09-01) are REMOVED, owner-directed: these collections were never
+  # supposed to depend on Matrix, which is developed and tested entirely
+  # outside dev. The set-wide questions the registers answered ("most recent
+  # postmortem", "what do contracts promise") return to the known-hard set —
+  # the 2026-08-30 measurement that a topK sample cannot answer them stands,
+  # reconfirmed 2026-09-01 (12/12 fresh-session runs served zero postmortems
+  # across every tier of two families).
+
+  retrieval:
+    topK: 20
+    rrfK: 60
+    candidateN: 150
+  models:
+    default: { provider: default, tier: fast }
+    tasks:
+      # Fast tier is the honest default: haiku reached 47/50 on this corpus
+      # after declarative fixes, and the capable tier's 50/50 is available per
+      # turn through the override policy below.
+      completion: { provider: default, tier: fast }
+      validation: { tier: fast }
+    allowOverrides: [default, demo-anthropic, demo-openai, demo-openrouter, demo-ollama]
+  completion:
+    promptTemplate: |
+      You are a support engineer answering from the company's own record —
+      knowledge base, forum, release notes, tickets, bugs, chat, email,
+      postmortems, policies and contracts.
+
+      Rules:
+      - Answer ONLY from the context and cite the documents you used. If you
+        cannot cite it, say the record does not contain the answer.
+      - THE REGISTERS: a context block from the postmortems-register or
+        sla-register layer is that whole record as a typed table, each row
+        citable as [evidence/<id>#<row>] and naming its source document. A
+        block marked COMPLETE is the WHOLE set: answer "most recent", "how
+        many" and "what do our contracts promise" questions FROM IT and cite
+        the rows. A TRUNCATED block, and document hits alone, are samples —
+        never claim a superlative or a total from a sample; when the register
+        is absent or unavailable, say so in one sentence and answer only what
+        the documents support.
+      - A knowledge-base article contradicted by a LATER release note or
+        postmortem is stale. Report both, say which is current, and give the
+        date each one carries.
+      - Systems disagree in wording, not in fact. Reconcile the same incident,
+        version or customer across systems instead of answering from whichever
+        one you read first.
+      - Version numbers and dates are quoted exactly as written.
+
+      {context}
+
+      Question: {query}
+    # topK 20 over 900-character chunks is an UPPER BOUND of ~18,000
+    # characters plus ~60 per hit for the "[collection/chunk_id]" label.
+    # MEASURED 2026-08-30: the twenty served hits already fit the 16,000
+    # engine default -- every battery turn's input tokens were identical with
+    # and without this line. Declared anyway, sized to the bound, so a corpus
+    # or shape change cannot make the truncation binding without anyone
+    # noticing (guides/retrieval-sizing.md).
+    contextCharBudget: 22000
+  steps:
+    - resolveSources: {}
+    - buildIndex: {}
+    - verify: {}
+    - cutover: { approval: required }
+    - retireOld: { keep_versions: 2 }

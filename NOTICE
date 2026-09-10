@@ -1,0 +1,11 @@
+Munarium Demo
+Copyright (c) 2026 Ioka LLC
+
+Application code and Ioka-authored configuration and documentation are licensed
+under Apache-2.0. See LICENSE. Munarium and Ioka are trademarks of Ioka LLC;
+see TRADEMARK.md. This grant does not include Munarium Enterprise.
+
+Third-party components retain their own licenses; see THIRD_PARTY_NOTICES.md
+and licenses/. Corpus records retain their original rights; see data/RIGHTS.md.
+Modified imported loading tools identify the standalone-demo adaptation in their
+headers. Corpus source bytes are preserved and checksummed in data/manifest.json.

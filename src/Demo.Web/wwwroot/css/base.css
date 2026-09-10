@@ -1,0 +1,13 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Original base rules for the demo's Bootstrap layout. */
+body { margin: 0; font-family: system-ui, sans-serif; color: #132f3d; }
+a { text-decoration: none; }
+.section { padding: 5rem 0; }
+.bg-home { padding: 7rem 0 3rem; }
+.navbar-custom { background: #132f3d; padding: .75rem 0; }
+.navbar-custom .nav-link { color: #f6f2e9; }
+.navbar-custom .nav-link:hover, .navbar-custom .nav-link.active { color: #e8ba76; }
+.navbar-brand img { vertical-align: middle; }
+.text-muted { color: #56666e !important; }
+.title-heading { max-width: 52rem; }
+.footer-bg { padding: 2rem 0; background: #132f3d; color: #f6f2e9; }

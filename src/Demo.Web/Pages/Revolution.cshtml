@@ -1,0 +1,72 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.RevolutionModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The scale story";
+    ViewData["Title"] = "American Revolution Archive";
+    ViewData["Description"] = "66,739 Library of Congress documents served as one governed archival retrieval application.";
+    ViewData["NavActive"] = "revolution";
+    ViewData["ChatCorpus"] = "revolution";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        Library of Congress digital collections gathered into one corpus:
+                        66,739 documents. The papers of Washington
+                        (~30,000 documents), Jefferson, Hamilton, Franklin and Madison; first-person
+                        narratives and diaries; printed ephemera, broadsides and the journals of the
+                        Continental Congress; revolutionary-era maps; and 16,849 newspaper pages from
+                        1770–1783 out of the Chronicling America OCR archive. The server shards this
+                        into 58 collections so every index build stays bounded — the demo searches all
+                        of them at once.
+                    </p>
+                    <p class="text-muted f-15">
+                        <span class="badge dm-badge-honesty">historical archive, OCR text</span>
+                        Historical originals are public-domain material; source rights and attribution in the bundled records are retained. Much of it — the newspapers
+                        especially — is raw OCR of eighteenth-century print: expect long-s artifacts,
+                        broken columns, and creative spelling. That is the point: the runbook's job is
+                        grounded answering over messy text at scale. In the lab this corpus measured
+                        18/18 on factual questions on both model tiers ($1.08 total), and its chat arm
+                        drove the "serve the cited-but-unread document" repair that now runs on every turn.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What did Washington write to Congress about supplying the army at Valley Forge?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>How did colonial newspapers report the Boston Tea Party?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What terms did the 1778 Treaty of Alliance with France establish?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which maps depict the fortifications around Boston in 1775 and 1776?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>How did American newspapers cover the Apollo 11 moon landing?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search over all 58 collections — each hit shows which collection
+                            group answered.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="revolution" data-badges="path">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the archive…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        This entire application — 58 collections, retrieval knobs, model policy, and the
+                        prompt that encodes the lab's lessons — is two YAML files applied to the server.
+                        No application code.
+                    </p>
+                    <a href="/downloads/runbooks/history-revolution.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">history-revolution.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/archival-documents.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">archival-documents.yaml</span>
+                    </a>
+}

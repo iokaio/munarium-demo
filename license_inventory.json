@@ -1,0 +1,231 @@
+{
+  "default_license": "Apache-2.0",
+  "noncommentable_assets": [
+    {
+      "path": "data/manifest.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "data/packs/dd.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/fin.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-adams-trial.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-amnotes-part01.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-amnotes-part02.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-amnotes-part03.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-amnotes-part04.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-battlemaps.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-capbay.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-contcong.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-ephemera.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-franklin.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-gw.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-hamilton.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-jefferson.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-lawmaking.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-madison.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part01.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part02.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part03.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part04.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part05.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part06.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-newspapers-part07.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-rarebook.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-revmaps.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/history-rochambeau.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/intel.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/patents.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "data/packs/support.zip",
+      "license": "SEE data/RIGHTS.md",
+      "notice": "data/RIGHTS.md"
+    },
+    {
+      "path": "package-lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "package.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/Demo.Web/Properties/launchSettings.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/Demo.Web/appsettings.Development.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/Demo.Web/appsettings.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/Demo.Web/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/Demo.Web/wwwroot/fonts/materialdesignicons-webfont.eot",
+      "license": "Apache-2.0",
+      "notice": "licenses/material-design-icons.txt"
+    },
+    {
+      "path": "src/Demo.Web/wwwroot/fonts/materialdesignicons-webfont.ttf",
+      "license": "Apache-2.0",
+      "notice": "licenses/material-design-icons.txt"
+    },
+    {
+      "path": "src/Demo.Web/wwwroot/fonts/materialdesignicons-webfont.woff",
+      "license": "Apache-2.0",
+      "notice": "licenses/material-design-icons.txt"
+    },
+    {
+      "path": "src/Demo.Web/wwwroot/fonts/materialdesignicons-webfont.woff2",
+      "license": "Apache-2.0",
+      "notice": "licenses/material-design-icons.txt"
+    },
+    {
+      "path": "src/Demo.Web/wwwroot/images/demo-mark.svg",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "tools/corpora/IMPORTS.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "vendor/assets.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/images/overview.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    }
+  ],
+  "third_party_notices": "THIRD_PARTY_NOTICES.md"
+}

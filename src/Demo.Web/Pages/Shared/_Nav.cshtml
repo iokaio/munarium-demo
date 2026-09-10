@@ -1,0 +1,80 @@
+@* SPDX-License-Identifier: Apache-2.0 *@
+@inject Demo.Web.Services.DemoIdentity Identity
+@using Demo.Web.Services
+@inject Dictionary<string, CorpusConfig> Corpora
+@inject MatrixOptions Matrix
+@{
+    var active = ViewData["NavActive"] as string ?? "";
+    // "Collections" reads active on any corpus page, and the registry decides
+    // which keys those are — so a new corpus lights the menu with no edit here.
+    var corpusActive = Corpora.ContainsKey(active);
+    // The vendored theme styles `li.active a` (white) and `li.active a:after`
+    // (the orange underline), so the flag has to ride BOTH elements.
+    string Li(bool on) => on ? "nav-item active" : "nav-item";
+    string A(bool on) => on ? "nav-link active" : "nav-link";
+}
+<!--Navbar Start-->
+<nav class="navbar navbar-expand-lg fixed-top navbar-custom navbar-dark sticky sticky-dark dm-nav" id="navbar">
+    <div class="container">
+        <!-- LOGO -->
+        <a class="navbar-brand logo" href="/">
+            <img src="@Identity.LogoUrl" alt="@Identity.Name" height="28">
+            <span class="dm-brand-name">@Identity.Name</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="mdi mdi-menu"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ms-auto navbar-center" id="navbar-navlist">
+                <li class="@Li(active == "home")">
+                    <a href="/" class="@A(active == "home")">Overview</a>
+                </li>
+                <li class="@Li(corpusActive) dropdown dm-nav-dropdown">
+                    @* The theme's `.nav-item .nav-link:after` outranks Bootstrap's
+                       `.dropdown-toggle::after`, turning the caret into the orange
+                       underline — so the caret is a real element. *@
+                    <a href="#" class="@A(corpusActive) dropdown-toggle" id="navCollections" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Collections <i class="mdi mdi-chevron-down dm-nav-caret" aria-hidden="true"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dm-nav-menu" aria-labelledby="navCollections">
+                        @foreach (var (key, corpus) in Corpora.Ordered())
+                        {
+                            var on = key == active;
+                            <li>
+                                <a class="dropdown-item dm-nav-item @(on ? "active" : "")"
+                                   href="@corpus.PathFor(key)" title="@corpus.Title"
+                                   aria-current="@(on ? "page" : null)">
+                                    @if (!string.IsNullOrWhiteSpace(corpus.Icon))
+                                    {
+                                        <i class="mdi @corpus.Icon me-2" aria-hidden="true"></i>
+                                    }
+                                    @corpus.NavLabelOrTitle()
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                <li class="@Li(active == "stats")">
+                    <a href="/stats" class="@A(active == "stats")">Usage</a>
+                </li>
+                <li class="nav-item"><a href="https://ioka.io" class="nav-link">About Munarium <i class="mdi mdi-arrow-top-right" aria-hidden="true"></i></a></li>
+                <li class="nav-item dm-nav-session"><a href="/logout" class="nav-link">Log out</a></li>
+                @if (Matrix.ConsoleVisible)
+                {
+                    @* WP-7.7: the structured-evidence plane's own console,
+                       view-only through /matrix-admin. Config-gated so a
+                       deployment without a Matrix shows no tab — and hidden
+                       by default since 2026-09-01 (owner-directed; the
+                       MATRIX_ADMIN_SHOWN switch re-enables). Proxied pages
+                       are not Razor, so the tab never reads active. *@
+                    <li class="nav-item">
+                        <a href="/matrix-admin" class="nav-link">Matrix</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Navbar End -->

@@ -1,0 +1,90 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.PatentsModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The real-records story";
+    ViewData["Title"] = "Patent Prosecution Record";
+    ViewData["Description"] = "Real USPTO prosecution records — 37 applications, 129 cited prior-art grants, the examiners' own citation records — with draft assessments that contradict them on purpose.";
+    ViewData["NavActive"] = "patents";
+    ViewData["ChatCorpus"] = "patents";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        <span class="badge dm-badge-honesty">real USPTO public records — plus generated draft assessments, marked as such</span>
+                    </p>
+                    <p class="text-muted f-15">
+                        This is the only corpus here built from real documents. Everything but the
+                        draft assessments comes from public USPTO records in one technology class
+                        (USPC 482, exercise devices): <strong>37 applications</strong> with their
+                        claims as filed and full specifications, <strong>129 cited prior-art
+                        grants</strong> reaching back to 1976, <strong>12 decoy patents</strong> in
+                        the same class that were never cited against anything, and the examiners'
+                        own citation records — first and second office actions — assembled from the
+                        Office Action Research Dataset, PatEx, and the full-text weeklies.
+                    </p>
+                    <p class="text-muted f-15">
+                        The 37 <em>draft novelty assessments</em> are generated, and that is the
+                        point: each one asserts a position about its application, and in planted
+                        places it asserts the opposite of what the examiner actually held. Asking
+                        whether the draft agrees with the record is asking the system to notice a
+                        contradiction between two documents and say which one controls — the record
+                        does. Privilege is the boundary and it is real: published prior art and the
+                        decoys are level 0, unfiled drafts and office actions need level 2 with
+                        <code>patent_counsel</code>, and the assessments are attorney work product at
+                        level 3. The demo asks with full clearance.
+                    </p>
+                    <p class="text-muted f-15">
+                        The prompt makes grounding non-negotiable: every disclosure statement must
+                        cite the reference by serial number <em>and</em> quote the passage that
+                        discloses it, anticipation and obviousness stay separate, and an element the
+                        served references do not disclose is a finding, not a gap to paper over.
+                        Measured in the lab: the ask arm reached <strong>45/48</strong> on sonnet-5
+                        and its chat arm 13/13; folding drafters' different words for one claim
+                        element onto a canonical id lifted element recall from 0.108 to 0.270; and
+                        the semantic-contradiction reviewer — which had never filed a finding on this
+                        corpus — produced 23 grounded findings covering 10 of the 12 planted
+                        contradictions with no junk, once the candidate pairing was fixed.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which US patents were cited on the record of application 12-056401? List them.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which US patents were cited on the record of application 12-224123? List them.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which references were applied in combination against application 12-201778 under 35 U.S.C. 103? Name each patent.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>On what date did US patent 4,436,097 issue, and what is its title?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What is the title of US patent 7,909,749?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>Is patent US11222333 cited anywhere in this corpus?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search across the five collections — prior art, decoys, target
+                            drafts, office actions and assessments — each hit named by collection.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="patents">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the prosecution record…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        Five collections across three privilege levels, a fact shape that accepts
+                        both patent serials and folded claim-element ids, and the citation rules —
+                        the whole application is two YAML files.
+                    </p>
+                    <a href="/downloads/runbooks/patent-analysis.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">patent-analysis.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/patent-documents.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">patent-documents.yaml</span>
+                    </a>
+}

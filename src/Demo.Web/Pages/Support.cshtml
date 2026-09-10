@@ -1,0 +1,87 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.SupportModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The format story";
+    ViewData["Title"] = "Support Knowledge Base";
+    ViewData["Description"] = "One synthetic seeded world scattered across ten source systems, reassembled as a compartmentalized retrieval application.";
+    ViewData["NavActive"] = "support";
+    ViewData["ChatCorpus"] = "support";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        About 1,500 documents emitted by a seeded world-model generator into ten
+                        disparate source systems: a public knowledge base, a community forum, release
+                        notes, support tickets, a bug tracker, incident postmortems, engineering chat
+                        logs, a mail archive, DOCX policy documents, and PDF customer contracts —
+                        four file types in all. Each system tells part of the same underlying story
+                        in its own vocabulary, and the corpus deliberately plants knowledge-base
+                        articles that a later release note or postmortem has made stale.
+                    </p>
+                    <p class="text-muted f-15">
+                        <span class="badge dm-badge-honesty">fully synthetic — the "Nimbara" fictional company</span>
+                        Every customer, incident, version number and contract here is invented; no real
+                        company data is involved. The runbook's rules are the interesting part: report
+                        both sides of a stale-KB conflict and say which record is current with dates;
+                        reconcile systems that disagree in wording, not fact; quote versions exactly.
+                        Measured in the lab: 47/50 on the fast tier after declarative fixes alone, 50/50
+                        on the capable tier.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which knowledge base articles about the export scheduler have been superseded by release notes?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What changed in release 4.2.1, and which tickets does it resolve?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which policy governs data retention, and where is it stated?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>What does our main competitor's SLA promise for priority-1 response times?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search across all ten systems the demo token can see.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="support" data-badges="path">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the knowledge corpus…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Gallery {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Curated questions from the lab's graded set. Each one fires a fresh
+                            one-turn session and shows the verified answer — these are the kinds of
+                            cross-system reconciliations the corpus was built to test.
+                        </p>
+                        <div class="dm-chips mb-3" data-dm-gallery data-corpus="support">
+                            <button type="button" class="dm-chip" data-dm-gallery-q>Which knowledge base articles are contradicted by a later release note?</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>What is the current maximum export size, and which document is authoritative for it?</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>Summarize the most severe incident in the record: cause, fix, and customer impact.</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>Do any customer contracts carry SLA terms stricter than the standard policy?</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>What does the bug tracker say about data-sync failures, and were they ever tied to an incident?</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>Which release fixed the issue customers reported most in tickets?</button>
+                            <button type="button" class="dm-chip" data-dm-gallery-q>What escalation path do the policy documents define for security issues?</button>
+                        </div>
+                        <div data-dm-gallery-out></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        Ten collections at four clearance levels, media-type bindings that route DOCX
+                        and PDF through server-side extraction, and the reconciliation prompt — all of
+                        it is two YAML files.
+                    </p>
+                    <a href="/downloads/runbooks/support-knowledge.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">support-knowledge.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/knowledge-sources.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">knowledge-sources.yaml</span>
+                    </a>
+}

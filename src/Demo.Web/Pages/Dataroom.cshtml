@@ -1,0 +1,89 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.DataroomModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The governance story";
+    ViewData["Title"] = "M&A Data Room";
+    ViewData["Description"] = "A synthetic 613-document virtual data room with clearance levels and compartments — same question, different persona, different answer.";
+    ViewData["NavActive"] = "dataroom";
+    ViewData["ChatCorpus"] = "dataroom";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        <span class="badge dm-badge-honesty">fully synthetic — the fictional Northgate / Aster Peak transaction</span>
+                    </p>
+                    <p class="text-muted f-15">
+                        This is a virtual data room for a transaction that never happened: Aster Peak
+                        Holdings' proposed acquisition of Northgate Systems Ltd. Every document — 612 of
+                        them across twelve diligence folders, with 41 seeded findings — was generated for
+                        the lab's due-diligence experiment. No real company, deal, or person appears here.
+                    </p>
+                    <p class="text-muted f-15">
+                        Each functional area is its own compartmentalized collection: corporate,
+                        commercial, real estate, insurance and operations sit at level 1; equity,
+                        financial, tax, IP and compliance files need level 2 with the
+                        <code>finance</code> or <code>legal</code> compartment; employment files and
+                        security incident records need level 3 with <code>hr</code> or
+                        <code>security</code>. The demo lets you switch persona — the token and session
+                        are re-minted with the new clearance, and access is enforced <em>before</em>
+                        retrieval ranks anything. Ask the same question as the associate and as the
+                        clean team and compare what comes back. The runbook's prompt encodes diligence
+                        reading rules: conflicts between documents are findings, amendments control
+                        their base agreements, audited financials outrank summaries.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Summarize Northgate's corporate structure and subsidiaries.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Are there change-of-control provisions in the material commercial contracts?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Do the audited financials conflict with management's summaries anywhere?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What litigation or regulatory compliance issues appear in the record?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip
+                            data-dm-requires-persona="cleanteam"
+                            title="Clean team access is required for security incident records">What security incidents are recorded, and were affected customers notified?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>How does Northgate's market share compare with its competitors'?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Persona {
+<p class="f-14 text-dark mb-2">You are asking as:</p>
+                    <div class="btn-group btn-group-sm flex-wrap" role="group" aria-label="Persona">
+                        <button type="button" class="btn dm-toggle active" data-dm-persona="associate" aria-pressed="true">Buyer associate</button>
+                        <button type="button" class="btn dm-toggle" data-dm-persona="counsel" aria-pressed="false">Deal counsel</button>
+                        <button type="button" class="btn dm-toggle" data-dm-persona="cleanteam" aria-pressed="false">Clean team</button>
+                    </div>
+                    <p class="f-13 text-muted mt-2 mb-0" data-dm-persona-scope aria-live="polite">
+                        Buyer associate: general deal folders only. Security incident records require Clean team.
+                    </p>
+                    <p class="f-13 text-muted mb-0">Changing persona clears this conversation. Answers cover only the folders your persona can access.</p>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search over the folders your current persona can see.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="dataroom" data-badges="path" data-use-persona="true">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the data room…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        Thirteen collections, four clearance levels, compartment tags, and the
+                        diligence reading rules — the whole application is two YAML files.
+                    </p>
+                    <a href="/downloads/runbooks/due-diligence.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">due-diligence.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/dataroom-documents.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">dataroom-documents.yaml</span>
+                    </a>
+}

@@ -1,0 +1,35 @@
+@* SPDX-License-Identifier: Apache-2.0 *@
+@inject Demo.Web.Services.DemoIdentity Identity
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - @Identity.Name</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <meta name="description" content="@ViewData["Description"]" />
+    <meta name="author" content="Ioka LLC" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#132f3d" />
+    <link rel="icon" href="/images/demo-mark.svg" type="image/svg+xml" />
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/base.css" rel="stylesheet" />
+    <link href="/css/editorial.css" rel="stylesheet" />
+    <link href="/css/demo.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/css/app-design.css" rel="stylesheet" asp-append-version="true" />
+</head>
+<body class="dm-app @(ViewData["Workspace"] is true ? "dm-workspace-page" : "dm-document-page")">
+    <a class="dm-skip-link" href="@(ViewData["Workspace"] is true ? "#chat-question" : "#main-content")">Skip to content</a>
+    @RenderBody()
+    @if (ViewData["Workspace"] is not true)
+    {
+        <footer class="dm-site-footer">
+            <a href="https://ioka.io">Ioka.io</a>
+            <span>© @DateTime.UtcNow.Year Ioka LLC · Apache-2.0 application source</span>
+            <a href="/logout">Log out <i class="mdi mdi-arrow-top-right" aria-hidden="true"></i></a>
+        </footer>
+    }
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

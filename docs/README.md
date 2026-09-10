@@ -1,0 +1,26 @@
+# Documentation
+
+## Understand the demo
+
+- [Architecture](architecture.md)
+- [Configuration reference](configuration.md)
+- [Security boundaries](security.md)
+- [Release compatibility](releases/README.md)
+
+## Build and customize
+
+- [Quickstart](guides/quickstart.md)
+- [Development and checks](guides/development.md)
+- [Corpora and data rights](guides/corpora.md)
+- [Runbooks, shapes, and providers](guides/runbooks.md)
+- [Customize the demo](guides/customize-demo.md)
+
+## Operate
+
+- [Corpus loading and recovery](ops/corpus-loading.md)
+- [Hosting](ops/deployment.md) and [Azure](ops/azure.md)
+- [Local models](ops/ollama.md)
+- [Access and email](ops/access-and-email.md)
+- [Backup and restore](ops/backup-restore.md)
+- [Upgrade and rollback](ops/upgrade-rollback.md)
+- [Troubleshooting](ops/troubleshooting.md)

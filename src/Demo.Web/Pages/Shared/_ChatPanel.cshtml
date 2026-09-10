@@ -1,0 +1,29 @@
+@* SPDX-License-Identifier: Apache-2.0 *@
+<div class="dm-chat">
+    <div class="dm-transcript" data-dm-transcript role="log" aria-label="Conversation" aria-live="polite" tabindex="0">
+        <div class="dm-empty" data-dm-empty>
+            <span class="dm-empty-mark" aria-hidden="true"><i class="mdi mdi-text-box-search-outline"></i></span>
+            <p class="dm-eyebrow">A conversation with the evidence</p>
+            <h2>Start with a question.<br />Follow the sources.</h2>
+            <p>Explore @ViewData["Title"]. Choose a question from the sidebar, or ask your own below.</p>
+            <div class="dm-empty-process" aria-hidden="true"><span>Retrieve</span><i class="mdi mdi-arrow-right"></i><span>Answer</span><i class="mdi mdi-arrow-right"></i><span>Verify</span></div>
+        </div>
+    </div>
+    <div class="dm-composer">
+        <div class="dm-thinking d-none" data-dm-thinking role="status">
+            <div><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span><span data-dm-thinking-label>Retrieving, answering, and verifying…</span></div>
+            <div class="dm-thinking-log" data-dm-thinking-log aria-live="polite"></div>
+        </div>
+        <div class="dm-composer-options">
+            <label><input type="checkbox" data-dm-follow-up disabled /> Follow up on the previous answer</label>
+            <span>Enter to send · Shift + Enter for a new line</span>
+        </div>
+        <form class="dm-input" data-dm-form>
+            <label for="chat-question" class="visually-hidden">Your question</label>
+            <textarea id="chat-question" class="form-control" data-dm-input maxlength="1000" rows="2"
+                      placeholder="Ask a question about this collection…" autocomplete="off"></textarea>
+            <button type="submit" class="btn dm-send" data-dm-send>Send <i class="mdi mdi-arrow-up" aria-hidden="true"></i></button>
+        </form>
+        <p class="dm-composer-note">Answers are grounded in this collection. Check the cited sources.</p>
+    </div>
+</div>

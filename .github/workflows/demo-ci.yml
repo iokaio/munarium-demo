@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: Apache-2.0
+name: demo-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Portable contribution checks with no deployment credentials.
+permissions:
+  contents: read
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: build (warnings are errors)
+        run: |
+          dotnet restore Demo.sln --locked-mode
+          dotnet build Demo.sln -c Release -warnaserror --no-restore
+
+      - name: format and analyzer check
+        run: dotnet format Demo.sln --verify-no-changes --no-restore
+
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '22'
+
+      - name: install pinned browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: readiness regression checks
+        run: node tools/test-readiness.cjs
+
+      - name: chat context regression checks
+        run: node tools/test-chat-context.cjs
+
+      - name: Ollama availability regression checks
+        run: node tools/test-ollama.cjs
+
+      - name: workspace browser regression checks
+        run: node tools/test-workspace.cjs
+
+      - name: public configuration security checks
+        run: node tools/test-public-config.cjs
+
+      - name: lint PowerShell
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
+          Import-Module PSScriptAnalyzer -RequiredVersion 1.24.0
+          $scripts = Get-ChildItem -Path . -Recurse -File -Include *.ps1, *.psm1, *.psd1 |
+            Where-Object { $_.FullName -notmatch '[\\/](bin|obj|vendor|node_modules|data)[\\/]' }
+          $results = @($scripts | Invoke-ScriptAnalyzer -Settings ./PSScriptAnalyzerSettings.psd1)
+          $results | Format-Table -AutoSize RuleName, Severity, ScriptName, Line, Message | Out-String -Width 200
+          "analyzed $($scripts.Count) files, $($results.Count) findings"
+          if ($results.Count) { exit 1 }
+
+      # The same image deploy.ps1 would build, minus the push. The Dockerfile
+      # itself asserts that exactly twelve runbook and shape YAMLs were copied
+      # and that no secrets file reached the publish output.
+      - name: build the demo image
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: docker build --build-arg "SOURCE_REVISION=$SOURCE_REVISION" -t munarium-demo-web:ci .
+
+      - name: install and run actionlint
+        run: |
+          version=1.7.12
+          archive="actionlint_${version}_linux_amd64.tar.gz"
+          curl -sSfL "https://github.com/rhysd/actionlint/releases/download/v${version}/${archive}" -o "/tmp/${archive}"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  /tmp/${archive}" | sha256sum -c -
+          tar -xzf "/tmp/${archive}" -C /tmp actionlint
+          /tmp/actionlint
+
+      - name: check CI cannot deploy the demo
+        shell: pwsh
+        run: |
+          ./tools/check_ci_boundary.ps1 -SelfTest
+          ./tools/check_ci_boundary.ps1

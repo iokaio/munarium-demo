@@ -1,0 +1,75 @@
+@* SPDX-License-Identifier: Apache-2.0 *@
+@{
+    Layout = "_Layout";
+    ViewData["Workspace"] = true;
+    var corpus = ViewData["ChatCorpus"] as string;
+    if (string.IsNullOrWhiteSpace(corpus))
+    {
+        throw new InvalidOperationException("Collection pages require ChatCorpus.");
+    }
+}
+<partial name="_Nav" />
+<main class="dm-workspace" id="main-content" data-dm-chat data-corpus="@corpus">
+    <header class="dm-workspace-heading">
+        <div><p class="dm-eyebrow">@ViewData["CollectionEyebrow"]</p><h1>@ViewData["Title"]</h1></div>
+        <div class="dm-heading-actions">
+            <button class="btn dm-outline d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#collection-sidebar" aria-controls="collection-sidebar"><i class="mdi mdi-tune" aria-hidden="true"></i> Explore</button>
+            <button class="btn dm-outline" type="button" data-bs-toggle="offcanvas" data-bs-target="#collection-briefing" aria-controls="collection-briefing"><i class="mdi mdi-information-outline" aria-hidden="true"></i> <span>About this collection</span></button>
+        </div>
+    </header>
+    <div class="dm-workspace-body">
+        <aside class="offcanvas-lg offcanvas-start dm-sidebar" id="collection-sidebar" tabindex="-1" aria-labelledby="sidebar-title">
+            <div class="offcanvas-header d-lg-none">
+                <h2 id="sidebar-title">Explore &amp; configure</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#collection-sidebar" aria-label="Close sidebar"></button>
+            </div>
+            <div class="dm-sidebar-settings">
+                <partial name="_ModelControls" />
+                @if (IsSectionDefined("Persona"))
+                {
+                    <details class="dm-persona-settings">
+                        <summary>Access persona <i class="mdi mdi-chevron-down" aria-hidden="true"></i></summary>
+                        @await RenderSectionAsync("Persona")
+                    </details>
+                }
+            </div>
+            <div class="dm-question-heading"><h2>Questions to explore</h2><p>Choose a question to make it your own.</p></div>
+            <div class="dm-question-list" tabindex="0" aria-label="Example questions">@await RenderSectionAsync("Questions")</div>
+            <div class="dm-sidebar-footer"><a href="/">All collections <i class="mdi mdi-arrow-top-right" aria-hidden="true"></i></a><span>Demonstration</span></div>
+        </aside>
+        <section class="dm-conversation" aria-label="Collection workspace">
+            <div class="dm-conversation-nav">
+                <ul class="nav dm-tabs" role="tablist" aria-label="Workspace view">
+                    <li class="nav-item" role="presentation"><button id="chat-tab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-chat" type="button" role="tab" aria-controls="tab-chat" aria-selected="true">Conversation</button></li>
+                    <li class="nav-item" role="presentation"><button id="search-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-search" type="button" role="tab" aria-controls="tab-search" aria-selected="false">Search sources</button></li>
+                    @if (IsSectionDefined("Gallery"))
+                    {
+                        <li class="nav-item" role="presentation"><button id="gallery-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gallery" type="button" role="tab" aria-controls="tab-gallery" aria-selected="false">Q&amp;A gallery</button></li>
+                    }
+                </ul>
+                <span class="dm-turns-note" data-dm-remaining></span>
+            </div>
+            <div class="tab-content dm-workspace-tabs">
+                <div class="tab-pane show active" id="tab-chat" role="tabpanel" aria-labelledby="chat-tab"><partial name="_ChatPanel" /></div>
+                <div class="tab-pane dm-source-panel" id="tab-search" role="tabpanel" aria-labelledby="search-tab" tabindex="0"><h2>Go straight to the source.</h2>@await RenderSectionAsync("Search")</div>
+                @if (IsSectionDefined("Gallery"))
+                {
+                    <div class="tab-pane dm-source-panel" id="tab-gallery" role="tabpanel" aria-labelledby="gallery-tab" tabindex="0"><h2>Explore the evaluated questions.</h2>@await RenderSectionAsync("Gallery")</div>
+                }
+            </div>
+        </section>
+    </div>
+</main>
+<aside class="offcanvas offcanvas-end dm-briefing" tabindex="-1" id="collection-briefing" aria-labelledby="briefing-title">
+    <div class="offcanvas-header">
+        <div><p class="dm-eyebrow">Collection field notes</p><h2 id="briefing-title">@ViewData["Title"]</h2></div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close collection details"></button>
+    </div>
+    <div class="offcanvas-body">@await RenderSectionAsync("Briefing")<div class="dm-downloads">@await RenderSectionAsync("Downloads")</div></div>
+    <div class="dm-briefing-footer"><button class="btn dm-send" type="button" data-bs-dismiss="offcanvas">Back to the conversation <i class="mdi mdi-arrow-right" aria-hidden="true"></i></button></div>
+</aside>
+@RenderBody()
+@section Scripts {
+    <script src="/js/demo-chat.js" asp-append-version="true"></script>
+    <script src="/js/workspace.js" asp-append-version="true"></script>
+}

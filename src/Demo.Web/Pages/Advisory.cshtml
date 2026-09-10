@@ -1,0 +1,84 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.AdvisoryModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The accuracy story";
+    ViewData["Title"] = "Wealth Advisory Record";
+    ViewData["Description"] = "Ten years of a family's advisory record — 1,233 documents, 26 signed constraint sheets — where every answer must carry the date it took effect.";
+    ViewData["NavActive"] = "advisory";
+    ViewData["ChatCorpus"] = "advisory";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        <span class="badge dm-badge-honesty">fully synthetic — the fictional Vale family</span>
+                    </p>
+                    <p class="text-muted f-15">
+                        Ten years of one household's advisory file, July 2016 to June 2026: 1,233
+                        documents across 25 record types — quarterly advisory reviews, portfolio
+                        statements, closely held business packets, venture positions, real estate
+                        and hospitality ventures, tax and insurance files, and 26 <em>signed
+                        constraint sheets</em> that govern what may be held and how much must stay
+                        liquid. No real family, adviser, or holding appears here.
+                    </p>
+                    <p class="text-muted f-15">
+                        Fourteen collections carry the compartment boundary: the portfolio, business,
+                        venture and policy record needs level 2 with <code>advisory</code>, while the
+                        client profile, tax and insurance files and household history need level 3
+                        with <code>client_pii</code> — and transaction files need both. The demo asks
+                        with full clearance, so you see the whole record.
+                    </p>
+                    <p class="text-muted f-15">
+                        What makes this corpus hard is that its governing values <em>change</em>. A
+                        liquidity floor rises; a prohibition is relaxed; a risk score goes down as
+                        well as up. So the runbook's prompt requires every constraint answer to state
+                        the value <strong>and</strong> the date it took effect, and to report a
+                        contradiction as a finding with both sides rather than reconciling it
+                        quietly. In the lab this corpus scored <strong>65/66 (0.985)</strong> on
+                        sonnet-5 for $9.28, with document-list F1 of 1.0 and all five planted
+                        anomalies found. The single failure became a rule in the prompt: asked which
+                        prohibitions held across all 26 sheets, the model read about eight of them
+                        and generalized — so the prompt now says to cover an enumerable set in full
+                        before asserting constancy.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Which signed constraints sheet governs personal suitability as of 2026-06-30, and what minimum liquidity floor does it set?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Why was the 2025 Q3 proposal to raise public equities to 75% rejected? What specific limit did it exceed?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Does the "estimated liquid investable assets" figure in the 2026 Q2 quarterly advisory review agree with the sum of the three portfolio statements' ending market values for 2026 Q2?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Between the 2025 and 2026 net-worth statements, liquid portfolios jumped by roughly $6.1 million while closely held business value FELL. What corpus event explains both moves at once?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>What was the family's credit score with Equifax in 2024?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search across all fourteen collections — each hit names the
+                            part of the record it came from.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="advisory">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the advisory record…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        Fourteen collections, two compartments, three clearance levels, and the
+                        reading rules the lab's one measured failure produced — the whole
+                        application is two YAML files.
+                    </p>
+                    <a href="/downloads/runbooks/financial-advisory.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">financial-advisory.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/advisory-records.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">advisory-records.yaml</span>
+                    </a>
+}

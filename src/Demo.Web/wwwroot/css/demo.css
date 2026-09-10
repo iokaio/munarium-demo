@@ -1,0 +1,452 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Munarium demo — page-local styles.
+   Convention: every class is dm- prefixed. Colors ride the editorial.css
+   tokens (--editorial-navy #071727, --editorial-cyan #32a9cc,
+   --editorial-silver #b7c5cf) plus the ioka brand orange #ff8700 and
+   primary #005bea. Typography uses the application's local font stacks. */
+
+:root {
+    --dm-orange: #ff8700;
+    --dm-primary: #005bea;
+}
+
+/* The demo has no dark hero image, so the fixed navbar keeps the editorial
+   navy at all times instead of starting transparent. */
+.dm-nav.navbar-custom {
+    background-color: var(--editorial-navy) !important;
+}
+
+/* ---- Collections dropdown -------------------------------------------------
+   The vendored theme paints EVERY `.navbar-custom .navbar-nav li a` white-ish,
+   12px, with `background-color: transparent !important` — and a dropdown item
+   is an `li a` too, so untreated the menu is white-on-white with no hover.
+   These selectors sit at (0,4,2), above the theme's (0,2,2), and hover/active
+   paint with an inset shadow because that one `!important` background cannot
+   be out-argued cleanly. */
+
+.dm-nav .navbar-nav .dm-nav-menu {
+    background: #fff;
+    border: 1px solid rgba(7, 23, 39, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0.35rem 0;
+    margin-top: 0.4rem;
+    min-width: 15rem;
+}
+
+.dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item,
+.dm-nav.nav-sticky .navbar-nav .dm-nav-menu li a.dm-nav-item {
+    display: block;
+    color: var(--editorial-navy) !important;
+    font-size: 13px;
+    line-height: 1.5;
+    text-transform: none;
+    margin: 0;
+    padding: 0.45rem 1rem;
+    white-space: nowrap;
+}
+
+.dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item:hover,
+.dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item:focus-visible {
+    box-shadow: inset 0 0 0 100vmax rgba(50, 169, 204, 0.12);
+    color: var(--editorial-navy) !important;
+}
+
+.dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item.active {
+    box-shadow: inset 0 0 0 100vmax var(--editorial-navy);
+    color: #fff !important;
+}
+
+/* The theme's animated underline belongs on the toggle, never on a menu item. */
+.dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item::after {
+    display: none;
+}
+
+.dm-nav-caret {
+    font-size: 14px;
+    vertical-align: -1px;
+    transition: transform 0.2s;
+}
+
+.dm-nav-dropdown > a[aria-expanded="true"] .dm-nav-caret {
+    transform: rotate(180deg);
+}
+
+/* Collapsed: Bootstrap makes the menu position:static, so a white card would
+   float inside the navy hamburger panel. Render it as an indented sub-list
+   instead — and with !important, because the theme forces the item colour
+   under 768px. */
+@media (max-width: 991.98px) {
+    .dm-nav .navbar-nav .dm-nav-menu {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        margin-top: 0;
+        padding: 0 0 0.25rem 1rem;
+    }
+
+    .dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item,
+    .dm-nav.nav-sticky .navbar-nav .dm-nav-menu li a.dm-nav-item {
+        color: rgba(255, 255, 255, 0.75) !important;
+        padding: 0.35rem 0;
+    }
+
+    .dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item:hover,
+    .dm-nav .navbar-nav .dm-nav-menu li a.dm-nav-item.active {
+        color: #fff !important;
+        box-shadow: none;
+    }
+}
+
+/* Page sections sit under the fixed navbar. */
+.dm-page {
+    padding-top: 110px;
+}
+
+/* ---- gate ---------------------------------------------------------------- */
+
+.dm-gate-section {
+    min-height: 82vh;
+    /* The theme's .section adds 80px top padding; with the logo block that
+       pushed the card far enough down to scroll on small screens. */
+    padding-top: 24px;
+}
+
+.dm-gate-input {
+    letter-spacing: 0.18em;
+    font-family: monospace;
+}
+
+/* The wide monospace styling is for what the visitor TYPES (a code reads
+   nicely spaced out); placeholders render in the page's normal face so they
+   never truncate. An explicit stack, not `inherit` — inherit would take the
+   input's own monospace. */
+.dm-gate-input::placeholder {
+    letter-spacing: normal;
+    font-family: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 0.75rem;
+}
+
+/* ---- chips --------------------------------------------------------------- */
+
+.dm-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.dm-chip {
+    border: 1px solid rgba(50, 169, 204, 0.45);
+    background: rgba(50, 169, 204, 0.07);
+    color: var(--editorial-navy);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    text-align: left;
+    transition: background 140ms ease, border-color 140ms ease;
+}
+
+.dm-chip:hover {
+    background: rgba(50, 169, 204, 0.18);
+    border-color: var(--editorial-cyan);
+}
+
+/* Verified chip: answers from this corpus, with citations (the marker lives
+   in a pseudo-element so chip.textContent stays the clean question). */
+.dm-chip-verified::before {
+    content: "\2713\00a0";
+    color: #2e8b57;
+    font-weight: 700;
+}
+
+/* Grounding-proof chip: deliberately OUTSIDE the corpus — demonstrates the
+   decline-rather-than-invent contract. */
+.dm-chip-oob {
+    border-style: dashed;
+    border-color: rgba(120, 120, 135, 0.55);
+    background: rgba(120, 120, 135, 0.06);
+}
+
+.dm-chip-oob::before {
+    content: "\2298\00a0";
+    color: #78787e;
+    font-weight: 700;
+}
+
+.dm-chip-oob:hover {
+    background: rgba(120, 120, 135, 0.14);
+    border-color: #78787e;
+}
+
+.dm-chips-footnote {
+    font-size: 0.78rem;
+    color: #6c757d;
+    margin: 0.6rem 0 0;
+    max-width: 62rem;
+}
+
+.dm-chips-footnote .fn-check {
+    color: #2e8b57;
+    font-weight: 700;
+}
+
+.dm-chips-footnote .fn-oob {
+    color: #78787e;
+    font-weight: 700;
+}
+
+/* ---- toggles + send button ---------------------------------------------- */
+
+.dm-toggle {
+    border: 1px solid var(--editorial-silver);
+    color: var(--editorial-navy);
+    background: #fff;
+}
+
+.dm-toggle.active {
+    background: var(--editorial-navy);
+    border-color: var(--editorial-navy);
+    color: #fff;
+}
+
+.dm-send {
+    background: var(--dm-primary);
+    border: 1px solid var(--dm-primary);
+    color: #fff;
+    white-space: nowrap;
+}
+
+.dm-send:hover {
+    background: #0049bd;
+    color: #fff;
+}
+
+.dm-send:disabled {
+    opacity: 0.6;
+}
+
+/* ---- tabs + chat panel --------------------------------------------------- */
+
+.dm-tabs .nav-link {
+    color: var(--editorial-navy);
+}
+
+.dm-tabs .nav-link.active {
+    font-weight: 500;
+    border-bottom-color: #fff;
+}
+
+.dm-tab-content {
+    border: 1px solid #dee2e6;
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+    padding: 1rem 1.25rem 1.25rem;
+    background: #fff;
+}
+
+.dm-transcript {
+    min-height: 180px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 0.25rem 0.25rem 0.25rem 0;
+}
+
+.dm-empty {
+    padding: 2.2rem 0;
+    text-align: center;
+}
+
+/* ---- bubbles ------------------------------------------------------------- */
+
+.dm-bubble {
+    max-width: 92%;
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.dm-bubble-user {
+    background: var(--editorial-navy);
+    color: #fff;
+    margin-left: auto;
+}
+
+.dm-bubble-assistant {
+    background: rgba(183, 197, 207, 0.18);
+    border: 1px solid rgba(183, 197, 207, 0.55);
+    color: #1e2a33;
+    margin-right: auto;
+}
+
+.dm-bubble-note {
+    background: rgba(255, 135, 0, 0.08);
+    border: 1px dashed rgba(255, 135, 0, 0.5);
+    color: #7a4a08;
+    margin: 0 auto 0.75rem;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.dm-bubble-error {
+    background: rgba(255, 135, 0, 0.08);
+    border: 1px solid rgba(255, 135, 0, 0.55);
+    color: #7a4a08;
+    margin-right: auto;
+}
+
+/* ---- badges -------------------------------------------------------------- */
+
+.dm-badge-honesty {
+    background: var(--dm-orange);
+    color: #fff;
+    font-weight: 500;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.dm-badge-model {
+    background: rgba(0, 91, 234, 0.1);
+    border: 1px solid rgba(0, 91, 234, 0.35);
+    color: var(--dm-primary);
+    font-weight: 500;
+}
+
+.dm-badge-collection {
+    background: rgba(50, 169, 204, 0.12);
+    border: 1px solid rgba(50, 169, 204, 0.4);
+    color: #1d7d9c;
+    font-weight: 500;
+}
+
+.dm-badge-verified {
+    background: #d7f3e3;
+    border: 1px solid #4caf7d;
+    color: #1e6b44;
+    font-weight: 500;
+}
+
+.dm-badge-unverified {
+    background: #fdeecd;
+    border: 1px solid var(--dm-orange);
+    color: #8a5a06;
+    font-weight: 500;
+}
+
+.dm-answer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+/* ---- citations ----------------------------------------------------------- */
+
+.dm-citations {
+    margin-top: 0.55rem;
+    border-top: 1px solid rgba(183, 197, 207, 0.55);
+    padding-top: 0.5rem;
+}
+
+.dm-citation {
+    font-size: 0.76rem;
+    color: #4c5a64;
+    background: #fff;
+    border: 1px solid rgba(183, 197, 207, 0.5);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.35rem;
+}
+
+.dm-citation .dm-doc-id {
+    font-family: monospace;
+    color: var(--editorial-navy);
+    word-break: break-all;
+}
+
+.dm-citation .dm-snippet {
+    display: block;
+    margin-top: 0.2rem;
+    color: #6b7883;
+    white-space: normal;
+}
+
+/* ---- search results / gallery -------------------------------------------- */
+
+.dm-hit {
+    border: 1px solid rgba(183, 197, 207, 0.6);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.6rem;
+    background: #fff;
+    font-size: 0.85rem;
+}
+
+.dm-hit .dm-doc-id {
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: var(--editorial-navy);
+    word-break: break-all;
+}
+
+.dm-hit .dm-score {
+    color: #8a97a1;
+    font-size: 0.74rem;
+}
+
+.dm-gallery-item {
+    border: 1px solid rgba(183, 197, 207, 0.6);
+    border-left: 3px solid var(--editorial-cyan);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    background: #fff;
+}
+
+.dm-gallery-item .dm-gallery-q {
+    font-weight: 500;
+    color: var(--editorial-navy);
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.dm-gallery-item .dm-gallery-a {
+    font-size: 0.86rem;
+    color: #1e2a33;
+    white-space: pre-wrap;
+}
+
+.dm-persona-card {
+    border-left: 3px solid var(--dm-orange);
+}
+
+.dm-thinking {
+    padding: 0.4rem 0;
+}
+
+.dm-thinking-log {
+    margin-top: 0.35rem;
+    padding-left: 1.65rem;
+    color: #6c757d;
+}
+
+.dm-thinking-log > div {
+    padding: 0.1rem 0;
+}
+
+.dm-model-note strong {
+    font-weight: 600;
+}
+.dm-chip[data-dm-requires-persona="cleanteam"]::after {
+    content: "Clean team required";
+    display: inline-block;
+    margin-left: .5rem;
+    padding: .1rem .4rem;
+    border: 1px solid currentColor;
+    border-radius: .25rem;
+    font-size: .8em;
+}

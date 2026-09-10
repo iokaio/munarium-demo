@@ -1,0 +1,90 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@model Demo.Web.Pages.IntelModel
+@{
+    Layout = "_CollectionLayout";
+    ViewData["CollectionEyebrow"] = "The identity story";
+    ViewData["Title"] = "Threat Intelligence Reports";
+    ViewData["Description"] = "Four vendor feeds naming the same adversaries differently — where reconciling aliases and refusing to over-merge is the whole job.";
+    ViewData["NavActive"] = "intel";
+    ViewData["ChatCorpus"] = "intel";
+}
+
+@section Briefing {
+<p class="text-muted f-15 mt-2">
+                        <span class="badge dm-badge-honesty">fully synthetic — fictional campaigns, documentation-reserved indicators</span>
+                    </p>
+                    <p class="text-muted f-15">
+                        Sixty-four vendor reports on Operation SILKNOTE and its sibling campaigns —
+                        TIDEGLASS, COPPERVEIL, GRAYFROST — plus decoy activity that looks related and
+                        is not. Three commercial feeds (Helioscope 23 reports, Trellium 18, Northwind
+                        18) arrive under contract and stay inside the <code>intel</code> compartment
+                        at level 1; five public CERT advisories are level 0. Every campaign, actor
+                        and indicator is invented, and the indicators use documentation-reserved
+                        ranges (<code>203.0.113.0/24</code>, <code>198.51.100.0/24</code>,
+                        <code>.example</code>) so nothing here can be mistaken for a live IOC.
+                    </p>
+                    <p class="text-muted f-15">
+                        Splitting by vendor is what makes the hard problem visible: the same adversary
+                        arrives three times under three names. Eight actors are tracked and five carry
+                        multi-vendor alias sets — VELVET CICADA is also TAG-77 and CicadaSpin — while
+                        two <em>traps</em> look like the same pattern and are not: IRON WREN and
+                        CRIMSON FERRET share the DUSKREACH loader, and shared tooling is not shared
+                        identity. In the lab, folding vendor aliases onto canonical actors took
+                        entity resolution from <strong>3 of 8 actors resolved to 8 of 8 with zero
+                        over-merges</strong>, on both model tiers — it is a deterministic step, so it
+                        does not depend on model strength. Canonicalizing indicators (defanged
+                        <code>update-cdn[.]example</code> and fanged <code>update-cdn.example</code>
+                        read as one) removed a false conflict while the genuine one survived: two
+                        vendors give the SILKNOTE phase-two staging server two different addresses,
+                        and that disagreement is real.
+                    </p>
+                    <p class="text-muted f-15">
+                        So the runbook's prompt says to reconcile aliases and name the designations it
+                        merged, never to merge two actors on a shared tool or target, to write every
+                        indicator in one canonical form, and to report two vendors asserting different
+                        attribution as a finding carrying both sides — not an average. Against a
+                        ten-finding answer key the lab measured recall 9/10 on the fast tier for $0.30
+                        and 10/10 on the capable tier.
+                    </p>
+}
+
+@section Questions {
+<div class="dm-chips">
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Who is Operation SILKNOTE attributed to? Do the vendors agree, and which designations did you merge?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>What IP address hosted the SILKNOTE phase-two staging server? Report every value on record.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>IRON WREN and CRIMSON FERRET both use the DUSKREACH loader. Are they the same actor?</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Is the GLASSKEY loader exclusive to one actor? Cite each vendor's position.</button>
+                    <button type="button" class="dm-chip dm-chip-example" data-dm-chip>Is Operation TIDEGLASS state-directed espionage or financially motivated?</button>
+                    <button type="button" class="dm-chip dm-chip-oob" data-dm-chip>What MITRE ATT&amp;CK technique IDs does CISA map to Operation SILKNOTE?</button>
+                </div>
+<details class="dm-question-notes"><summary>About these questions</summary><p class="dm-chips-footnote">These examples target the bundled records. Answers and citations depend on the selected model and current index. Historical lab scores describe prior experiments; inspect the sources when evaluating a new deployment. Out-of-corpus examples test whether the model recognizes missing evidence.</p></details>
+}
+
+@section Search {
+<p class="f-14 text-muted mt-3 mb-2">
+                            Raw hybrid search across the four feeds — each hit names the vendor
+                            collection it came from, which is how you see three reports on one actor.
+                        </p>
+                        <form class="d-flex gap-2 mb-3" data-dm-search-form data-corpus="intel">
+                            <input type="text" class="form-control" data-dm-search-input maxlength="500"
+                                   placeholder="Search the reporting…" autocomplete="off" />
+                            <button type="submit" class="btn dm-send"><i class="mdi mdi-magnify"></i> Search</button>
+                        </form>
+                        <div data-dm-search-results></div>
+}
+
+@section Downloads {
+<h5 class="fw-light mb-2 text-dark">The declarative assets</h5>
+                    <p class="text-muted f-14 mb-2">
+                        Four collections on the vendor-feed boundary, a fact shape whose value ceiling
+                        exists so one indicator canonicalizes to one value, and the alias and
+                        over-merge rules — the whole application is two YAML files.
+                    </p>
+                    <a href="/downloads/runbooks/threat-intelligence.yaml" download class="text-dark d-block mb-1">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Runbook: <span class="text-custom">threat-intelligence.yaml</span>
+                    </a>
+                    <a href="/downloads/runbooks/threat-reports.yaml" download class="text-dark d-block">
+                        <i class="mdi mdi-file-code text-custom me-2"></i>Shape: <span class="text-custom">threat-reports.yaml</span>
+                    </a>
+}

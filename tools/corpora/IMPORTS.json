@@ -1,0 +1,217 @@
+{
+  "status": "Imported source retained with standalone paths and demo provider aliases.",
+  "source_repository": "munarium-int",
+  "source_revision": "d47c848dd8611f3a0886de7e3195d33805255219",
+  "files": [
+    {
+      "path": "tools/corpora/layouts.py",
+      "source_path": "server/deploy/azure/bulkload/layouts.py",
+      "source_sha256": "b13dc178c0be885a8ec2cd5869e05cf7dc848633d366390abc6c4764d2932dd8",
+      "sha256": "0c3aa991e09862e8265c05c11ec3645861bf42e1012182769775253cbc7cb0c4",
+      "changes": [
+        "Corpus roots now resolve inside this repository.",
+        "Removed the unrelated Matrix register layout.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "tools/corpora/loader.py",
+      "source_path": "server/deploy/azure/bulkload/loader.py",
+      "source_sha256": "ded6d6d10925c1eae26ca6ddfebadf1ae3340e7c15a316cd3a633f9e2d74348c",
+      "sha256": "d62bc6ecaaf3ed976b3b440b5a3d04698c2963203fb736653e6f4a396ede1c30",
+      "changes": [
+        "Repository-root resolution adjusted for tools/corpora.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "tools/corpora/emit_history_yaml.py",
+      "source_path": "server/deploy/azure/bulkload/emit_history_yaml.py",
+      "source_sha256": "2553db68f2a16d8959688a19c67e5644b5ebc47eb63c95b514e0b4b07a96559c",
+      "sha256": "81f48996aa051b74e1c5b9b3122fc6a910b68ef25bfb0b3c93978a4803edc940",
+      "changes": [
+        "Runbook location adjusted to vendor/runbooks.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "tools/corpora/drive-run.ps1",
+      "source_path": "server/deploy/azure/bulkload/drive-run.ps1",
+      "source_sha256": "98e17ee0c16c6cfb0f1b789437add01d89910c079dca378a932c6ea326ad389f",
+      "sha256": "04aff2469ee61cb0eac4670eccf9da99ea14beb43018408dbdae89ee172928ab",
+      "changes": [
+        "Added Apache source header.",
+        "Rewrote historical operator notes for a generic deployment and fixed lint.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "vendor/providers/demo-anthropic.yaml",
+      "source_path": "server/runbooks/providers/example-anthropic.yaml",
+      "source_sha256": "d9afc621e062d5272434c70e11e187a0e283e2e00d5a4d763af988ec5dd7cf66",
+      "sha256": "e1655f885b425b3b662ec0766e998e229462f147419cf5464391f01195242620",
+      "changes": [
+        "Provider name aligned to demo model selection.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "vendor/providers/demo-openai.yaml",
+      "source_path": "server/runbooks/providers/example-openai.yaml",
+      "source_sha256": "71a375cbe6dabb0f59dfac581319cacd42553dabdf773189362d5011e0064dff",
+      "sha256": "eb9b196ed3980f5252f7897f5a538e8b6816b53e4fe86fb387158de7f7ac0737",
+      "changes": [
+        "Provider name aligned to demo model selection.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "vendor/providers/demo-openrouter.yaml",
+      "source_path": "server/runbooks/providers/example-openrouter.yaml",
+      "source_sha256": "72e6592281330a6a20f59a554ae53e4b676ab465632948b234f045aa23202776",
+      "sha256": "a66acdb407d7b31d8e8743550e1be14d3b769991d4eb5a722e2510bc22cc23e6",
+      "changes": [
+        "Provider name aligned to demo model selection.",
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ]
+    },
+    {
+      "path": "vendor/runbooks/advisory-records.yaml",
+      "source_path": "server/runbooks/shapes/advisory-records.yaml",
+      "source_sha256": "91f5019cb70f4af93f3bacde47bb3e5deecfdafbe5ac9d79098734e7c9e05a4f",
+      "sha256": "d6838e17acda97ab4a92fe701a3b9fba8f4f34331a348c7ffa23fc7643368ae1",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/archival-documents.yaml",
+      "source_path": "server/runbooks/shapes/archival-documents.yaml",
+      "source_sha256": "b14ea90f48d64712790fdf622f3e6bde71336b500ccdb95e7db1762320ba6217",
+      "sha256": "f283f636ae0b76b46d133c24393ff68900f3f34a16524ab9bb83ce5583260ce9",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/dataroom-documents.yaml",
+      "source_path": "server/runbooks/shapes/dataroom-documents.yaml",
+      "source_sha256": "0b189cb5613ff647321e92495f45a1b00cb4b850f5b9de1d397c0688891731ee",
+      "sha256": "4c46c5e54de790c00e19ce5169c6df4e04d29a60d62109c1843021b9dce80cd8",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/due-diligence.yaml",
+      "source_path": "server/runbooks/experiments/due-diligence.yaml",
+      "source_sha256": "7923942aee522399765dc76657123aa721427b1e7222d047336091e28199af72",
+      "sha256": "7b95ba37dce6fb9eab9d0ddfe1fb9f59bb87f1740e155a497feacf0cb967f715",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/financial-advisory.yaml",
+      "source_path": "server/runbooks/experiments/financial-advisory.yaml",
+      "source_sha256": "eb814c883231a23c0147cd5a6e5089994a24b7764c13c816ed6369128f7c4f83",
+      "sha256": "edba4b8fdd6fb6b6bf89082db831df1f2a621622f762c91011d79d79368edc42",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/history-revolution.yaml",
+      "source_path": "server/runbooks/experiments/history-revolution.yaml",
+      "source_sha256": "80d88480ed604f258df2bca0da90366395cf5cbff0c17e2238f231d5cdcdc127",
+      "sha256": "0fb60ce4b19115532ecdd920df5b8a3463e373a55358a692c97b7581395a7571",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/knowledge-sources.yaml",
+      "source_path": "server/runbooks/shapes/knowledge-sources.yaml",
+      "source_sha256": "398389513d236d3aa6c89c3ca02bea9fcd455e8d16d0f45fc270ed0b83a3c52c",
+      "sha256": "860a559375e734e71c2a65aeeeb2c3da691d3fed0d954998879bfb1c9dc3d7f6",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/patent-analysis.yaml",
+      "source_path": "server/runbooks/experiments/patent-analysis.yaml",
+      "source_sha256": "092938e488246ede14b52d1bd3b38b903ddf6907a36f7d670bedcb6cc2835bc8",
+      "sha256": "ef90a4daa1a683402e28ce8c5779939bd52528dcfd98801a3bb31d36489321d6",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/patent-documents.yaml",
+      "source_path": "server/runbooks/shapes/patent-documents.yaml",
+      "source_sha256": "6f5a9f7587ac0fed3b0b933df728e0926aa0cb35b7fb634dd1f0b8bbae66c3e3",
+      "sha256": "0598233891b424576d2b842714bc9a75571ba888cdf777eac9aa663e2980b6dd",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/support-knowledge.yaml",
+      "source_path": "server/runbooks/experiments/support-knowledge.yaml",
+      "source_sha256": "a9e61acf0b973e72f937e7668baccba5173b50a36401b615a7c0f86e548e6a01",
+      "sha256": "2d1bf3dd3bf059859e67169c0cb7b6ae11ee10435250d3e286241bb28402ea2b",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/threat-intelligence.yaml",
+      "source_path": "server/runbooks/experiments/threat-intelligence.yaml",
+      "source_sha256": "2db3f000caaf794b40f84564ead53c7dec815e38d0c1259891f5da250af3a153",
+      "sha256": "e19163d7e197b50b13ebc00f0b3a5fd36436a968811350dfdfafaa6c27b03fc3",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    },
+    {
+      "path": "vendor/runbooks/threat-reports.yaml",
+      "source_path": "server/runbooks/shapes/threat-reports.yaml",
+      "source_sha256": "b62089dc877c145d9d6a0a369cce61088afcd5cdfbf15ee96caca697587c903c",
+      "sha256": "1272f0ba16d2a423ce15e8d869893159b9131dcfd5442b15c08f5baecf2e62b2",
+      "changes": [
+        "Added Apache source header.",
+        "Normalized text to LF for portable checksums."
+      ],
+      "already_present": true
+    }
+  ]
+}

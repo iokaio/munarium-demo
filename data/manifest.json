@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "import_date": "2026-09-09",
+  "status": "Packaged standalone demo input; see RIGHTS.md for source rights.",
+  "source_repository": "munarium-lab",
+  "source_revision": "dd0817daadeeee7ba25c55dfcb72238dfaf7f885",
+  "layout_source_repository": "munarium-int",
+  "layout_source_revision": "d47c848dd8611f3a0886de7e3195d33805255219",
+  "corpora": [
+    {
+      "id": "history",
+      "source_path": "experiments/history_revolution/sources/corpus_text",
+      "document_count": 66739,
+      "document_bytes": 552067418,
+      "collection_prefix_count": 58,
+      "rights_status": "Original-source rights retained; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/history-adams-trial.zip",
+          "documents": 2,
+          "bytes": 1894,
+          "sha256": "2923a480ebe9320f26ea0d147663cd506717c4d941b571d9efff1c3cbc5405ea"
+        },
+        {
+          "path": "packs/history-amnotes-part01.zip",
+          "documents": 1049,
+          "bytes": 18250575,
+          "sha256": "0f85a37f50f494bb757d420ed7dfdc13f42e7584d6be1666fe7210cb6e3e1048"
+        },
+        {
+          "path": "packs/history-amnotes-part02.zip",
+          "documents": 1042,
+          "bytes": 18139100,
+          "sha256": "6d74b67f915bf8976a6fef8ce3fc6cf85638f7856f2cd9de98b08292ba7596e0"
+        },
+        {
+          "path": "packs/history-amnotes-part03.zip",
+          "documents": 1047,
+          "bytes": 17832554,
+          "sha256": "64465b42bd48d332166a09eb968e87c8a542dae37fd0a279196b99398e4a978b"
+        },
+        {
+          "path": "packs/history-amnotes-part04.zip",
+          "documents": 787,
+          "bytes": 13514243,
+          "sha256": "8dd361ce5b5c0f4f8920b23b4d7cf24cecf9530c2b6ec81fa1d1b88f11ad99ca"
+        },
+        {
+          "path": "packs/history-battlemaps.zip",
+          "documents": 1414,
+          "bytes": 1024328,
+          "sha256": "95366f314a4611e471ac53e4ae85d5fe5104de2d02d4c3a4fc73f48b0a0db765"
+        },
+        {
+          "path": "packs/history-capbay.zip",
+          "documents": 1177,
+          "bytes": 19413724,
+          "sha256": "e6027cc2b95ed2a2fe02d1476bc64aea14f2ec16f158ded3fcad5a53ea19323f"
+        },
+        {
+          "path": "packs/history-contcong.zip",
+          "documents": 284,
+          "bytes": 1190679,
+          "sha256": "6399940f8e9c42e009d7c02342f42b3740b771df8c19cc70f90eada95355e38e"
+        },
+        {
+          "path": "packs/history-ephemera.zip",
+          "documents": 1794,
+          "bytes": 6144922,
+          "sha256": "3bbae31321d6c74273a4502dfaa2a11500fb3d23ac0f06dd94b8f175b040ec3d"
+        },
+        {
+          "path": "packs/history-franklin.zip",
+          "documents": 33,
+          "bytes": 18283,
+          "sha256": "4e4b5b3ff871b4dec6eb35fdbc486f40e94c6d59cba8ff61409933b9c153bc27"
+        },
+        {
+          "path": "packs/history-gw.zip",
+          "documents": 30170,
+          "bytes": 24049314,
+          "sha256": "6dc66b1e54878af4640c1c01eaff753f9714da8cc9958fbc578b64e5da214f6d"
+        },
+        {
+          "path": "packs/history-hamilton.zip",
+          "documents": 655,
+          "bytes": 352078,
+          "sha256": "951dd710a5e799cebe19cfcd5b99c921f3b25e5c48f489430358954a844c7c18"
+        },
+        {
+          "path": "packs/history-jefferson.zip",
+          "documents": 6085,
+          "bytes": 3214083,
+          "sha256": "99fb0972abc621890b321112d71179578c4c0e98d8e65e6f3b8d39293aca0a01"
+        },
+        {
+          "path": "packs/history-lawmaking.zip",
+          "documents": 446,
+          "bytes": 5820053,
+          "sha256": "89a0a938f2b5fb6047e6093b57363e29eba2b1a561e933edfa93bf7a9e0a6ed3"
+        },
+        {
+          "path": "packs/history-madison.zip",
+          "documents": 1866,
+          "bytes": 1449876,
+          "sha256": "12c3f1a3a26aacf1af6eda5cc3e0c708ea3767501685dc07046ec71271b21001"
+        },
+        {
+          "path": "packs/history-newspapers-part01.zip",
+          "documents": 2445,
+          "bytes": 20292912,
+          "sha256": "2044b0f9aff356058acef0d937031134815807ca76e4e311202d2913d53212f4"
+        },
+        {
+          "path": "packs/history-newspapers-part02.zip",
+          "documents": 2889,
+          "bytes": 21122188,
+          "sha256": "04c6c562285ef8eedcb8c0038d4702cb49b22f74511a802e25c42d381b481813"
+        },
+        {
+          "path": "packs/history-newspapers-part03.zip",
+          "documents": 2779,
+          "bytes": 21053735,
+          "sha256": "df400f8b0791c668d72e39b7b5bc894dee9097790b5660285267a0895f9ae624"
+        },
+        {
+          "path": "packs/history-newspapers-part04.zip",
+          "documents": 2820,
+          "bytes": 20932777,
+          "sha256": "f08d16f76842b36538b6d7298339c73e1687b74de3b0e462d71cbba94f586ddc"
+        },
+        {
+          "path": "packs/history-newspapers-part05.zip",
+          "documents": 2452,
+          "bytes": 21686510,
+          "sha256": "32e1e5d1abff69a19f2ee0fe0798f035d489dabf6052b9d24b00c3712ad7b76d"
+        },
+        {
+          "path": "packs/history-newspapers-part06.zip",
+          "documents": 3004,
+          "bytes": 23461828,
+          "sha256": "aacf85a90f03b6c22d4992f172bfd0804f79f533d1728284cdb7359689bc2ec1"
+        },
+        {
+          "path": "packs/history-newspapers-part07.zip",
+          "documents": 460,
+          "bytes": 3920206,
+          "sha256": "0ca28dbf29d89448cf7353e49a9bc7af9ac79c8eb9c721525cc9a2284409c225"
+        },
+        {
+          "path": "packs/history-rarebook.zip",
+          "documents": 515,
+          "bytes": 1231796,
+          "sha256": "9402ed78eb40b8b4e1c27d727a2a62ca265e7d28404d454cb0038eb34a7abcbd"
+        },
+        {
+          "path": "packs/history-revmaps.zip",
+          "documents": 1457,
+          "bytes": 1045230,
+          "sha256": "8b8d3fc58a6274e39b61dce4a67740b127f829f377b654250b792c639bd11cbd"
+        },
+        {
+          "path": "packs/history-rochambeau.zip",
+          "documents": 67,
+          "bytes": 94864,
+          "sha256": "a18fe6703f188da056f2d470ec090b47e57b8f26d9ecbe2f338512eb7cf0f472"
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "source_path": "experiments/support_knowledge/sources",
+      "document_count": 1500,
+      "document_bytes": 730810,
+      "collection_prefix_count": 10,
+      "rights_status": "Ioka-authored synthetic material: Apache-2.0; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/support.zip",
+          "documents": 1500,
+          "bytes": 693805,
+          "sha256": "c84a6e093f82c100c56ed8bf82ab07dec08f07c82c644dd1ecd6a151fa063548"
+        }
+      ]
+    },
+    {
+      "id": "dd",
+      "source_path": "experiments/due_diligence/sources",
+      "document_count": 613,
+      "document_bytes": 414558,
+      "collection_prefix_count": 13,
+      "rights_status": "Ioka-authored synthetic material: Apache-2.0; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/dd.zip",
+          "documents": 613,
+          "bytes": 417618,
+          "sha256": "dd775e5c9ee2602b13649638ca0d0981c4fb44bc828711e676065301768d6d1f"
+        }
+      ]
+    },
+    {
+      "id": "fin",
+      "source_path": "experiments/financial_advisory/sources",
+      "document_count": 1233,
+      "document_bytes": 2449448,
+      "collection_prefix_count": 14,
+      "rights_status": "Ioka-authored synthetic material: Apache-2.0; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/fin.zip",
+          "documents": 1233,
+          "bytes": 1644813,
+          "sha256": "cddb0e985f5fe8c03dbaf1861a466ccf84269e9999c0cc4a8a432a96a17458ca"
+        }
+      ]
+    },
+    {
+      "id": "patents",
+      "source_path": "experiments/patent_analysis/sources/sources-epoch2",
+      "document_count": 266,
+      "document_bytes": 5918345,
+      "collection_prefix_count": 5,
+      "rights_status": "Original-source rights retained; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/patents.zip",
+          "documents": 266,
+          "bytes": 1525221,
+          "sha256": "e96b8e81d425330af043a68530134f9114dffb742f18d2832a24caa37b575c78"
+        }
+      ]
+    },
+    {
+      "id": "intel",
+      "source_path": "experiments/threat_intelligence/sources",
+      "document_count": 64,
+      "document_bytes": 213874,
+      "collection_prefix_count": 4,
+      "rights_status": "Ioka-authored synthetic material: Apache-2.0; see RIGHTS.md.",
+      "packs": [
+        {
+          "path": "packs/intel.zip",
+          "documents": 64,
+          "bytes": 116715,
+          "sha256": "bd0c713ef2ed3129cf3389e7d24e7398b937182b10215468a67d7eac4bdf946d"
+        }
+      ]
+    }
+  ]
+}

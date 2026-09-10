@@ -1,0 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Demo document collection">
+  <rect width="40" height="40" rx="8" fill="#132f3d"/>
+  <path d="M10 12h20v4H10zm0 7h20v4H10zm0 7h13v4H10z" fill="#f6f2e9"/>
+</svg>

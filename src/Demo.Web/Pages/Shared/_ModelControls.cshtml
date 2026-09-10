@@ -1,0 +1,21 @@
+@* SPDX-License-Identifier: Apache-2.0 *@
+<div class="dm-model-controls">
+    <h2 class="dm-control-label" id="provider-label">Answer provider</h2>
+    <div class="dm-provider-options" role="group" aria-labelledby="provider-label">
+        <button type="button" class="btn dm-toggle active" data-dm-family="claude" aria-pressed="true">Claude</button>
+        <button type="button" class="btn dm-toggle" data-dm-family="gpt" aria-pressed="false">GPT</button>
+        <button type="button" class="btn dm-toggle" data-dm-family="openrouter" aria-pressed="false">OpenRouter</button>
+        <button type="button" class="btn dm-toggle d-none" data-dm-family="ollama" aria-pressed="false" hidden disabled>Ollama</button>
+    </div>
+    <h2 class="dm-control-label" id="tier-label">Answer tier</h2>
+    <div class="dm-tier-options" role="group" aria-labelledby="tier-label">
+        <button type="button" class="btn dm-toggle active" data-dm-tier="fast" aria-pressed="true">Fast</button>
+        <button type="button" class="btn dm-toggle" data-dm-tier="capable" aria-pressed="false">Capable</button>
+        <button type="button" class="btn dm-toggle" data-dm-tier="frontier" aria-pressed="false" title="Limited to 2 requests per collection per day">Frontier</button>
+    </div>
+    <div class="dm-model-note" data-dm-model-note aria-live="polite" title="The exact model that will generate your answer."></div>
+    @if (ViewData["ChatCorpus"] as string == "revolution")
+    {
+        <p class="dm-preparation-note">Your selected model also prepares search queries for this archive.</p>
+    }
+</div>

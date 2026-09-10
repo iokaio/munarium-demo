@@ -1,0 +1,69 @@
+@page
+@* SPDX-License-Identifier: Apache-2.0 *@
+@inject Demo.Web.Services.DemoIdentity Identity
+@model Demo.Web.Pages.GateModel
+@{
+    ViewData["Title"] = "Access";
+    ViewData["Description"] = "Private Munarium demo — sign in with your email and login code.";
+}
+
+<section class="section bg-light dm-gate-section" id="main-content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8">
+                <div class="text-center mb-3 mt-2">
+                    <img src="@Identity.LogoUrl" alt="@Identity.Name" height="36" class="dm-gate-logo">
+                    <span class="align-middle ms-2 h4 fw-light text-dark">@Identity.Name</span>
+                </div>
+                <article class="about-box about-light paper-card p-4 dm-gate-card">
+                    <h4 class="fw-light mb-2 text-dark">Munarium Demo</h4>
+                    <p class="text-muted f-14 mb-3">
+                        This demo requires an access code. Enter a
+                        <strong>valid email address</strong> — on your first visit
+                        we'll email you a login code from
+                        <a href="mailto:@Identity.ContactEmail">@(string.IsNullOrEmpty(Identity.ContactEmail) ? "the site operator" : Identity.ContactEmail)</a>. That code,
+                        together with your email, is how you enter the demo on
+                        every future visit, so keep it.
+                    </p>
+                    @if (Model.Error is not null)
+                    {
+                        <div class="alert alert-warning f-14 py-2">@Model.Error</div>
+                    }
+                    @if (Model.Notice is not null)
+                    {
+                        <div class="alert alert-success f-14 py-2">@Model.Notice</div>
+                    }
+                    <form method="post">
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <div class="mb-2">
+                            <input asp-for="Email" type="email" class="form-control dm-gate-input"
+                                   placeholder="Your email address" maxlength="254"
+                                   autocomplete="email" autofocus />
+                        </div>
+                        <div class="mb-2">
+                            <input asp-for="Code" class="form-control dm-gate-input"
+                                   placeholder="Login code" maxlength="16" autocomplete="off" />
+                            <div class="form-text f-13">
+                                First visit? Leave the code blank — we'll email you one.
+                            </div>
+                        </div>
+                        <button type="submit" class="btn dm-send w-100">Enter</button>
+                        <p class="f-13 mt-2 mb-0">
+                            <button type="submit" asp-page-handler="SendCode"
+                                    class="btn btn-link btn-sm f-13 p-0 text-muted text-decoration-underline">
+                                Lost your code? Email me a new one
+                            </button>
+                        </p>
+                    </form>
+                    <p class="text-muted f-13 mt-3 mb-0">
+                        This installation stores your email address to manage access.
+                        Contact the operator for their privacy and retention policy.
+                    </p>
+                </article>
+                <p class="text-center text-muted f-13 mt-3">
+                    Do not share this URL or your login code.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: Apache-2.0
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_DB: demo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python tools/setup.py init}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U demo -d demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  server:
+    image: ${MUNARIUM_IMAGE:-iokaio/munarium:1.1.1}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_DATABASE_URL: postgres://demo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/demo
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: ${MUNARIUM_API_TOKEN:?Set MUNARIUM_API_TOKEN}:demo:rw,${MUNARIUM_MGMT_TOKEN:?Set MUNARIUM_MGMT_TOKEN}:demo:mgmt
+      MUNARIUM_TOKEN_SECRET: ${MUNARIUM_TOKEN_SECRET:?Set MUNARIUM_TOKEN_SECRET}
+      MUNARIUM_SECRET_ANTHROPIC: ${MUNARIUM_SECRET_ANTHROPIC:-}
+      MUNARIUM_SECRET_OPENAI: ${MUNARIUM_SECRET_OPENAI:-}
+      MUNARIUM_SECRET_OPENROUTER: ${MUNARIUM_SECRET_OPENROUTER:-}
+    ports: ["127.0.0.1:${SERVER_HOST_PORT:-8080}:8080"]
+  ollama:
+    image: ollama/ollama:0.11.10
+    profiles: [local-model]
+    volumes: [models:/root/.ollama]
+  demo-web:
+    build: .
+    image: munarium-demo-web:local
+    depends_on: [server]
+    ports: ["127.0.0.1:${DEMO_HOST_PORT:-5310}:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      Gate__Disabled: "true"
+      MUNARIUM_BASE_URL: http://server:8080
+      MUNARIUM_MGMT_TOKEN: ${MUNARIUM_MGMT_TOKEN:?Set MUNARIUM_MGMT_TOKEN}
+      DEMO_GATE_SECRET: ${DEMO_GATE_SECRET:?Set DEMO_GATE_SECRET}
+      DEMO_ADMIN_USER: admin
+      DEMO_ADMIN_PASSWORD: ${DEMO_ADMIN_PASSWORD:?Set DEMO_ADMIN_PASSWORD}
+      DEMO_STORE_PATH: /data/demo.sqlite
+      DEMO_SENDGRID_API_KEY: ${DEMO_SENDGRID_API_KEY:-}
+      DEMO_MAIL_FROM: ${DEMO_MAIL_FROM:-}
+      DEMO_OLLAMA_MODE: direct
+      DEMO_OLLAMA_URL: http://ollama:11434
+      DEMO_OLLAMA_FAST: qwen3:1.7b
+      DEMO_OLLAMA_CAPABLE: qwen3:1.7b
+    volumes: [visitors:/data]
+volumes:
+  pgdata:
+  visitors:
+  models:

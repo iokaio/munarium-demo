@@ -1,0 +1,68 @@
+{
+  "files": [
+    {
+      "path": "vendor/providers/demo-anthropic.yaml",
+      "sha256": "e1655f885b425b3b662ec0766e998e229462f147419cf5464391f01195242620"
+    },
+    {
+      "path": "vendor/providers/demo-ollama.yaml",
+      "sha256": "6d725c8150a2d1454d477b35d155c80dcb0a5cafa090704e8044751ec098e102"
+    },
+    {
+      "path": "vendor/providers/demo-openai.yaml",
+      "sha256": "eb9b196ed3980f5252f7897f5a538e8b6816b53e4fe86fb387158de7f7ac0737"
+    },
+    {
+      "path": "vendor/providers/demo-openrouter.yaml",
+      "sha256": "a66acdb407d7b31d8e8743550e1be14d3b769991d4eb5a722e2510bc22cc23e6"
+    },
+    {
+      "path": "vendor/runbooks/advisory-records.yaml",
+      "sha256": "d6838e17acda97ab4a92fe701a3b9fba8f4f34331a348c7ffa23fc7643368ae1"
+    },
+    {
+      "path": "vendor/runbooks/archival-documents.yaml",
+      "sha256": "f283f636ae0b76b46d133c24393ff68900f3f34a16524ab9bb83ce5583260ce9"
+    },
+    {
+      "path": "vendor/runbooks/dataroom-documents.yaml",
+      "sha256": "4c46c5e54de790c00e19ce5169c6df4e04d29a60d62109c1843021b9dce80cd8"
+    },
+    {
+      "path": "vendor/runbooks/due-diligence.yaml",
+      "sha256": "7b95ba37dce6fb9eab9d0ddfe1fb9f59bb87f1740e155a497feacf0cb967f715"
+    },
+    {
+      "path": "vendor/runbooks/financial-advisory.yaml",
+      "sha256": "edba4b8fdd6fb6b6bf89082db831df1f2a621622f762c91011d79d79368edc42"
+    },
+    {
+      "path": "vendor/runbooks/history-revolution.yaml",
+      "sha256": "0fb60ce4b19115532ecdd920df5b8a3463e373a55358a692c97b7581395a7571"
+    },
+    {
+      "path": "vendor/runbooks/knowledge-sources.yaml",
+      "sha256": "860a559375e734e71c2a65aeeeb2c3da691d3fed0d954998879bfb1c9dc3d7f6"
+    },
+    {
+      "path": "vendor/runbooks/patent-analysis.yaml",
+      "sha256": "ef90a4daa1a683402e28ce8c5779939bd52528dcfd98801a3bb31d36489321d6"
+    },
+    {
+      "path": "vendor/runbooks/patent-documents.yaml",
+      "sha256": "0598233891b424576d2b842714bc9a75571ba888cdf777eac9aa663e2980b6dd"
+    },
+    {
+      "path": "vendor/runbooks/support-knowledge.yaml",
+      "sha256": "2d1bf3dd3bf059859e67169c0cb7b6ae11ee10435250d3e286241bb28402ea2b"
+    },
+    {
+      "path": "vendor/runbooks/threat-intelligence.yaml",
+      "sha256": "e19163d7e197b50b13ebc00f0b3a5fd36436a968811350dfdfafaa6c27b03fc3"
+    },
+    {
+      "path": "vendor/runbooks/threat-reports.yaml",
+      "sha256": "1272f0ba16d2a423ce15e8d869893159b9131dcfd5442b15c08f5baecf2e62b2"
+    }
+  ]
+}

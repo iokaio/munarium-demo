@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Threat-intelligence shape — 64 vendor reports on Operation SILKNOTE and its
+# sibling campaigns, 8 actors, 5 of them carrying multi-vendor alias sets
+# (the threat_intelligence experiment). Bound by the threat-intelligence
+# runbook.
+#
+#   mmctl apply -f runbooks/shapes/threat-reports.yaml
+#
+# Subjects are the canonical actor/campaign ids (velvet_cicada,
+# operation_silknote) — every vendor's designation for the same adversary
+# (TAG-77, CicadaSpin) folds onto one subject, which took the experiment's
+# actors-resolved-to-one-entity score from 3/8 to 8/8 with zero over-merges.
+# Values are short because IOC canonicalization (defang -> fang, CVE format,
+# hash casefold) happens before the write: hxxps://evil[.]com and
+# https://evil.com must be the same value or they file a conflict that is not
+# real.
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: { name: threat-reports, version: 1 }
+spec:
+  fact:
+    schema:
+      type: object
+      properties:
+        subject: { type: string, pattern: "^[a-z][a-z0-9_]{0,63}$" }
+        key: { type: string, pattern: "^[a-z][a-z0-9_:-]{0,63}$" }
+        value: { type: string, minLength: 1, maxLength: 256 }
+      required: [subject, key, value]
+    supersession:
+      identity: [subject, key]
+  chunking: { max_chars: 1000 }
+  indexing: { rrf_k: 60, candidate_n: 100 }
