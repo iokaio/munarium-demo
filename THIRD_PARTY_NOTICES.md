@@ -38,7 +38,7 @@ carries its own third-party notices and licenses, which must be retained with th
 
 ## Build and operation tools
 
-Playwright 1.55.1 is Apache-2.0 (Microsoft and contributors); its downloaded browser
+Playwright 1.63.0 is Apache-2.0 (Microsoft and contributors); its downloaded browser
 has separate Chromium third-party notices. PyYAML 6.0.3 is MIT; see the
 [retained license](licenses/pyyaml-MIT.txt). Tool versions and integrity hashes are
 recorded in the package lockfiles. Container images retain their own licenses:
