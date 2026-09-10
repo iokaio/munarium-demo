@@ -2,6 +2,14 @@
 
 ASP.NET configuration uses `__` for nested environment keys. Explicit compatibility environment names below override their corresponding JSON values. Keep secret values out of command history and tracked files. Compose reads ignored `.env`; a directly launched `dotnet` process does not automatically load that file.
 
+Compose uses `.env` for interpolation; it does **not** automatically pass every
+entry into containers. The supplied `docker-compose.yml` forwards only its listed
+environment values. For example, branding, turn caps, trusted proxies and changed
+Ollama model IDs need an `environment:` entry in an operator-owned Compose override.
+The web app also loads optional `appsettings.Secrets.json` after the default
+configuration providers: that file can override nested `__` settings, while the
+explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
+
 | Setting | Purpose and default |
 |---|---|
 | `MUNARIUM_BASE_URL` | Server origin; tracked JSON defaults to `http://localhost:8080`, Compose uses service DNS |
@@ -20,10 +28,11 @@ ASP.NET configuration uses `__` for nested environment keys. Explicit compatibil
 | `DEMO_TRUSTED_PROXIES` | Comma-separated ingress IP addresses permitted to supply forwarding headers |
 | `OperatorConsole__Enabled` | Optional Server/Matrix console proxy; false by default and requires operator authentication |
 | `MUNARIUM_IMAGE` | Override the pinned compatible Server image for a deliberate upgrade/rehearsal |
+| `DEMO_HOST_PORT`, `SERVER_HOST_PORT` | Compose host ports; default 5310 and 8080, bound to loopback |
 | `DEMO_OLLAMA_MODE` | `direct` for local Ollama; otherwise authenticated readiness gateway |
-| `DEMO_OLLAMA_URL`, `DEMO_OLLAMA_KEY` | Backend-only model readiness endpoint and optional gateway credential |
-| `DEMO_OLLAMA_FAST`, `DEMO_OLLAMA_CAPABLE` | Direct-mode installed models; default `qwen3:1.7b` |
+| `DEMO_OLLAMA_URL`, `DEMO_OLLAMA_KEY` | Backend-only model readiness endpoint; key is required in gateway mode and not sent in direct mode |
+| `DEMO_OLLAMA_FAST`, `DEMO_OLLAMA_CAPABLE` | Direct-mode installed models; fast defaults to `qwen3:1.7b`, capable defaults to the fast model; Compose explicitly sets both |
 
-Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. Runbook model selection controls expansion and completion on Server 1.1.1.
+Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.1.1, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
 
 Optional Matrix configuration uses `MATRIX_BASE_URL`, `MATRIX_MGMT_TOKEN`, and `MATRIX_ADMIN_SHOWN`. Keep it disabled unless you operate Matrix and intend to expose its operator view.

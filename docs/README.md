@@ -1,5 +1,13 @@
 # Documentation
 
+- **Business evaluation:** start with [what the demo shows](../README.md),
+  [the bundled datasets](guides/corpora.md) and
+  [recorded validation and its limits](releases/open-source-preparation.md).
+- **Technical evaluation:** follow the [quickstart](guides/quickstart.md), then
+  read [architecture](architecture.md) and [configuration](configuration.md).
+- **Hosting:** start with [deployment](ops/deployment.md) and
+  [security boundaries](security.md), including the selectable-persona model.
+
 ## Understand the demo
 
 - [Architecture](architecture.md)

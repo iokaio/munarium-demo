@@ -2,7 +2,16 @@
 
 The supplied Compose stack is a local installation with loopback ports and a Development gate bypass. For an externally reachable host, create an operator-owned override with Production mode, gate bypass disabled, TLS ingress, persistent volumes, and private Server/database networking.
 
-Generate distinct strong secrets and deliver them using your platform's secret store. Configure `DEMO_GATE_SECRET`, Server management/capability secrets, operator credentials, a persistent `DEMO_STORE_PATH`, and a verified mail sender. Set `DEMO_TRUSTED_PROXIES` to the actual trusted ingress IP addresses so forwarded scheme/IP handling works without trusting arbitrary clients.
+Generate distinct strong secrets and deliver them using your platform's secret store. Configure `DEMO_GATE_SECRET`, Server management/capability secrets, operator credentials, and a persistent `DEMO_STORE_PATH`. Set `DEMO_TRUSTED_PROXIES` to the actual trusted ingress IP addresses so forwarded scheme/IP handling works without trusting arbitrary clients.
+
+Mail delivery is optional if an operator issues visitor codes through `/admin`.
+Configure a verified sender and SendGrid key when visitors should receive codes
+by email. Production never falls back to logging delivery codes.
+
+The demo allows every admitted visitor to select any configured persona. Hosting
+it in Production enables the visitor gate but does not turn persona selection
+into organization-managed role assignment. Read the [security boundaries](../security.md)
+before replacing the bundled demonstration data with confidential records.
 
 Use one web replica. Mount the visitor store and keep PostgreSQL and source storage durable. Use `/livez` for liveness and `/readyz` for readiness; a sleeping/unreachable backend must not cause the web app to restart continuously. Restrict management access and keep the optional operator-console proxy disabled unless you intend to use it.
 

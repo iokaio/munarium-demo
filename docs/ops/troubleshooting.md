@@ -13,5 +13,9 @@
 | Mail not received | Verified sender, provider key/delivery response, address validity; Development log-only mode |
 | Login loop behind ingress | Trusted forwarding address, HTTPS scheme, browser cookie policy |
 | Interrupted load | Private `.local` records and Server run state; resume the owned run rather than approving unrelated work |
+| `init` reports an existing `.env`, but Compose reports a missing setting | Initialization does not repair an existing file; compare its keys with `.env.example` and supply missing private values |
+| `verify` fails after loading only support | Use `setup.py verify --corpus support`; the default checks all six corpora |
+| Verification rejects `history`, `dd` or `fin` | `verify_demo.py` uses browser IDs `revolution`, `dataroom`, `advisory`; setup uses manifest IDs |
+| A setting in `.env` has no effect on the web app | Add it to the container's `environment:` configuration; Compose does not forward arbitrary `.env` entries |
 
 Use `docker compose logs --tail 100 server demo-web` locally, but redact operational logs before sharing an issue. Never paste bearer tokens, visitor emails/codes, private deployment origins, or database connection strings. Historical experiment notes are diagnostic context, not instructions to patch a live database directly.
