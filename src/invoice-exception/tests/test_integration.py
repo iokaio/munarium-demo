@@ -25,11 +25,15 @@ def count():
     return response.json()["calls"]
 
 
+def expected_case_count():
+    return len(json.loads(Path("/oracle/expected.json").read_text()))
+
+
 @pytest.fixture(scope="module")
 def packets():
     output = Path("/work/integration") / uuid4().hex[:12]
     summary = process(INPUTS, CREDENTIALS, output)
-    assert summary["completed"] == 20, summary
+    assert summary["completed"] == expected_case_count(), summary
     assert not summary["uncertain"] and not summary["unverified"], summary
     return output
 
@@ -40,7 +44,7 @@ def test_end_to_end_arithmetic_grounding_and_abstention(packets):
     assert report["failures"] == []
     assert report["real_model"] is False
     packets_list = [json.loads(path.read_text()) for path in packets.glob("case-*.json")]
-    assert len({packet["session_id"] for packet in packets_list}) == 20
+    assert len({packet["session_id"] for packet in packets_list}) == expected_case_count()
     for packet in packets_list:
         assert packet["evidence"]["envelopes"]
         assert packet["evidence"]["skipped"] == []
@@ -51,9 +55,9 @@ def test_end_to_end_arithmetic_grounding_and_abstention(packets):
 def test_restart_reuses_completed_work_without_provider_calls(packets):
     before = count()
     summary = process(INPUTS, CREDENTIALS, packets)
-    assert summary["reused"] == 20
+    assert summary["reused"] == expected_case_count()
     assert count() == before
-    assert len(list(packets.glob("case-*.json"))) == 20
+    assert len(list(packets.glob("case-*.json"))) == expected_case_count()
 
 
 def test_lost_response_reconciles_saved_server_transcript(packets):
@@ -62,7 +66,7 @@ def test_lost_response_reconciles_saved_server_transcript(packets):
     before = count()
     summary = process(INPUTS, CREDENTIALS, packets, reconcile=True)
     assert summary["uncertain"] == 0, summary
-    assert summary["completed"] == 20
+    assert summary["completed"] == expected_case_count()
     assert count() == before
 
 

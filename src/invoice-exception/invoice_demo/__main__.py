@@ -68,16 +68,26 @@ def main():
     if args.cloud_run and args.limit is not None:
         parser.error("Cloud acceptance runs must execute every assigned case")
     if args.command == "generate":
+        selected_profile = os.environ.get("DEMO_PROFILE", "default")
+        profiles = json.loads(Path("/app/fixture-profiles.json").read_text())
+        if selected_profile not in ("default", "heldout", "stress"):
+            parser.error("Unknown fixture profile")
+        if not any(token.split("=")[0] in ("--seed", "--groups") for token in sys.argv):
+            args.seed = profiles[selected_profile]["seed"]
+            args.groups = profiles[selected_profile]["groups"]
+        else:
+            selected_profile = "custom"
         if (args.inputs / "manifest.json").exists():
             manifest = verify(args.inputs)
             if (
                 manifest["seed"] != args.seed
                 or manifest["groups"] != args.groups
+                or manifest.get("profile") != selected_profile
                 or not (args.oracle / "expected.json").exists()
             ):
                 raise ValueError("Use a new Compose project for a different fixture seed/profile")
         else:
-            manifest = generate(args.inputs, args.oracle, args.seed, args.groups)
+            manifest = generate(args.inputs, args.oracle, args.seed, args.groups, selected_profile)
         print(f"Verified {manifest['case_count']} synthetic invoice cases.")
     elif args.command == "bootstrap":
         from .server import bootstrap

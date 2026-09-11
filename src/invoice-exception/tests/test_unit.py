@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 import json
+import os
+import subprocess
+import sys
 
 import pytest
 from munarium_client.models import TurnResult
@@ -33,6 +36,21 @@ def test_accounting_matches_independent_scenario_oracle(tmp_path):
         for field in ("exceptions", "computed_total_cents", "stated_total_cents", "receipt_status"):
             assert result[field] == expected[case["case_id"]][field]
         assert result["payment_authorized"] is False
+
+
+@pytest.mark.parametrize("profile,seed,groups,cases", [("default", 111, 3, 20), ("heldout", 8111, 3, 20), ("stress", 9111, 30, 182)])
+def test_named_profiles_reproduce_inputs_and_oracles(tmp_path, profile, seed, groups, cases):
+    first = generate(tmp_path / "one", tmp_path / "oracle-one", seed, groups, profile)
+    subprocess.run([sys.executable, "-m", "invoice_demo", "generate", "--inputs", str(tmp_path / "two"), "--oracle", str(tmp_path / "oracle-two")], env=os.environ | {"DEMO_PROFILE": profile}, check=True, capture_output=True)
+    second = json.loads((tmp_path / "two/manifest.json").read_text())
+    assert first == second
+    assert first["case_count"] == cases
+    assert (tmp_path / "oracle-one/expected.json").read_bytes() == (tmp_path / "oracle-two/expected.json").read_bytes()
+    expected = json.loads((tmp_path / "oracle-one/expected.json").read_text())
+    for case in load_cases(tmp_path / "one"):
+        actual = calculate(case)
+        for field in ("exceptions", "computed_total_cents", "stated_total_cents", "receipt_status"):
+            assert actual[field] == expected[case["case_id"]][field]
 
 
 def test_cloud_selection_keeps_duplicate_detection_and_covers_distinct_scenarios(tmp_path):

@@ -8,6 +8,7 @@ $ErrorActionPreference = 'Stop'
 if ($Project -notmatch '^invoice-[a-z0-9-]+$') { throw 'Use a project name beginning invoice- with lowercase letters, digits, and hyphens.' }
 if ($Action -ne 'stop') {
     $fixtureProfile = if ($env:DEMO_PROFILE) { $env:DEMO_PROFILE } else { 'default' }
+    if ($Action -eq 'cloud' -and $fixtureProfile -ne 'default') { throw 'Cloud qualification uses the fixed default corpus; larger and held-out profiles are keyless' }
     & (Join-Path $PSScriptRoot '../../tools/demo_preflight.ps1') -Demo 'invoice-exception' -Profile $fixtureProfile
 }
 Push-Location $PSScriptRoot
@@ -31,8 +32,9 @@ try {
         Invoke-InvoiceCompose @('stop')
         return
     }
+    $testRun=[guid]::NewGuid().ToString('N'); $testReport="/work/test/$testRun"
     Invoke-InvoiceCompose @('build', 'tests')
-    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'unit')
+    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'unit', '--work', $testReport)
     Invoke-InvoiceCompose @('up', '-d', 'server', 'provider-fixture', 'sdk-fixture')
     Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'generator')
     if ($Action -eq 'cloud') {
@@ -59,9 +61,10 @@ try {
     }
     Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'bootstrap')
     if ($Action -eq 'test') {
-        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'test')
-        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'qualify')
+        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'test', '--work', $testReport)
+        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'qualify', '--work', $testReport)
     }
-    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'app', 'process')
-    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'quality')
+    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'app', 'process', '--work', $testReport)
+    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'quality', '--work', $testReport)
+    Write-Output "Reports: artifacts/invoice-exception/test/$testRun"
 } finally { Pop-Location }

@@ -46,7 +46,7 @@ services:
     entrypoint: [python, /opt/munarium/clients/python/conformance/ollama_fixture.py, --bind, 0.0.0.0]
   generator:
     <<: *runner
-    environment: {}
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
     network_mode: none
     volumes: [inputs:/inputs, oracle:/oracle]
     command: [generate]

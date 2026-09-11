@@ -1,5 +1,6 @@
 *
 !Dockerfile
+!fixture-profiles.json
 !requirements.lock
 !invoice_demo/**
 !shapes/**

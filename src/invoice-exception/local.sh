@@ -3,6 +3,7 @@
 set -eu
 cd "$(dirname "$0")"
 action=${1:-test}
+if [ "$action" = cloud ] && [ "${DEMO_PROFILE:-default}" != default ]; then echo 'Cloud qualification uses the default corpus' >&2; exit 2; fi
 project=${2:-invoice-wave1}
 case "$action" in test|cloud|stop) ;; *) echo 'Use test, cloud, or stop.' >&2; exit 2;; esac
 case "$project" in invoice-*) ;; *) echo 'Use a project beginning invoice-.' >&2; exit 2;; esac
@@ -24,8 +25,10 @@ fi
 compose config --quiet
 if [ "$action" = stop ]; then compose stop; exit; fi
 sh ../../tools/demo_preflight.sh invoice-exception "${DEMO_PROFILE:-default}"
+test_run="$(date -u +%Y%m%dT%H%M%SZ)-$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
+test_report="/work/test/$test_run"
 compose build tests
-compose run --rm --no-deps tests unit
+compose run --rm --no-deps tests unit --work "$test_report"
 compose up -d server provider-fixture sdk-fixture
 compose run --rm --no-deps generator
 if [ "$action" = cloud ]; then
@@ -45,8 +48,9 @@ if [ "$action" = cloud ]; then
 fi
 compose run --rm --no-deps bootstrap
 if [ "$action" = test ]; then
-    compose run --rm --no-deps tests test
-    compose run --rm --no-deps tests qualify
+    compose run --rm --no-deps tests test --work "$test_report"
+    compose run --rm --no-deps tests qualify --work "$test_report"
 fi
-compose run --rm --no-deps app process
-compose run --rm --no-deps tests quality
+compose run --rm --no-deps app process --work "$test_report"
+compose run --rm --no-deps tests quality --work "$test_report"
+echo "Reports: artifacts/invoice-exception/test/$test_run"

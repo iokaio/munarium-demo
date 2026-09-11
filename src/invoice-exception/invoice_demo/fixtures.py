@@ -32,7 +32,7 @@ def digest(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def generate(inputs: Path, oracle: Path, seed: int = 111, groups: int = 3) -> dict:
+def generate(inputs: Path, oracle: Path, seed: int = 111, groups: int = 3, profile: str = "default") -> dict:
     """Refuse existing nonempty output directories; never destroy someone's fixtures."""
     if (
         inputs.resolve() == oracle.resolve()
@@ -118,6 +118,8 @@ def generate(inputs: Path, oracle: Path, seed: int = 111, groups: int = 3) -> di
         }
     manifest = {
         "generator_version": GENERATOR_VERSION,
+        "template_revision": "invoice-rules-1",
+        "profile": profile,
         "seed": seed,
         "groups": groups,
         "logical_date": "2026-01-15",
@@ -125,6 +127,8 @@ def generate(inputs: Path, oracle: Path, seed: int = 111, groups: int = 3) -> di
         "timezone": "UTC",
         "fictional": True,
         "case_count": len(kinds),
+        "record_counts": {"invoices": len(kinds), "orders": len(kinds) - groups,
+                          "receipts": len(kinds) - groups, "policies": len(kinds)},
         "files": {
             str(path.relative_to(inputs)).replace("\\", "/"): digest(path.read_bytes())
             for path in sorted(inputs.rglob("*"))

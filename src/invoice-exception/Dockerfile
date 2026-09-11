@@ -7,6 +7,7 @@ COPY requirements.lock /tmp/requirements.lock
 RUN pip install --no-cache-dir -r /tmp/requirements.lock && pip install --no-deps --no-build-isolation /opt/munarium/clients/python
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app
 WORKDIR /app
+COPY fixture-profiles.json /app/fixture-profiles.json
 COPY invoice_demo /app/invoice_demo
 COPY shapes /app/shapes
 COPY runbooks /app/runbooks

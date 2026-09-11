@@ -1,0 +1,7 @@
+{
+  "license": "Apache-2.0",
+  "schema_version": 1,
+  "default": {"seed": 111, "groups": 3, "cases": 20, "purpose": "tuning"},
+  "heldout": {"seed": 8111, "groups": 3, "cases": 20, "purpose": "held-out regression"},
+  "stress": {"seed": 9111, "groups": 30, "cases": 182, "purpose": "larger independent invoice workload"}
+}

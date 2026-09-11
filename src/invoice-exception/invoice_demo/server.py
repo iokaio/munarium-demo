@@ -62,6 +62,7 @@ def bootstrap(
     }
     if provider == "fixture":
         spec["endpoint"] = "http://provider-fixture:11434"
+        spec["budgets"]["rpm"] = max(60, manifest["case_count"] * 3 + 8)
     else:
         spec["credentialRef"] = {"env": provider.upper() + "_API_KEY"}
     report = {
@@ -69,6 +70,7 @@ def bootstrap(
         "fixture_manifest": manifest,
         "provider": provider,
         "model": model,
+        "provider_budgets": spec["budgets"],
         "namespace": namespace,
         "client_revision": "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3",
         "runs": {},

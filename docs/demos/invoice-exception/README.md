@@ -125,3 +125,31 @@ On 2026-09-11, the rebalanced cloud run `c617074b08ce45c8ba1503b685d503cc` passe
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Named fixture profiles
+
+The committed [profile specification](../../../src/invoice-exception/fixture-profiles.json) declares a tuning/default seed 111 with 20 invoices, a held-out regression seed 8111 with 20 invoices, and a stress seed 9111 with 182 invoices. Price values and independent expected arithmetic derive from the selected seed. Stress generates 30 groups of the six main business scenarios plus two duplicate submissions, rather than replaying the same completed packets. Manifests now include profile, template revision and per-record-type counts. Native tests regenerate every profile in a second Python process and compare manifests and private oracle bytes.
+
+Run the complete selected workload from the repository root:
+
+```powershell
+./tools/measure_demo.ps1 -Demo invoice-exception -Project invoice-regression -Profile heldout
+./tools/measure_demo.ps1 -Demo invoice-exception -Project invoice-larger -Profile stress
+```
+
+```sh
+sh tools/measure_demo.sh invoice-exception invoice-regression heldout
+sh tools/measure_demo.sh invoice-exception invoice-larger stress
+```
+
+These commands require fresh project names and select `DEMO_PROFILE` only for the generator. The application reads the resulting validated corpus; all generated cases must pass the private oracle. Default and held-out remain 20 cases. New unit/integration/SDK reports and controlled packets are retained under separate `test/<run>/` directories. Cloud qualification remains fixed to the default corpus and its 3/3/2 assignment. Only the canned provider's request budget scales with fixture size; online budgets and paid-turn behavior are unchanged.
+
+| Profile | Measurement run | Application / SDK result | Business cases | Elapsed seconds | Sampled project memory maximum |
+|---|---|---|---:|---:|---:|
+| Held-out, PowerShell | `a22e1bd4cedf4f4794bddc60926d7d0a` | 32 / 175 passed; four SDK skips | 20 | 42.28 | 212,598,782 bytes |
+| Stress, POSIX | `20260911T073115Z-a0617ca29ebb8a3c` | 32 / 175 passed; four SDK skips | 182 | 130 | 292,626,101 bytes |
+| Default, fresh Ubuntu WSL checkout | `20260911T073226Z-08a1b5fc69586d75` | 32 / 175 passed; four SDK skips | 20 | 69 | 213,301,326 bytes |
+
+The fresh checkout used snapshot `16bbccbdf00445964dfcd129c288375000b9f2cd` and empty `invoice-linuxdefault` volumes. WSL exercises Linux userspace against Docker Desktop; it does not qualify native Linux Engine or macOS. The stress test report is `test/20260911T073118Z-9df502f34359a564`; the fresh default report is `test/20260911T073235Z-e5a580a7c14c39be`. Sampled resource figures exclude Docker/VM/build overhead and can miss short peaks.
+
+Failed measurement `c416f4a740894046880dc5fcdd7a44e3` caught a missing Docker-context allowlist entry for the new profile file. Failed stress run `20260911T072858Z-0f17d9a401d34fbf` completed 60 invoices before the canned provider's 60-RPM budget refused further requests, retaining 122 uncertain jobs. It passed 28 tests, failed one and had three setup errors. The successful stress run used a new project and a 554-RPM canned-provider budget; no uncertain journal was silently replayed. Failed reports remain intact. No real model ran for these fixture profiles.
