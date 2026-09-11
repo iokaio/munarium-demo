@@ -21,7 +21,9 @@ def calls():
     return httpx.get("http://provider-fixture:11434/state").json()["calls"]
 
 
-@pytest.mark.parametrize("number", range(1, 9))
+@pytest.mark.parametrize(
+    "number", sorted(int(case.split("-")[1]) for case in read("/oracle/expected.json"))
+)
 def test_independent_business_case(number):
     case = f"case-{number:03}"
     path = ROOT / case

@@ -46,6 +46,8 @@ def bootstrap(
     if provider not in ("fixture", "openai", "anthropic", "openrouter"):
         raise ValueError("Unsupported demo provider")
     manifest = verify(inputs)
+    if provider != "fixture" and manifest["profile"] != "default":
+        raise ValueError("Online qualification requires default fixtures")
     ready()
     revision = digest((inputs / "manifest.json").read_bytes())[:12]
     configuration_hash = digest(
@@ -58,7 +60,10 @@ def bootstrap(
     spec = {
         "provider": "ollama" if provider == "fixture" else provider,
         "models": {"complete": [model], "fast": model},
-        "budgets": {"rpm": 60, "dailyTokens": {"fast": 150000}},
+        "budgets": {
+            "rpm": max(60, len(manifest["cases"]) * 3) if provider == "fixture" else 60,
+            "dailyTokens": {"fast": 150000},
+        },
     }
     if provider == "fixture":
         spec["endpoint"] = "http://provider-fixture:11434"

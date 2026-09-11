@@ -37,8 +37,18 @@ def read(path):
     return json.loads(Path(path).read_text())
 
 
-def generate(inputs, oracle):
+def profile_settings(profile):
+    return read(Path(__file__).resolve().parents[1] / "fixture-profiles.json")[profile]
+
+
+def generate(inputs, oracle, profile="default"):
     inputs, oracle = Path(inputs), Path(oracle)
+    settings = profile_settings(profile)
+    seed, count = settings["seed"], settings["cases"]
+    if (inputs / "manifest.json").exists():
+        prior = read(inputs / "manifest.json")
+        if prior.get("profile") != profile or prior["seed"] != seed:
+            raise ValueError("Use empty state for a different profile")
     templates = [
         ("purchasing approval", "500 credits", "750 credits"),
         ("travel receipt", "50 credits", "35 credits"),
@@ -50,7 +60,19 @@ def generate(inputs, oracle):
         ("archive review", "90 days", None),
     ]
     files, cases, expected = {}, {}, {}
-    for number, (topic, old, new) in enumerate(templates, 1):
+    for number in range(1, count + 1):
+        topic, old, new = templates[(number - 1) % len(templates)]
+        if profile != "default":
+
+            def shifted(rule):
+                if rule is None:
+                    return None
+                if rule.endswith(" UTC"):
+                    return str(int(rule[:2]) + (2 if profile == "heldout" else 4)) + rule[2:]
+                quantity, unit = rule.split(" ", 1)
+                return f"{int(quantity) + seed % 11 + 1} {unit}"
+
+            old, new = shifted(old), shifted(new)
         case = f"case-{number:03}"
         checklist = f"checklist-{number:03}"
         paths = {
@@ -87,8 +109,13 @@ def generate(inputs, oracle):
             "new_rule": new,
         }
     manifest = {
-        "seed": 8091,
-        "generator": "digest-v1",
+        "seed": seed,
+        "generator": "digest-v2",
+        "template_revision": "office-policy-revisions-v1",
+        "profile": profile,
+        "record_counts": {"cases": count, "documents": len(files)},
+        "timezone": "UTC",
+        "locale": "invariant",
         "logical_time": "2026-09-11T00:00:00Z",
         "cases": cases,
         "files": files,
@@ -101,7 +128,13 @@ def generate(inputs, oracle):
 def verify(inputs):
     inputs = Path(inputs)
     manifest = read(inputs / "manifest.json")
-    if manifest["generator"] != "digest-v1" or len(manifest["cases"]) != 8:
+    settings = profile_settings(manifest["profile"])
+    if (
+        manifest["generator"] != "digest-v2"
+        or manifest["seed"] != settings["seed"]
+        or len(manifest["cases"]) != settings["cases"]
+        or len(manifest["files"]) != settings["cases"] * 4
+    ):
         raise ValueError("Unexpected fixture generation")
     for name, expected in manifest["files"].items():
         path = inputs / name

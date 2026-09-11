@@ -9,7 +9,11 @@ from digest_demo.fixtures import generate, read, verify
 from digest_demo.workflow import compare
 
 
-def test_two_process_generator_reproducibility(tmp_path):
+@pytest.mark.parametrize(
+    "profile,count,old_rule",
+    [("default", 8, "500 credits"), ("heldout", 8, "504 credits"), ("stress", 80, "505 credits")],
+)
+def test_two_process_generator_reproducibility(tmp_path, profile, count, old_rule):
     for name in ("a", "b"):
         subprocess.run(
             [
@@ -23,8 +27,11 @@ def test_two_process_generator_reproducibility(tmp_path):
                 str(tmp_path / (name + "-oracle")),
                 "--work",
                 str(tmp_path / "work"),
+                "--profile",
+                profile,
             ],
             check=True,
+            timeout=30,
         )
     a = {
         str(p.relative_to(tmp_path / "a")): p.read_bytes()
@@ -40,9 +47,15 @@ def test_two_process_generator_reproducibility(tmp_path):
     assert (tmp_path / "a-oracle/expected.json").read_bytes() == (
         tmp_path / "b-oracle/expected.json"
     ).read_bytes()
+    assert len(verify(tmp_path / "a")["cases"]) == count
+    expected = read(tmp_path / "a-oracle/expected.json")
+    assert len(expected) == count
+    assert expected["case-001"]["old_rule"] == old_rule
+    assert expected["case-007"]["status"] == "unchanged"
+    assert expected["case-008"]["status"] == "insufficient_evidence"
     from pathlib import Path
 
-    (Path(os.environ["DIGEST_REPORT_DIR"]) / "reproducible-manifest.json").write_bytes(
+    (Path(os.environ["DIGEST_REPORT_DIR"]) / f"reproducible-{profile}-manifest.json").write_bytes(
         (tmp_path / "a/manifest.json").read_bytes()
     )
 

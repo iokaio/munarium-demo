@@ -78,3 +78,23 @@ Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these de
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/policy-change-digest/fixture-profiles.json) select `default` (seed 8091, eight policy pairs), `heldout` (seed 88091, eight pairs with changed numeric rules and UTC deadlines), or `stress` (seed 98091, 80 pairs and 320 documents). Stress repeats the eight authored rule types with unique case identities. Every pair is independently checked against private old/new rule and change-status expectations, including unchanged rules and missing after revisions. The scheduled batch also replays every completed pair without another provider call.
+
+Manifests record profile, seed, generator/template revisions, record counts, logical date, timezone, locale and hashes. Two separate network-disabled Python processes reproduce every corpus and oracle byte for each profile. Generation refuses a different profile in existing state. Only the canned provider budget scales with corpus size; online runs require the default profile.
+
+Run `./tools/measure_demo.ps1 -Demo policy-change-digest -Project digest-heldout -Profile heldout`, or `sh tools/measure_demo.sh policy-change-digest digest-stress stress`, with new project state.
+
+All profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `f11851293c4046d4a40ac81f407b3b18` | 25 | 87.50 s | 99.79% | 235,321,422 bytes |
+| Stress, POSIX | `20260911T090115Z-df6271e444761167` | 97 | 166 s | 100.94% | 359,346,992 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T090104Z-d14cd6c5167e79c8` | 25 | 108 s | 104.45% | 250,211,203 bytes |
+
+Every profile also passed Ruff formatting/lint and 175 SDK checks with the four documented chronology skips. The final source matches fresh-checkout snapshot `c742feeaac4af3ba63e4be7803afcb1b6ac0c90e`, tested with empty project state. Test IDs are `0d3d29fb562f4da6a5c3f8a3fe14399c` (held-out), `20260911T090116Z-e6a56da0fca701b6` (stress), and `20260911T090105Z-29950eccc6fb2957` (fresh default). Online run `4fd630a63bff47fda9d9aa88ceb17f53` passed eight fresh cases: three OpenAI, three Anthropic and two OpenRouter, with 60 seconds before each OpenRouter case. No local model inference ran.
+
+Held-out retained volumes occupy 56,737,020 logical bytes. The development runner is 438,412,900 bytes unpacked. Per-volume stress sizes and all reports remain under `artifacts/policy-change-digest/`. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.
