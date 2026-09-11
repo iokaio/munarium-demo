@@ -87,3 +87,25 @@ Native Linux/macOS hosts and ARM64 remain pending. A Docker Desktop Windows pass
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/master-data-reconciliation/fixture-profiles.json) select `default` (seed 6091, eight supplier pairs), `heldout` (seed 86091, eight pairs with changed values and policy revisions), or `stress` (seed 96091, 80 pairs and 80 procedures). Each pair contains one mapped field in each export. Stress repeats the eight authored field/review scenarios with unique supplier identifiers. Seeded currency codes remain valid three-letter codes and payment terms remain numeric. Every pair is checked against private expected review decisions, current/historical values and source revisions.
+
+Manifests record seed, generator/template revisions, profile, both export row counts, document count, logical date, timezone, locale and hashes. Three native tests compare all corpus and oracle bytes across separate JVMs and assert profile cardinality and changed business values. Generation refuses a different profile in existing input state. Online qualification requires the default corpus; only the canned provider request budget scales for stress. The two real competing-worker containers remain part of every controlled profile.
+
+Run `./tools/measure_demo.ps1 -Demo master-data-reconciliation -Project reconcile-heldout -Profile heldout`, or `sh tools/measure_demo.sh master-data-reconciliation reconcile-stress stress`, using new project state.
+
+All complete profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `1d8e098af5fc40918f0b499d60b64a08` | 28 | 249.47 s | 369.48% | 1,250,909,224 bytes |
+| Stress, POSIX | `20260911T083959Z-2e2f62fb5d29bfd5` | 100 | 284 s | 443.12% | 1,284,285,397 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T083949Z-a7bbd73477270c39` | 28 | 319 s | 420.13% | 1,204,635,564 bytes |
+
+Each run also passed 63 Java SDK checks with the documented chronology skip. Application totals include one separately reported competing-worker test; each race observed one head conflict and completed the required recovery. The final source matches fresh-checkout snapshot `3f1568aff9d7ab3d3f8f4401c912859613356a6b`. Test IDs are `10d24fb0ec1f44f49e5140a3002df008` (held-out), `20260911T084000Z-dd36411cec87dd40` (stress), and `20260911T083950Z-4f7fde2b944c4316` (fresh default). Reports remain under `artifacts/master-data-reconciliation/`.
+
+Cloud invocation `e16e55e27c6c44118fb04f767758fb52` passed all eight fresh cases with the 3/3/2 provider split and 60-second OpenRouter pacing. Reports retain actual provider/model identities and completion usage. Earlier failed provider runs remain separate.
+
+Held-out retained volumes occupy 54,491,879 logical bytes; stress occupies 89,526,637 bytes. The local runner is 843,372,781 bytes unpacked. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. The shared guide records base-image transfers separately. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.

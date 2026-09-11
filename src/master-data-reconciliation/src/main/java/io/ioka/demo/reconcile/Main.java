@@ -8,7 +8,7 @@ public final class Main {
         if(args.length==0) throw new IllegalArgumentException("Commands: generate, bootstrap PROVIDER --approve, prepare WORK CASE, recover WORK, review WORK approve|reject REVIEWER REASON, import WORK [--pause], reconcile WORK STEP, render STATUS PNG");
         switch(args[0]) {
             case "race" -> CompetingWorkers.run(args[1],Path.of(args[2]));
-            case "generate" -> Fixtures.generate(Path.of(args.length>1?args[1]:"/inputs"),Path.of(args.length>2?args[2]:"/oracle"));
+            case "generate" -> Fixtures.generate(Path.of(args.length>1?args[1]:"/inputs"),Path.of(args.length>2?args[2]:"/oracle"),args.length>3?args[3]:FilesUtil.env("DEMO_PROFILE","default"));
             case "bootstrap" -> Bootstrap.run(args[1],args.length>2 && args[2].equals("--approve"));
             case "provider" -> ProviderFixture.run();
             case "faults" -> FaultProxy.run();

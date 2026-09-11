@@ -14,7 +14,7 @@ class AcceptanceTest {
     static Stream<String> cases() throws Exception {
         String kind=System.getenv("RECONCILE_TEST_KIND");String expected=kind.equals("controlled")?"fixture":kind.substring("cloud-".length());
         assertEquals(expected,Bootstrap.grant().provider(),"Profile must use its assigned provider");
-        return Fixtures.assignments(expected).stream();
+        return expected.equals("fixture") ? FilesUtil.read(Path.of("/oracle/expected.json")).properties().stream().map(Map.Entry::getKey).sorted() : Fixtures.assignments(expected).stream();
     }
     @BeforeAll static void usageBefore() throws Exception {
         try(var management=Bootstrap.ops(true)) {FilesUtil.save(report().resolve("usage-before.json"),management.reports.usage(io.ioka.munarium.client.planes.Params.UsageQuery.byUid()));}
