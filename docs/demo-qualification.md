@@ -64,3 +64,5 @@ For the employee-policy desktop, record this supplementary checklist separately 
 6. Record OS/architecture, application revision, result and any defect, then close the application.
 
 Container headless tests remain required and cannot substitute for these OS-integration checks.
+
+The [employee policy assistant walkthrough](demos/employee-policy-assistant/README.md) records the completed native Windows x64 check on 2026-09-11: launch, question entry, grounded answer/source inspection, Windows file-picker export and identity-state clearing. It used the held-out canned backend. Native Linux/macOS and ARM64 checks remain pending; the Windows result does not qualify those environments.
