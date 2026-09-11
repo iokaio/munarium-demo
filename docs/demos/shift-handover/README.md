@@ -62,6 +62,10 @@ Eight business cases independently assert prior and current status, open and ful
 
 ## Recorded validation
 
+The final concurrency audit adds two separate worker containers sharing a bounded barrier. Both read the same initial ledger head before writing; exactly one receives a typed head conflict, saves a fresh head and new idempotency key, and succeeds on its second attempt. Both replay their confirmed completed commands without advancing the ledger. The `race/` bundle retains each command attempt and its outcome. PowerShell run `970a7b87db204689b4c33a883fdd5b7d` passed all 21 application checks and 79 SDK checks with no skips; the chronology coverage gap below still applies.
+
+Fresh snapshot `2aad2f68ce2dbfbf054f1aa1cea2c97ef506ce04` repeated the final 21 application and 79 SDK checks through the POSIX wrapper with empty `shift-raceclean` volumes. Run `20260911T070007Z-f6be133385bae336` passed with no skips and the same fixture manifest SHA-256 `6f9f206826a885e281bd6955097fe3d1b9ac04821df69ab790a8d9c5d2a60372`. Native formatting and Clippy, wrapper syntax, documentation links, licenses and the public-material scan passed. This concurrency qualification uses no model inference.
+
 PowerShell run `279b5511918d4151b7d6beea5658c06c` passed 20 application checks: three native unit tests, eight business scenarios, eight failure/lifecycle checks and one Server-restart check. All 79 Rust SDK checks passed: 40 unit/doc tests and 39 REST/gRPC conformance and platform checks. There were no skips. Kernel chronology scenarios are not implemented by this Rust conformance suite; that coverage gap is explicitly reported rather than counted as a passing test.
 
 Earlier run `557c7bfb300a4b5cafdbc48fa47a67f8` passed the three unit tests and seven integrations but failed nine controlled assertions: eight compared current-head metadata as though it were historical evidence, and one assumed the composer had a hard token limit. The corrected application exposes budget overflow and the tests compare pinned evidence independently of current-head metadata. The failed run is retained separately.

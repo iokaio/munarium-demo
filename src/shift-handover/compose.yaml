@@ -59,6 +59,14 @@ services:
     environment: {<<: *runtime, MUNARIUM_GRPC_URL: 'http://server:50051', MUNARIUM_TOKEN: shift-rw, MUNARIUM_MGMT_TOKEN: shift-mgmt}
     volumes: [inputs:/inputs:ro, oracle:/oracle:ro, credentials:/credentials:ro, '../../artifacts/shift-handover:/work']
     entrypoint: [sh, /app/coordinator.sh]
+  race-a:
+    <<: *runner
+    environment: {<<: *runtime, MUNARIUM_TOKEN: shift-rw}
+    command: [race, a, '${SHIFT_RACE_WORK:-/work/race}']
+  race-b:
+    <<: *runner
+    environment: {<<: *runtime, MUNARIUM_TOKEN: shift-rw}
+    command: [race, b, '${SHIFT_RACE_WORK:-/work/race}']
   unit:
     <<: *runner
     environment: {}

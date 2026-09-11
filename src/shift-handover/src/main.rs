@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 mod bootstrap;
+mod competing_workers;
 mod data;
 mod faults;
 mod journal;
@@ -17,6 +18,7 @@ async fn main() -> Result<()> {
     match arg(1)? {
         "generate"=>data::generate(args.get(2).map(String::as_str).unwrap_or("/inputs"),args.get(3).map(String::as_str).unwrap_or("/oracle"))?,
         "bootstrap"=>bootstrap::run().await?,
+        "race"=>competing_workers::run(arg(2)?,arg(3)?).await?,
         "faults"=>faults::run().await?,
         "scan"|"crash"=>journal::scan(arg(2)?,arg(3)?,&bootstrap::endpoint(),arg(1)?=="crash").await?,
         "daemon"=>loop {if let Err(error)=journal::scan(arg(2)?,arg(3)?,&bootstrap::endpoint(),false).await {eprintln!("{error:#}");}tokio::time::sleep(Duration::from_millis(500)).await;},

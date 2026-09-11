@@ -24,6 +24,10 @@ compose up -d server faults
 compose run --rm --no-deps generator
 compose run --rm --no-deps -e "SHIFT_RUN_ID=$run" bootstrap
 compose run --rm --no-deps -e "SHIFT_REPORT_DIR=$report/controlled" tests controlled
+export SHIFT_RACE_WORK="$report/race"
+compose run --rm --no-deps operator race init "$report/race"
+compose up --no-deps --abort-on-container-failure race-a race-b
+compose run --rm --no-deps operator race verify "$report/race"
 compose restart server
 compose run --rm --no-deps -e "SHIFT_REPORT_DIR=$report/controlled" tests restarted
 compose run --rm --no-deps -e "SHIFT_REPORT_DIR=$report/sdk" tests qualify

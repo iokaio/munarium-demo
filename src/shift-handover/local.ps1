@@ -25,6 +25,10 @@ try {
     Invoke-Shift @('run','--rm','--no-deps','generator')
     Invoke-Shift @('run','--rm','--no-deps','-e',"SHIFT_RUN_ID=$run",'bootstrap')
     Invoke-Shift @('run','--rm','--no-deps','-e',"SHIFT_REPORT_DIR=$report/controlled",'tests','controlled')
+    $env:SHIFT_RACE_WORK="$report/race"
+    Invoke-Shift @('run','--rm','--no-deps','operator','race','init',"$report/race")
+    Invoke-Shift @('up','--no-deps','--abort-on-container-failure','race-a','race-b')
+    Invoke-Shift @('run','--rm','--no-deps','operator','race','verify',"$report/race")
     Invoke-Shift @('restart','server')
     Invoke-Shift @('run','--rm','--no-deps','-e',"SHIFT_REPORT_DIR=$report/controlled",'tests','restarted')
     Invoke-Shift @('run','--rm','--no-deps','-e',"SHIFT_REPORT_DIR=$report/sdk",'tests','qualify')

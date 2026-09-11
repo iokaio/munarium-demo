@@ -137,7 +137,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 ### 7. Shift handover journal — Rust daemon and CLI
 
-**Implementation status.** The [shift handover journal](demos/shift-handover/README.md) is implemented in `src/shift-handover/`. Its daemon journals reviewed claims, anchors and promises before dispatch, and its CLI composes current or consistently pinned historical briefs. Twenty application checks and 79 Rust SDK checks passed in both the controlled run and a fresh-checkout POSIX run with identical fixture manifests. The tutorial deliberately uses no model inference, so online qualification is not applicable. The walkthrough explains Server's current-head metadata on historical responses and its protected-section overflow for tiny composition budgets.
+**Implementation status.** The [shift handover journal](demos/shift-handover/README.md) is implemented in `src/shift-handover/`. Its daemon journals reviewed claims, anchors and promises before dispatch, and its CLI composes current or consistently pinned historical briefs. Twenty-one application checks, including competing worker containers, and 79 Rust SDK checks passed in both the controlled run and a fresh-checkout POSIX run with identical fixture manifests. The tutorial deliberately uses no model inference, so online qualification is not applicable. The walkthrough explains Server's current-head metadata on historical responses and its protected-section overflow for tiny composition budgets.
 
 **Use case and merit.** Operations teams need persistent knowledge of equipment status, unresolved work, and commitments between shifts. This demonstrates Munarium's memory kernel beyond an ephemeral chat history.
 
