@@ -195,6 +195,8 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Acceptance.** The packet labels observation, supported conclusion, and hypothesis separately. Missing or refused required evidence prevents a complete-packet status. A procedure search never establishes a complete defect count. Root-cause determination and disposition remain reviewer decisions.
 
+**Implementation status.** Quality investigation is implemented in [its source folder](../src/quality-investigation) and [walkthrough](demos/quality-investigation/README.md). It combines frozen fact bindings and required procedures, preserves disagreements, and creates reviewed child-version corrections. Controlled and final fresh-checkout runs passed 22 application tests and 63 official Java tests, with one documented chronology skip. All eight final online cases passed with the 3/3/2 allocation and paced OpenRouter calls; earlier failed runs remain documented. Engineering change review is next.
+
 ### 11. Engineering change review — Rust CI executable
 
 **Use case and merit.** Engineering teams want relevant architecture decisions, internal standards, and release procedures beside a proposed change. A CI tool delivers cited review suggestions in the workflow developers already use.

@@ -1,6 +1,7 @@
 {
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
+    {"path": "docs/demos/quality-investigation/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
     {
       "path": "docs/demos/retrieval-evaluation/application.png",
       "license": "Apache-2.0",
