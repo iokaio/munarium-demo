@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: {name: shift-observation, version: 1}
+spec:
+  fact:
+    schema:
+      type: object
+      required: [subject, key, value]
+      properties:
+        subject: {type: string, pattern: '^station_[0-9]{3}$'}
+        key: {type: string, enum: [status, handover_note]}
+        value: {type: string, minLength: 1, maxLength: 200}
+    supersession: {identity: [subject, key]}

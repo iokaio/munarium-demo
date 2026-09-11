@@ -8,4 +8,5 @@ Each new demo has its own code, Docker setup, and tests under `src/<demo-name>/`
 - [Maintenance procedure terminal](maintenance-terminal/README.md): Rust terminal with explicit revision selection, retrieval-only operation, source inspection and optional cited explanations. Source: [src/maintenance-terminal](../../src/maintenance-terminal).
 - [Records intake service](records-intake/README.md): C# background worker with stable-file reconciliation, explicit binding and separately approved index activation. Source: [src/records-intake](../../src/records-intake).
 - [Master-data reconciliation](master-data-reconciliation/README.md): Java CLI with cited stewardship drafts, explicit reviews, retained disputes, corrections and historical fact reads. Source: [src/master-data-reconciliation](../../src/master-data-reconciliation).
+- [Shift handover journal](shift-handover/README.md): Rust daemon and CLI with reviewed events, durable write receipts, commitments and consistently pinned historical briefs. Source: [src/shift-handover](../../src/shift-handover).
 - [Planned demos](../other-demo-plans.md): remaining non-web enterprise scenarios and implementation guidance.
