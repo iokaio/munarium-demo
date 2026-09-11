@@ -64,6 +64,14 @@ services:
     <<: *runner
     environment: {<<: *runtime, MUNARIUM_TOKEN: reconcile-rw}
     command: [import, /work/manual/case-001]
+  race-a:
+    <<: *runner
+    environment: {<<: *runtime, MUNARIUM_TOKEN: reconcile-rw}
+    command: [race, a, '${RECONCILE_RACE_WORK:-/work/race}']
+  race-b:
+    <<: *runner
+    environment: {<<: *runtime, MUNARIUM_TOKEN: reconcile-rw}
+    command: [race, b, '${RECONCILE_RACE_WORK:-/work/race}']
   unit:
     <<: *runner
     environment: {}

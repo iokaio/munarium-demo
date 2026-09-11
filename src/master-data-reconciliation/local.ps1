@@ -46,6 +46,10 @@ try {
     } else {
         Invoke-ReconcileCompose @('run','--rm','--no-deps','bootstrap')
         Invoke-ReconcileCompose @('run','--rm','--no-deps','-e',"RECONCILE_REPORT_DIR=$report/controlled",'tests','controlled')
+        $env:RECONCILE_RACE_WORK="$report/race"
+        Invoke-ReconcileCompose @('run','--rm','--no-deps','writer','race','init',"$report/race")
+        Invoke-ReconcileCompose @('up','--no-deps','--abort-on-container-failure','race-a','race-b')
+        Invoke-ReconcileCompose @('run','--rm','--no-deps','writer','race','verify',"$report/race")
         Invoke-ReconcileCompose @('restart','server')
         Invoke-ReconcileCompose @('run','--rm','--no-deps','-e',"RECONCILE_REPORT_DIR=$report/restarted",'tests','restarted')
         Invoke-ReconcileCompose @('run','--rm','--no-deps','-e',"RECONCILE_REPORT_DIR=$report/sdk",'tests','qualify')

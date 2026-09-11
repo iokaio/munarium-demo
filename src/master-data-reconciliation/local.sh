@@ -40,6 +40,10 @@ if [ "$action" = cloud ]; then
 fi
 compose run --rm --no-deps bootstrap
 compose run --rm --no-deps -e "RECONCILE_REPORT_DIR=$report/controlled" tests controlled
+export RECONCILE_RACE_WORK="$report/race"
+compose run --rm --no-deps writer race init "$report/race"
+compose up --no-deps --abort-on-container-failure race-a race-b
+compose run --rm --no-deps writer race verify "$report/race"
 compose restart server
 compose run --rm --no-deps -e "RECONCILE_REPORT_DIR=$report/restarted" tests restarted
 compose run --rm --no-deps -e "RECONCILE_REPORT_DIR=$report/sdk" tests qualify
