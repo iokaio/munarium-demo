@@ -3,6 +3,10 @@
 param([ValidateSet('test','cloud','stop')][string]$Action='test',[string]$Project='digest-wave2')
 $ErrorActionPreference='Stop'
 if ($Project -notmatch '^digest-[a-z0-9-]+$') { throw 'Use an isolated digest- project name.' }
+if ($Action -ne 'stop') {
+    $fixtureProfile = if ($env:DEMO_PROFILE) { $env:DEMO_PROFILE } else { 'default' }
+    & (Join-Path $PSScriptRoot '../../tools/demo_preflight.ps1') -Demo 'policy-change-digest' -Profile $fixtureProfile
+}
 Push-Location $PSScriptRoot
 try {
     $endpoint=docker context inspect --format '{{.Endpoints.docker.Host}}'

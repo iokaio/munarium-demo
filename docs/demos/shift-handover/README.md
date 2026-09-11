@@ -73,3 +73,6 @@ Earlier run `557c7bfb300a4b5cafdbc48fa47a67f8` passed the three unit tests and s
 Fresh checkout `df5cbe44ef0cb7499aee894c5c829668dfc91b60` passed the full suite through Git Bash's POSIX wrapper with empty `shift-cleanroom` volumes and no private environment file. Run `20260911T041317Z-937c0b3c51840429` passed all 20 application and 79 SDK checks, including the final guard against reusing a journal after the bootstrap catalogue changes its ledger version. Its fixture manifest matches the PowerShell run byte for byte. The runner image is `sha256:c7a8e2cee0c87155db54806c7a8c882d2044cd958e08d5e4bea05444b3f178fd`. Wrapper syntax, documentation links, license inventory and public-material checks passed.
 
 Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these are observed host resources, not minimum requirements. Native Linux/macOS hosts and ARM64 remain unqualified. Runtime dependencies retain their own licenses; synthetic fixtures, walkthrough and rendered output are Apache-2.0 demo material.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

@@ -75,3 +75,6 @@ Fresh checkout `16f96e94cd347a971b69ffbc2ea04aacb0f5d89b` passed the full POSIX 
 Online run `4f89773c7e9c4017b822831e48a2c0fd` passed eight fresh independently asserted cases: three OpenAI, three Anthropic and two paced OpenRouter cases, using the preferred models listed above. No case was skipped, uncertain or recovered from prior work. The earlier network-pool failure was run `54be679559c04eebac92332165d9c77d` and made no provider calls.
 
 Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these describe the observed test environment, not minimum requirements. Native Linux/macOS hosts and ARM64 remain unqualified. Synthetic fixtures, documentation and rendered output are Apache-2.0 material; dependencies retain their respective licenses.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

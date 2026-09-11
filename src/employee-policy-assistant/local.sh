@@ -25,6 +25,7 @@ compose() {
 case "$action" in test|cloud|desktop|publish|stop) ;; *) echo 'Unknown action' >&2; exit 2 ;; esac
 compose config --quiet
 if [ "$action" = stop ]; then compose stop; exit; fi
+sh ../../tools/demo_preflight.sh employee-policy-assistant "${DEMO_PROFILE:-default}"
 compose build tests
 if [ "$action" = publish ]; then
   runtime=${2:-linux-x64}

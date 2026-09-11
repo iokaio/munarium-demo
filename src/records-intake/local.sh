@@ -17,6 +17,7 @@ docker ps --format '{{.Names}} {{.Image}} {{.Status}}' > "$local_report/containe
 git rev-parse HEAD > "$local_report/demo-revision.txt"
 docker info --format '{{.OSType}} {{.Architecture}} {{.NCPU}} {{.MemTotal}}' > "$local_report/host.txt"
 echo "POSIX local.sh $action $project; $(uname -s -m)" > "$local_report/command.txt"
+sh ../../tools/demo_preflight.sh records-intake "${DEMO_PROFILE:-default}"
 compose build tests
 docker image inspect munarium-records-runner:local --format '{{.Id}} {{.Size}}' > "$local_report/runner.txt"
 compose run --rm --no-deps -e "RECORDS_REPORT_DIR=$report/unit" unit unit

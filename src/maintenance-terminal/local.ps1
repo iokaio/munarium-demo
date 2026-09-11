@@ -3,6 +3,10 @@
 param([ValidateSet('test','cloud','stop')][string]$Action = 'test', [string]$Project = 'maintenance-wave1')
 $ErrorActionPreference = 'Stop'
 if ($Project -notmatch '^maintenance-[a-z0-9-]+$') { throw 'Use an isolated maintenance- project name.' }
+if ($Action -ne 'stop') {
+    $fixtureProfile = if ($env:DEMO_PROFILE) { $env:DEMO_PROFILE } else { 'default' }
+    & (Join-Path $PSScriptRoot '../../tools/demo_preflight.ps1') -Demo 'maintenance-terminal' -Profile $fixtureProfile
+}
 Push-Location $PSScriptRoot
 try {
     $endpoint = docker context inspect --format '{{.Endpoints.docker.Host}}'

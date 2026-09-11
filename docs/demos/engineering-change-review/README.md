@@ -76,3 +76,6 @@ Qualification used Docker Desktop on Windows with Linux/AMD64 containers, on a h
 The generator fixes seed 11091, template revision 1, UTC logical time 2026-09-11, invariant formatting, eight change records and four procedure documents. It emits UTF-8/LF files with canonical hashes. Two independent generator processes must produce matching manifests, input bytes and private oracles. Native `cargo fmt`, strict Clippy and unit tests precede real-Server business, CLI, scope, expiry, outage, injection and recovery checks. The official Rust SDK unit/doc and REST/gRPC conformance suites run separately. Their chronology scenario is not implemented; no skipped test is counted as a pass.
 
 `stop` retains all evidence and state. Run `docker compose --env-file ../../.env.local.sample -p engineering-wave3 down` from the source folder to remove only this project's containers/network while retaining volumes. Adding `-v` explicitly destroys its named input/credential/database volumes; host report bundles remain. Native Linux/macOS hosts and ARM64 require separate qualification; Windows Docker Desktop results do not establish them.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

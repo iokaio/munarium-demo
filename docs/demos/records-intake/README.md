@@ -84,3 +84,6 @@ Earlier reports are retained: `87c20d894232416189712f23f1998d88` failed the form
 The final source passed the same 19 application and 82 SDK checks through Git Bash's POSIX entry point from fresh checkout `fa8442af0e886e67f7aab0f767c7783c0181ced8`, with empty `records-cleanroom` volumes and no `.env.local`. Run `20260911T031258Z-ad387d8218061521` retains the reports; its fixture manifest matches the PowerShell run byte for byte. The final runner image is `sha256:0727dd9b5e77d7eb3327e0f17c2aacc050d904e42c01d0e3fa69da98be80bec0`. Documentation links, license inventory and public-material scanning passed. No model qualification is applicable because no completion or model expansion is configured.
 
 Run one invocation per Compose project at a time because its credential volume is shared. Native Linux/macOS hosts and ARM64 remain pending; a Windows-hosted Linux-container pass does not qualify those platforms. Runtime and package licenses remain with the pinned dependencies. The original generator material, documentation and rendering are Apache-2.0 demo assets.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

@@ -23,6 +23,7 @@ docker ps --format '{{.Names}} {{.Image}} {{.Status}}' > "$local_report/containe
 docker info --format '{{.OSType}} {{.Architecture}} {{.NCPU}} {{.MemTotal}}' > "$local_report/docker-host.txt"
 git rev-parse HEAD > "$local_report/demo-revision.txt"
 echo "POSIX local.sh $action $project; host=$(uname -s -m)" > "$local_report/command.txt"
+sh ../../tools/demo_preflight.sh master-data-reconciliation "${DEMO_PROFILE:-default}"
 compose build tests
 docker image inspect munarium-reconcile-runner:local --format '{{.Id}} {{.Size}}' > "$local_report/runner-image.txt"
 compose run --rm --no-deps -e "RECONCILE_REPORT_DIR=$report/unit" unit unit

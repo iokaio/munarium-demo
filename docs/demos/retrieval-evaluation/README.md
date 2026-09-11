@@ -86,3 +86,6 @@ Online run `8ae6bd370b1841dda9923b57f081f19a` passed all eight case checks and a
 Recorded completion usage was 2272 input / 540 output tokens for OpenAI, 2514 / 738 for Anthropic and 1878 / 1663 for OpenRouter. These are measured totals for different assigned questions, not prices or a comparative efficiency ranking.
 
 Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these are observed resources, not minimum requirements. Native Linux/macOS hosts and ARM64 remain unqualified. Synthetic fixtures, documentation and plots are Apache-2.0 material; dependencies retain their own licenses.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

@@ -84,3 +84,6 @@ Fresh cloud run `c5de746ffceb49439735346c0be64852` passed all eight cases: three
 Recorded completion usage was 817 input / 304 output tokens for OpenAI, 965 / 425 for Anthropic, and 727 / 1409 for OpenRouter. These are the measured tokens for the disjoint final workloads, not prices or a comparison of provider efficiency.
 
 Native Linux/macOS hosts and ARM64 remain pending. A Docker Desktop Windows pass with Linux/AMD64 containers does not establish native host qualification. Runtime dependencies retain their own licenses; the synthetic fixtures, walkthrough and output rendering are Apache-2.0 demo material.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.

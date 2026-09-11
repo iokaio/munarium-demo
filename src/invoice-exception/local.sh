@@ -23,6 +23,7 @@ if [ "$action" = cloud ] && [ ! -f ../../.env.local ]; then
 fi
 compose config --quiet
 if [ "$action" = stop ]; then compose stop; exit; fi
+sh ../../tools/demo_preflight.sh invoice-exception "${DEMO_PROFILE:-default}"
 compose build tests
 compose run --rm --no-deps tests unit
 compose up -d server provider-fixture sdk-fixture

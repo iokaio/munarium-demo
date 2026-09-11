@@ -6,6 +6,10 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 if ($Project -notmatch '^invoice-[a-z0-9-]+$') { throw 'Use a project name beginning invoice- with lowercase letters, digits, and hyphens.' }
+if ($Action -ne 'stop') {
+    $fixtureProfile = if ($env:DEMO_PROFILE) { $env:DEMO_PROFILE } else { 'default' }
+    & (Join-Path $PSScriptRoot '../../tools/demo_preflight.ps1') -Demo 'invoice-exception' -Profile $fixtureProfile
+}
 Push-Location $PSScriptRoot
 try {
     $endpoint = docker context inspect --format '{{.Endpoints.docker.Host}}'

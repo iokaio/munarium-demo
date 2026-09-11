@@ -122,3 +122,6 @@ After removing real local-model testing on 2026-09-10, all 29 application tests,
 
 
 On 2026-09-11, the rebalanced cloud run `c617074b08ce45c8ba1503b685d503cc` passed all eight fresh cases with a 3/3/2 OpenAI/Anthropic/OpenRouter allocation and 60-second pacing before each OpenRouter submission. No response was reused, uncertain or unverified. Recorded input/output tokens were 1872/558 for OpenAI, 2089/641 for Anthropic, and 2329/3493 for OpenRouter. The isolated `invoice-balancecheck` controlled run passed 29 application tests, 175 SDK tests with four documented chronology skips, and all 20 business cases. Prior failed and historical cloud runs remain recorded above.
+
+
+Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
