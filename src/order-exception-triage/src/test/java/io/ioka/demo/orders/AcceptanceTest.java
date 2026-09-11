@@ -14,11 +14,11 @@ class AcceptanceTest {
     static String identity(Bootstrap.Grant grant) { return grant.uid() + ":" + grant.namespace(); }
     @Tag("controlled") @ParameterizedTest @ValueSource(strings = {"event-001", "event-002", "event-003", "event-004", "event-005", "event-006", "event-007", "event-008"})
     void controlledBusinessCase(String id) throws Exception { qualify(id, "fixture"); }
-    @Tag("cloud-openai") @ParameterizedTest @ValueSource(strings = {"event-001", "event-002"})
+    @Tag("cloud-openai") @ParameterizedTest @ValueSource(strings = {"event-001", "event-002", "event-007"})
     void openaiBusinessCase(String id) throws Exception { qualify(id, "openai"); }
-    @Tag("cloud-anthropic") @ParameterizedTest @ValueSource(strings = {"event-003", "event-004"})
+    @Tag("cloud-anthropic") @ParameterizedTest @ValueSource(strings = {"event-003", "event-004", "event-008"})
     void anthropicBusinessCase(String id) throws Exception { qualify(id, "anthropic"); }
-    @Tag("cloud-openrouter") @ParameterizedTest @ValueSource(strings = {"event-005", "event-006", "event-007", "event-008"})
+    @Tag("cloud-openrouter") @ParameterizedTest @ValueSource(strings = {"event-005", "event-006"})
     void openrouterBusinessCase(String id) throws Exception { qualify(id, "openrouter"); }
     private void qualify(String id, String provider) throws Exception {
         var grant = Bootstrap.grant(); assertEquals(provider, grant.provider());

@@ -63,9 +63,9 @@ public final class Fixtures {
     }
     public static List<String> assignments(String provider) {
         return switch(provider) {
-            case "openai" -> List.of("event-001", "event-002");
-            case "anthropic" -> List.of("event-003", "event-004");
-            case "openrouter" -> List.of("event-005", "event-006", "event-007", "event-008");
+            case "openai" -> List.of("event-001", "event-002", "event-007");
+            case "anthropic" -> List.of("event-003", "event-004", "event-008");
+            case "openrouter" -> List.of("event-005", "event-006");
             case "fixture" -> java.util.stream.IntStream.rangeClosed(1, 8).mapToObj(i -> "event-%03d".formatted(i)).toList();
             default -> throw new IllegalArgumentException("Only the fixture and three online providers are allowed.");
         };
