@@ -11,7 +11,7 @@ public static class Program
         {
             switch (args[0])
             {
-                case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle"); break;
+                case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle", args.ElementAtOrDefault(3) ?? Environment.GetEnvironmentVariable("DEMO_PROFILE") ?? "default"); break;
                 case "bootstrap": await Bootstrap.Run(args.ElementAtOrDefault(1) ?? "fixture", args.ElementAtOrDefault(2) ?? "/work/bootstrap/" + Guid.NewGuid().ToString("N")); break;
                 case "fixture": await ProviderFixture.Run(); break;
                 case "faults": await Faults.Run(); break;

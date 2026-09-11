@@ -21,15 +21,22 @@ public sealed class Tests
         var start = new ProcessStartInfo("dotnet") { UseShellExecute = false }; start.ArgumentList.Add("/app/Meetings/bin/Release/net10.0/Meetings.dll"); foreach (var arg in args) start.ArgumentList.Add(arg);
         using var process = Process.Start(start)!; await process.WaitForExitAsync(); return process.ExitCode;
     }
-    [Fact, Trait("Kind", "unit")]
-    public async Task IndependentGeneratorProcesses()
+    [Theory, Trait("Kind", "unit")]
+    [InlineData("default", 8, "Person001", "2026-09-21")]
+    [InlineData("heldout", 8, "Person292", "2026-10-21")]
+    [InlineData("stress", 80, "Person692", "2026-11-21")]
+    public async Task IndependentGeneratorProcesses(string profile, int count, string owner, string due)
     {
-        var first = Work("fixtures-a"); var second = Work("fixtures-b");
-        Assert.Equal(0, await Child("generate", first, first + "-oracle")); Assert.Equal(0, await Child("generate", second, second + "-oracle"));
+        var first = Work("fixtures-a-" + profile); var second = Work("fixtures-b-" + profile);
+        Assert.Equal(0, await Child("generate", first, first + "-oracle", profile)); Assert.Equal(0, await Child("generate", second, second + "-oracle", profile));
         Assert.Equal(File.ReadAllBytes(Path.Combine(first, "manifest.json")), File.ReadAllBytes(Path.Combine(second, "manifest.json")));
         Assert.Equal(File.ReadAllBytes(Path.Combine(first + "-oracle", "expected.json")), File.ReadAllBytes(Path.Combine(second + "-oracle", "expected.json")));
         foreach (var pair in Fixtures.Verify(first).Files) Assert.Equal(File.ReadAllBytes(Path.Combine(first, pair.Key)), File.ReadAllBytes(Path.Combine(second, pair.Key)));
-        File.Copy(Path.Combine(first, "manifest.json"), Work("reproducible-manifest.json"));
+        Assert.Equal(count, Fixtures.Verify(first).Files.Count);
+        var expected = Storage.Read<JsonElement>(Path.Combine(first + "-oracle", "expected.json"));
+        Assert.Equal(count, expected.EnumerateObject().Count()); Assert.Equal(owner, expected.GetProperty("case-001").GetProperty("owner").GetString()); Assert.Equal(due, expected.GetProperty("case-001").GetProperty("due_date").GetString());
+        Assert.False(expected.GetProperty("case-007").GetProperty("approved").GetBoolean()); Assert.False(expected.GetProperty("case-008").GetProperty("approved").GetBoolean());
+        File.Copy(Path.Combine(first, "manifest.json"), Work("reproducible-" + profile + "-manifest.json"));
     }
     [Theory, Trait("Kind", "unit")]
     [InlineData("2026-09-21", true)]
@@ -80,15 +87,8 @@ public sealed class Tests
         else { Assert.Null(journal.Version); Assert.Empty(journal.Commands); await Ledger.Status(path); }
         Storage.Save(Work(caseId + ".quality.json"), new { caseId, passed = true, draft.InputHash, draft.Result.Completion, accepted = expected.GetProperty("approved").GetBoolean(), priorPin = journal.PriorPin });
     }
-    [Theory, Trait("Kind", "business")]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    [InlineData(6)]
-    [InlineData(7)]
-    [InlineData(8)]
+    public static IEnumerable<object[]> BusinessCases() => Storage.Read<JsonElement>("/oracle/expected.json").EnumerateObject().Select(p => new object[] { int.Parse(p.Name.AsSpan(5), System.Globalization.CultureInfo.InvariantCulture) });
+    [Theory, Trait("Kind", "business"), MemberData(nameof(BusinessCases), DisableDiscoveryEnumeration = true)]
     public Task IndependentReviewedBusinessCase(int number) => Scenario(number);
     [Fact, Trait("Kind", "failure")]
     public async Task QueryIdentityCannotWrite()

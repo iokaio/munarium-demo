@@ -183,7 +183,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Acceptance.** No candidate reaches the ledger before the review step. Rejected items remain only in the local review history. Corrected dates can be read both before and after the correction with pins. Reminders are local preview output until an organization adds its own delivery adapter.
 
-**Implementation status.** Meeting commitments is implemented in [its source folder](../src/meeting-commitments) and [walkthrough](demos/meeting-commitments/README.md). Controlled qualification passed 24 application tests and 82 official .NET tests, with two documented chronology skips. The fresh-checkout POSIX run passed the same checks; all eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls.
+**Implementation status.** Meeting commitments is implemented in [its source folder](../src/meeting-commitments) and [walkthrough](demos/meeting-commitments/README.md). Controlled qualification passed 24 application tests and 82 official .NET tests, with two documented chronology skips. The fresh-checkout POSIX run passed the same checks; all eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls. Default and independently seeded held-out profiles now pass 26 application checks; the 80-transcript stress profile passes 98. Separate-process reproducibility, fresh empty-state WSL qualification and measured resource reports are recorded in the walkthrough.
 
 ### 10. Quality investigation packet — Java batch job
 

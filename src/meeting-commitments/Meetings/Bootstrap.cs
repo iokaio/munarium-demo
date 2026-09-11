@@ -23,6 +23,7 @@ public static class Bootstrap
     {
         Storage.Require(provider is "fixture" or "openai" or "anthropic" or "openrouter", "Unknown provider");
         var manifest = Fixtures.Verify("/inputs");
+        Storage.Require(provider == "fixture" || manifest.Profile == "default", "Online qualification requires the default profile");
         await Ready();
         var model = provider == "fixture" ? "meetings-fixture" : Environment.GetEnvironmentVariable(provider.ToUpperInvariant() + "_MODEL") ?? throw new InvalidOperationException("Preferred model missing");
         var template = File.ReadAllText("/app/runbooks/meeting.yaml");
@@ -39,7 +40,7 @@ public static class Bootstrap
               provider: {{(provider == "fixture" ? "ollama" : provider)}}
               {{connection}}
               models: {complete: [{{model}}], fast: {{model}} }
-              budgets: {rpm: 60, dailyTokens: {fast: 200000} }
+              budgets: {rpm: {{(provider == "fixture" ? Math.Max(60, manifest.Files.Count * 3) : 60)}}, dailyTokens: {fast: 200000} }
             """);
         Storage.Require((await api.Providers.HealthAsync(config)).Healthy, "Provider health failed");
         await api.Runbooks.ApplyShapeAsync(shape);

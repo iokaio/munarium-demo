@@ -25,7 +25,7 @@ public static class Storage
     public static JsonElement Element<T>(T value) => JsonSerializer.SerializeToElement(value, Json);
     public static FileStream Lease(string work) { Directory.CreateDirectory(work); return new FileStream(Path.Combine(work, ".lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None); }
 }
-public record Manifest(int Seed, string Generator, string LogicalTime, SortedDictionary<string, string> Files);
+public record Manifest(int Seed, string Generator, string LogicalTime, SortedDictionary<string, string> Files, string Profile, string TemplateRevision, SortedDictionary<string, int> RecordCounts, string Timezone, string Locale);
 public record Grant(string Token, string Uid, string Provider, string Model, string Revision, SortedDictionary<string, string> Runbooks);
 public sealed record Candidate(string Id, string Description, string? Owner, string? DueDate, string Disposition, string Quote, string[] Citations);
 public record CandidateList(Candidate[] Candidates);
