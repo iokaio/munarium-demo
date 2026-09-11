@@ -22,6 +22,9 @@
 - [Corpora and data rights](guides/corpora.md)
 - [Runbooks, shapes, and providers](guides/runbooks.md)
 - [Customize the demo](guides/customize-demo.md)
+- [Other demo plans: non-web enterprise applications](other-demo-plans.md)
+- [Demo application documentation](demos/README.md)
+- [Invoice exception batch: first Wave 1 implementation](demos/invoice-exception.md)
 
 ## Operate
 

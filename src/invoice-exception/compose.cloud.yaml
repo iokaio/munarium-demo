@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Only use with an explicit --env-file ../../.env.local. Do not print resolved config.
+services:
+  server:
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  bootstrap:
+    environment:
+      OPENAI_MODEL: ${OPENAI_MODEL:?Set OPENAI_MODEL}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:?Set ANTHROPIC_MODEL}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:?Set OPENROUTER_MODEL}
+    command: [bootstrap, --approve, --provider, "${INVOICE_PROVIDER:?Set INVOICE_PROVIDER}", --model, "${INVOICE_MODEL:?Set INVOICE_MODEL}"]
