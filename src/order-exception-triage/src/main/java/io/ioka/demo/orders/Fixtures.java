@@ -8,8 +8,21 @@ import java.util.*;
 public final class Fixtures {
     private Fixtures() {}
     public static final String VERSION = "orders-v1";
-    public static void main(String[] args) throws Exception { generate(Path.of(args[0]), Path.of(args[1]), Long.parseLong(args[2])); }
+    public static void main(String[] args) throws Exception { generateProfile(Path.of(args[0]), Path.of(args[1]), args[2]); }
+    public static void generateProfile(Path inputs, Path oracle, String profile) throws Exception {
+        var config = FilesUtil.read(Path.of("fixture-profiles.json")).path(profile);
+        if (config.isMissingNode()) throw new IllegalArgumentException("Unknown fixture profile");
+        generate(inputs, oracle, config.path("seed").asLong(), config.path("events").asInt(), profile);
+    }
     public static void generate(Path inputs, Path oracle, long seed) throws Exception {
+        generate(inputs, oracle, seed, 8, seed == 41017 ? "default" : "custom");
+    }
+    private static void generate(Path inputs, Path oracle, long seed, int count, String profile) throws Exception {
+        if (Files.exists(inputs.resolve("manifest.json"))) {
+            var prior = FilesUtil.read(inputs.resolve("manifest.json"));
+            if (!prior.path("profile").asText().equals(profile) || prior.path("seed").asLong() != seed)
+                throw new IllegalStateException("Use empty state for a different profile");
+        }
         String[] reasons = {"stock_shortage", "address_invalid", "substitution", "export_missing", "carrier_delay", "unknown_hold", "stock_shortage", "substitution"};
         String[] routes = {"PROCUREMENT", "CUSTOMER_SERVICE", "FULFILLMENT", "COMPLIANCE", "LOGISTICS", "MANUAL_REVIEW", "PROCUREMENT", "FULFILLMENT"};
         String[] rules = {
@@ -25,27 +38,29 @@ public final class Fixtures {
         var random = new Random(seed);
         var expectations = new TreeMap<String, Object>();
         var hashes = new TreeMap<String, String>();
-        for (int i = 0; i < reasons.length; i++) {
+        for (int i = 0; i < count; i++) {
+            int scenario = i % reasons.length;
             String id = "event-%03d".formatted(i + 1);
-            var event = new OrderEvent(id, "order-%04d".formatted(1001 + i), reasons[i], 10 + random.nextInt(20), i == 6 ? 0 : 3, i == 7, i != 3);
+            var event = new OrderEvent(id, "order-%04d".formatted(1001 + i), reasons[scenario], 10 + random.nextInt(20), scenario == 6 ? 0 : 3, scenario == 7, scenario != 3);
             Path eventFile = inputs.resolve("events/" + id + ".json");
             FilesUtil.save(eventFile, event);
-            String document = "FICTIONAL TEST MATERIAL — Northstar Fulfillment\nProcedure revision: 2026-09-01\nEvent scope: " + id + "\n" + rules[i] + "\n";
+            String document = "FICTIONAL TEST MATERIAL — Northstar Fulfillment\nProcedure revision: 2026-09-01\nEvent scope: " + id + "\n" + rules[scenario] + "\n";
             FilesUtil.write(inputs.resolve("documents/" + id + ".txt"), document);
-            expectations.put(id, new TreeMap<>(Map.of("route", routes[i], "missing_evidence", i == 3 || i == 5,
-                "required_terms", switch(i) { case 0, 6 -> List.of("stock", "hold"); case 1 -> List.of("address"); case 2, 7 -> List.of("consent"); case 3 -> List.of("missing", "document"); case 4 -> List.of("carrier"); default -> List.of("evidence"); })));
+            expectations.put(id, new TreeMap<>(Map.of("route", routes[scenario], "requested", event.requested(), "missing_evidence", scenario == 3 || scenario == 5,
+                "required_terms", switch(scenario) { case 0, 6 -> List.of("stock", "hold"); case 1 -> List.of("address"); case 2, 7 -> List.of("consent"); case 3 -> List.of("missing", "document"); case 4 -> List.of("carrier"); default -> List.of("evidence"); })));
         }
         try (var paths = Files.walk(inputs)) {
             for (Path path : paths.filter(Files::isRegularFile).filter(p -> !p.getFileName().toString().equals("manifest.json")).sorted().toList())
                 hashes.put(inputs.relativize(path).toString().replace('\\', '/'), FilesUtil.hash(Files.readString(path)));
         }
-        FilesUtil.save(inputs.resolve("manifest.json"), new TreeMap<>(Map.of("generator", VERSION, "seed", seed, "logical_time", "2026-09-01T00:00:00Z", "files", hashes)));
+        FilesUtil.save(inputs.resolve("manifest.json"), new TreeMap<>(Map.of("generator", VERSION, "template_revision", "orders-procedures-v1", "profile", profile, "seed", seed, "record_counts", new TreeMap<>(Map.of("events", count, "documents", count)), "timezone", "UTC", "locale", "en-US", "logical_time", "2026-09-01T00:00:00Z", "files", hashes)));
         FilesUtil.save(oracle.resolve("expected.json"), expectations);
         verify(inputs);
     }
     public static void verify(Path inputs) throws Exception {
         var manifest = FilesUtil.read(inputs.resolve("manifest.json"));
-        if (!manifest.path("generator").asText().equals(VERSION) || manifest.path("files").size() != 16) throw new IllegalStateException("Unexpected fixture manifest.");
+        int count = manifest.path("record_counts").path("events").asInt();
+        if (!manifest.path("generator").asText().equals(VERSION) || count < 8 || manifest.path("files").size() != count * 2) throw new IllegalStateException("Unexpected fixture manifest.");
         var entries = manifest.path("files").properties();
         for (var entry : entries) {
             Path target = inputs.resolve(entry.getKey()).normalize();

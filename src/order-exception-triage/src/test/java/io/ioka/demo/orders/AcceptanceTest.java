@@ -5,6 +5,7 @@ import io.ioka.munarium.client.model.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import java.nio.file.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class AcceptanceTest {
     static Path report() { return Path.of(Objects.requireNonNull(System.getenv("ORDER_REPORT_DIR"), "Report directory required")); }
     static String identity(Bootstrap.Grant grant) { return grant.uid() + ":" + grant.namespace(); }
-    @Tag("controlled") @ParameterizedTest @ValueSource(strings = {"event-001", "event-002", "event-003", "event-004", "event-005", "event-006", "event-007", "event-008"})
+    static List<String> controlledCases() throws Exception { return FilesUtil.read(Path.of("/oracle/expected.json")).properties().stream().map(Map.Entry::getKey).sorted().toList(); }
+    @Tag("controlled") @ParameterizedTest @MethodSource("controlledCases")
     void controlledBusinessCase(String id) throws Exception { qualify(id, "fixture"); }
     @Tag("cloud-openai") @ParameterizedTest @ValueSource(strings = {"event-001", "event-002", "event-007"})
     void openaiBusinessCase(String id) throws Exception { qualify(id, "openai"); }
@@ -39,6 +41,7 @@ class AcceptanceTest {
                 assertEquals(1, inbox.packets().size());
                 var packet = Json.MAPPER.readTree(inbox.packets().get(id));
                 var answer = packet.path("answer");
+                assertEquals(expected.path("requested").asInt(), packet.path("event").path("requested").asInt());
                 assertEquals(expected.path("route").asText(), answer.path("route").asText());
                 assertEquals(expected.path("missing_evidence").asBoolean(), answer.path("missing_evidence").asBoolean());
                 String explanation = answer.path("explanation").asText().toLowerCase(Locale.ROOT);

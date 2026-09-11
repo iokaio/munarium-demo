@@ -10,8 +10,8 @@ public final class Main {
         if (args.length == 0) throw new IllegalArgumentException("Use generate, bootstrap, consume, reconcile, inspect, provider, or render.");
         switch(args[0]) {
             case "generate" -> {
-                Fixtures.generate(Path.of("/inputs"), Path.of("/oracle"), 41017);
-                System.out.println("Generated eight fictional events and procedures; private oracle stored separately.");
+                Fixtures.generateProfile(Path.of("/inputs"), Path.of("/oracle"), FilesUtil.env("DEMO_PROFILE", "default"));
+                System.out.println("Generated selected fictional events and procedures; private oracle stored separately.");
             }
             case "bootstrap" -> Bootstrap.run(args[1], Arrays.asList(args).contains("--approve"));
             case "provider" -> ProviderFixture.run();
@@ -21,7 +21,7 @@ public final class Main {
                 try (var inbox = new Inbox(directory, grant.uid() + ":" + grant.namespace())) {
                     var worker = new Worker(inbox, grant);
                     if (args[0].equals("consume")) {
-                        var events = Fixtures.events(Path.of("/inputs")).stream().filter(e -> Fixtures.assignments(grant.provider()).contains(e.eventId())).toList();
+                        var events = Fixtures.events(Path.of("/inputs")).stream().filter(e -> grant.provider().equals("fixture") || Fixtures.assignments(grant.provider()).contains(e.eventId())).toList();
                         try { worker.consume(events); } finally { worker.export(directory.resolve("packets")); }
                     } else if (args[0].equals("reconcile")) {
                         try { worker.reconcile(); } finally { worker.export(directory.resolve("packets")); }

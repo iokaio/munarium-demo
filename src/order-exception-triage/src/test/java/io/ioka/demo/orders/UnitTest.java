@@ -10,9 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("unit")
 class UnitTest {
     @TempDir Path directory;
-    @Test void separateJvmProcessesGenerateIdenticalBytes() throws Exception {
+    @org.junit.jupiter.params.ParameterizedTest @org.junit.jupiter.params.provider.ValueSource(strings = {"default", "heldout", "stress"})
+    void separateJvmProcessesGenerateIdenticalBytes(String profile) throws Exception {
         for (String name : List.of("first", "second")) {
-            var process = new ProcessBuilder("java", "-cp", "build/install/order-exception-triage/lib/*", Fixtures.class.getName(), directory.resolve(name).toString(), directory.resolve(name + "-oracle").toString(), "41017").redirectErrorStream(true).redirectOutput(directory.resolve(name + ".log").toFile()).start();
+            var process = new ProcessBuilder("java", "-cp", "build/install/order-exception-triage/lib/*", Fixtures.class.getName(), directory.resolve(name).toString(), directory.resolve(name + "-oracle").toString(), profile).redirectErrorStream(true).redirectOutput(directory.resolve(name + ".log").toFile()).start();
             if (!process.waitFor(30, java.util.concurrent.TimeUnit.SECONDS)) { process.destroyForcibly(); fail("Fixture subprocess timed out"); }
             assertEquals(0, process.exitValue(), Files.readString(directory.resolve(name + ".log")));
         }
@@ -20,6 +21,7 @@ class UnitTest {
             for (var path : paths.filter(Files::isRegularFile).toList()) assertArrayEquals(Files.readAllBytes(path), Files.readAllBytes(directory.resolve("second").resolve(directory.resolve("first").relativize(path))));
         }
         assertEquals(Files.readString(directory.resolve("first-oracle/expected.json")), Files.readString(directory.resolve("second-oracle/expected.json")));
+        assertEquals(profile.equals("stress") ? 80 : 8, Fixtures.events(directory.resolve("first")).size());
     }
     @Test void fixturesAreReproducibleAndOracleIsSeparate() throws Exception {
         for (String name : List.of("a", "b")) Fixtures.generate(directory.resolve(name), directory.resolve(name + "-oracle"), 41017);

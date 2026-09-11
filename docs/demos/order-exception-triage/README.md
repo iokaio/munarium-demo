@@ -112,3 +112,27 @@ Host evidence establishes Docker Desktop on Windows with Linux/AMD64 containers.
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress qualification
+
+The [fixture profiles](../../../src/order-exception-triage/fixture-profiles.json) define `default` (seed 41017, eight events), `heldout` (seed 841017, eight events), and `stress` (seed 941017, 80 events). Each event has its own procedure, indexed collection, scoped runbook and private expected result. Seeded order quantities are preserved in the exported packet and asserted alongside routes, missing-evidence flags and grounded explanation terms. The stress corpus repeats the eight authored scenario types with unique business identifiers and quantities; every generated case is qualified. It does not measure model quality across 80 distinct scenario types.
+
+Manifests include generator/template revisions, profile, seed, event/document counts, logical clock, timezone, locale and content hashes. Separate JVM processes must produce identical corpus and oracle bytes for every profile. Generation refuses a different profile in existing input state. Online qualification requires default fixtures and retains the 3/3/2 provider assignment; its Compose profile enforces 60-second OpenRouter pacing. Only the canned fixture's request budget scales with corpus size.
+
+Run `./tools/measure_demo.ps1 -Demo order-exception-triage -Project orders-heldout -Profile heldout` or `sh tools/measure_demo.sh order-exception-triage orders-stress stress`, choosing a new project name for each run.
+
+The final 2026-09-11 profile results are:
+
+| Profile and entry point | Measurement ID | Application tests passed | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `37335ddce11a46129f6f69e3c4f3c935` | 31 | 214.26 s | 378.95% | 1,048,647,300 bytes |
+| Stress, POSIX | `20260911T080753Z-cf043ffcb367b69f` | 103 | 212 s | 439.98% | 1,185,688,845 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T080739Z-5b1c176956e03c38` | 31 | 250 s | 434.16% | 1,101,697,907 bytes |
+
+Each run additionally passed 63 Java SDK tests with the one documented chronology skip. Stress includes all 80 business cases. The fresh checkout used snapshot `83dd77ccbb35246cc0faf09e54ec21e9f69807b1`, matching final source, and empty project state; its test run is `20260911T080740Z-7ab00d8bcf0b8eee`. Held-out and stress test IDs are `d8eaa2f8304e4f9ab1b8d3e664e770c5` and `20260911T080754Z-5edc6f25046d25f2`.
+
+The held-out project's retained volumes occupy 53,583,965 logical bytes; stress occupies 83,186,920 bytes. The local runner is about 849 MB unpacked. Measurements ran in isolated projects on a shared Docker Desktop host, with other qualification work active; timings include build/cache effects, and 100% CPU denotes one core. Sampled peaks exclude host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed image download sizes. These WSL results qualify Linux userspace with Docker Desktop, not native Linux Engine, macOS, ARM64 or Apple Silicon emulation.
+
+Initial profile runs exposed nondeterministic iteration order in the new manifest's nested count map. Canonical sorting fixed it; separate-JVM comparisons now pass. Failed measurements `371a20081cad484fa5c0508599376f69`, `20260911T080425Z-cb4cf445fb7a380c`, and `20260911T080409Z-13a249fae8d601da`, plus cloud invocation `6a8763a34b3646729d4713906b35ca95`, remain preserved. Those invocations stopped at fixture unit checks before business/provider qualification.
+
+Final cloud invocation `c8aa871ad57441808213ad362de13964` passed all eight fresh cases, three on OpenAI, three on Anthropic and two on OpenRouter, with no skips or unresolved outputs. Case reports preserve actual provider/model identity and completion usage. Its unit phase also passed all 11 checks.

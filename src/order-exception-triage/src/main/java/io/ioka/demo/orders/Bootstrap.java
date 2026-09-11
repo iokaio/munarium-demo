@@ -24,6 +24,8 @@ public final class Bootstrap {
         Fixtures.assignments(provider);
         if (!approve) throw new IllegalArgumentException("Bootstrap requires --approve for its isolated test index cutovers.");
         Path inputs = Path.of("/inputs"); Fixtures.verify(inputs);
+        if (!provider.equals("fixture") && !FilesUtil.read(inputs.resolve("manifest.json")).path("profile").asText().equals("default"))
+            throw new IllegalArgumentException("Online qualification requires default fixtures");
         String model = provider.equals("fixture") ? "order-selected" : System.getenv(provider.toUpperCase(Locale.ROOT) + "_MODEL");
         if (model == null || model.isBlank()) throw new IllegalArgumentException("Preferred model is absent.");
         String template = Files.readString(Path.of("runbooks/orders.yaml"));
@@ -50,8 +52,8 @@ public final class Bootstrap {
                   models:
                     complete: [%s]
                     fast: %s
-                  budgets: {rpm: 60, dailyTokens: {fast: 100000}}
-                """.formatted(config, provider.equals("fixture") ? "ollama" : provider, connection, FilesUtil.json(model), FilesUtil.json(model)));
+                  budgets: {rpm: %d, dailyTokens: {fast: 100000}}
+                """.formatted(config, provider.equals("fixture") ? "ollama" : provider, connection, FilesUtil.json(model), FilesUtil.json(model), provider.equals("fixture") ? Math.max(60, Fixtures.events(inputs).size() * 3) : 60));
             if (!ops.providers.health(config).healthy()) throw new IllegalStateException("Named provider health failed: " + provider);
             ops.runbooks.applyShape(shape, null);
             for (var event : Fixtures.events(inputs)) {
@@ -73,6 +75,6 @@ public final class Bootstrap {
             var issued = issuer.tokens.mint(new Tokens.IssueTokenRequest("order-reviewer", 0, List.of(), List.of("query"), refs.values().stream().map(r -> r.split("@")[0]).toList(), 3600L));
             FilesUtil.save(Path.of("/credentials/query.json"), new Grant(issued.token(), "order-reviewer", name, provider, model, config, refs));
         }
-        System.out.println("Bootstrapped " + provider + "/" + model + "; eight isolated event collections.");
+        System.out.println("Bootstrapped " + provider + "/" + model + "; " + refs.size() + " isolated event collections.");
     }
 }
