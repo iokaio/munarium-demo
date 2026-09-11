@@ -232,6 +232,11 @@
       "notice": "NOTICE"
     },
     {
+      "path": "docs/demos/order-exception-triage/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
       "path": "docs/demos/employee-policy-assistant/application.png",
       "license": "Apache-2.0",
       "notice": "NOTICE"

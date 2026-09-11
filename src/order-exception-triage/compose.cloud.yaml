@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+services:
+  server:
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?Supply OPENAI_API_KEY in .env.local}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Supply ANTHROPIC_API_KEY in .env.local}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Supply OPENROUTER_API_KEY in .env.local}
+  bootstrap:
+    environment:
+      OPENAI_MODEL: ${OPENAI_MODEL:?Supply OPENAI_MODEL}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:?Supply ANTHROPIC_MODEL}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:?Supply OPENROUTER_MODEL}
+  tests:
+    environment:
+      ORDER_OPENROUTER_CASE_DELAY_SECONDS: ${ORDER_OPENROUTER_CASE_DELAY_SECONDS:-30}
