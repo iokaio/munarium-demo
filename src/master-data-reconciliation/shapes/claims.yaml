@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: {name: reconcile-record, version: 1}
+spec:
+  fact:
+    schema:
+      type: object
+      required: [subject, key, value]
+      properties:
+        subject: {type: string, pattern: '^supplier_[0-9]{3}$'}
+        key: {type: string, enum: [billing_city, currency, payment_days, contact_team, delivery_site, display_name, tax_region, bank_review]}
+        value: {type: string, minLength: 1, maxLength: 120}
+    supersession: {identity: [subject, key]}

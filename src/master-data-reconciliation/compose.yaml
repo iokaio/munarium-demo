@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-reconcile-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - inputs:/inputs:ro
+    - credentials:/credentials:ro
+    - ../../artifacts/master-data-reconciliation:/work
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: {POSTGRES_USER: reconcile, POSTGRES_PASSWORD: reconcile-local-only, POSTGRES_DB: reconcile}
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U reconcile -d reconcile']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://reconcile:reconcile-local-only@postgres:5432/reconcile
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: reconcile-rw:reconcile:rw,reconcile-mgmt:reconcile:mgmt
+      MUNARIUM_TOKEN_SECRET: reconcile-local-only-signing-secret-at-least-32-bytes
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    command: [provider]
+  faults:
+    <<: *runner
+    environment: {}
+    volumes: []
+    command: [faults]
+  generator:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: reconcile-rw
+      MUNARIUM_MGMT_TOKEN: reconcile-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - ../../artifacts/master-data-reconciliation:/work
+    command: [bootstrap, fixture, --approve]
+  app:
+    <<: *runner
+    command: [prepare, /work/manual/case-001, case-001]
+  writer:
+    <<: *runner
+    environment: {<<: *runtime, MUNARIUM_TOKEN: reconcile-rw}
+    command: [import, /work/manual/case-001]
+  unit:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: ['../../artifacts/master-data-reconciliation:/work']
+    entrypoint: [sh, /app/coordinator.sh]
+    command: [unit]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: http://server:50051
+      MUNARIUM_TOKEN: reconcile-rw
+      MUNARIUM_MGMT_TOKEN: reconcile-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - ../../artifacts/master-data-reconciliation:/work
+    entrypoint: [sh, /app/coordinator.sh]
+    command: [controlled]
+volumes:
+  inputs:
+  oracle:
+  credentials:
+  database:
