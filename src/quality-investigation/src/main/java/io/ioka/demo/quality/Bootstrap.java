@@ -22,7 +22,8 @@ public final class Bootstrap {
     public static void ready() throws Exception {try(var api=reader()) {for(int n=0;;n++) {try {Fixtures.require(api.serverVersion().version().equals("1.1.1"),"Server 1.1.1 required");return;}catch(io.ioka.munarium.client.errors.MunariumException error) {if(n==59) throw error;Thread.sleep(1000);}}}}
     private static void save(ObjectNode value) throws Exception {FilesUtil.save(Path.of("/credentials/registry.json"),value);}
     public static void run(String provider,boolean approve) throws Exception {
-        Fixtures.require(approve,"Explicit --approve required for isolated verified index cutovers");Fixtures.assignments(provider);Fixtures.verify(Path.of("/inputs"));ready();
+        Fixtures.require(approve,"Explicit --approve required for isolated verified index cutovers");Fixtures.assignments(provider);Fixtures.verify(Path.of("/inputs"));
+        var manifest=FilesUtil.read(Path.of("/inputs/manifest.json"));int count=manifest.path("record_count").asInt();Fixtures.require(provider.equals("fixture")||manifest.path("profile").asText().equals("default"),"Online qualification requires the default profile");ready();
         String model=provider.equals("fixture")?"quality-fixture":Objects.requireNonNull(System.getenv(provider.toUpperCase(Locale.ROOT)+"_MODEL"));
         String template=Files.readString(Path.of("/app/runbooks/investigation.yaml"));String namespace="quality-"+FilesUtil.hash(Files.readString(Path.of("/inputs/manifest.json"))+template+provider+model).substring(0,12),config=namespace+"-model";
         var registry=Files.exists(Path.of("/credentials/registry.json"))?registry():Json.MAPPER.createObjectNode();
@@ -37,11 +38,11 @@ public final class Bootstrap {
                   provider: %s
                   %s
                   models: {complete: [%s], fast: %s}
-                  budgets: {rpm: 60, dailyTokens: {fast: 200000}}
-                """.formatted(config,provider.equals("fixture")?"ollama":provider,connection,FilesUtil.json(model),FilesUtil.json(model)));
+                  budgets: {rpm: %d, dailyTokens: {fast: 200000}}
+                """.formatted(config,provider.equals("fixture")?"ollama":provider,connection,FilesUtil.json(model),FilesUtil.json(model),provider.equals("fixture")?Math.max(60,count*4):60));
             Fixtures.require(api.providers.health(config).healthy(),"Provider health failed");
             api.runbooks.applyShape(Files.readString(Path.of("/app/shapes/documents.yaml")),null);api.runbooks.applyShape(Files.readString(Path.of("/app/shapes/observations.yaml")),null);
-            for(int n=1;n<=8;n++) {
+            for(int n=1;n<=count;n++) {
                 String id=Fixtures.id(n),name=namespace+"-"+id;refs.put(id,name);
                 var row=FilesUtil.read(Path.of("/inputs/"+id+"/inspection.json"));validateObservation(row,id);
                 ObjectNode state=registry.has(name)?(ObjectNode)registry.path(name):registry.putObject(name);
@@ -62,7 +63,7 @@ public final class Bootstrap {
             }
         }
         try(var api=ops(true)) {var issued=api.tokens.mint(new Tokens.IssueTokenRequest("quality-reviewer",0,List.of(),List.of("query"),new ArrayList<>(refs.values()),3600L));FilesUtil.save(Path.of("/credentials/query.json"),new Grant(issued.token(),"quality-reviewer",namespace,provider,model,config,refs));}
-        System.out.println("Eight frozen investigation versions and scoped runbooks prepared for "+provider);
+        System.out.println(count+" frozen investigation versions and scoped runbooks prepared for "+provider);
     }
     private static void apply(MunariumClient api,String name,String config,String version,int revision) throws Exception {api.runbooks.applyRunbook(Files.readString(Path.of("/app/runbooks/investigation.yaml")).replace("__NAME__",name).replace("__PROVIDER__",config).replace("__VERSION__",version).replace("__REVISION__",Integer.toString(revision)));}
     private static void claim(MunariumClient api,ObjectNode registry,ObjectNode record,String operation,String subject,String field,String value,String supersedes,JsonNode evidence,String scope) throws Exception {

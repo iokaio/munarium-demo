@@ -13,7 +13,7 @@ public class AcceptanceTest {
         var packet=Workflow.packet(work,id,"baseline",false,false,Bootstrap.endpoint());var oracle=FilesUtil.read(Path.of("/oracle/expected.json")).path(id);
         assertEquals(oracle.path("status"),packet.path("status"));assertEquals(oracle.path("defects"),packet.path("model_suggestion").path("observed_defects"));assertEquals(oracle.path("narrative"),packet.path("model_suggestion").path("narrative_defects"));assertFalse(packet.path("complete_lot_defect_count_available").asBoolean());
         assertEquals("fact_slice",packet.path("evidence").path("hierarchy").path("layers").get(0).path("block").asText());assertEquals("document_hits",packet.path("evidence").path("hierarchy").path("layers").get(1).path("block").asText());
-        assertEquals(2,packet.path("model_suggestion").path("citations").size());assertEquals(n==7?1:2,packet.path("observations").path("facts").size());
+        assertEquals(2,packet.path("model_suggestion").path("citations").size());assertEquals(oracle.path("defects").isNull()?1:2,packet.path("observations").path("facts").size());
         if(correction) {
             int before=IntegrationTest.calls();var repeat=Workflow.packet(work,id,"baseline",false,false,Bootstrap.endpoint());assertEquals(FilesUtil.json(packet),FilesUtil.json(repeat));assertEquals(before,IntegrationTest.calls());
             var base=packet.path("binding");Bootstrap.correct(id,oracle.path("corrected_defects").asInt(),"synthetic-reviewer","Reviewed corrected sampled inspection");var updated=Workflow.packet(work.resolve("corrected"),id,"corrected",false,false,Bootstrap.endpoint());
@@ -23,7 +23,7 @@ public class AcceptanceTest {
         }
         FilesUtil.save(UnitTest.root().resolve(id+".quality.json"),Map.of("case_id",id,"passed",true,"status",packet.path("status"),"model",packet.path("evidence").path("completion"),"required_evidence",packet.path("evidence").path("hierarchy")));
     }
-    @TestFactory @Tag("controlled") Stream<DynamicTest> controlled() {return Fixtures.assignments("fixture").stream().map(n->DynamicTest.dynamicTest(Fixtures.id(n),()->scenario(n,true)));}
+    @TestFactory @Tag("controlled") Stream<DynamicTest> controlled() throws Exception {return FilesUtil.read(Path.of("/oracle/expected.json")).properties().stream().map(p->Integer.parseInt(p.getKey().substring(5))).map(n->DynamicTest.dynamicTest(Fixtures.id(n),()->scenario(n,true)));}
     static Stream<DynamicTest> cloud(String provider) {return Fixtures.assignments(provider).stream().map(n->DynamicTest.dynamicTest(Fixtures.id(n),()->{if(provider.equals("openrouter")) Thread.sleep(60000);scenario(n,false);}));}
     @TestFactory @Tag("cloud-openai") Stream<DynamicTest> openai() {return cloud("openai");}
     @TestFactory @Tag("cloud-anthropic") Stream<DynamicTest> anthropic() {return cloud("anthropic");}

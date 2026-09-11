@@ -9,10 +9,11 @@ import org.junit.jupiter.api.*;
 public class UnitTest {
     static Path root() {return Path.of(System.getenv("QUALITY_REPORT_DIR"));}
     static int child(String... args) throws Exception {var command=new ArrayList<>(List.of("/app/build/install/quality-investigation/bin/quality-investigation"));command.addAll(List.of(args));return new ProcessBuilder(command).inheritIO().start().waitFor();}
-    @Test void independentGeneratorProcesses() throws Exception {
-        Path a=root().resolve("a"),b=root().resolve("b");assertEquals(0,child("generate",a.toString(),a+"-oracle"));assertEquals(0,child("generate",b.toString(),b+"-oracle"));
+    @org.junit.jupiter.params.ParameterizedTest @org.junit.jupiter.params.provider.CsvSource({"default,8,3","heldout,8,5","stress,80,6"}) void independentGeneratorProcesses(String profile,int count,int defects) throws Exception {
+        Path a=root().resolve("a-"+profile),b=root().resolve("b-"+profile);assertEquals(0,child("generate",a.toString(),a+"-oracle",profile));assertEquals(0,child("generate",b.toString(),b+"-oracle",profile));
         assertEquals(Files.readString(a.resolve("manifest.json")),Files.readString(b.resolve("manifest.json")));assertEquals(Files.readString(Path.of(a+"-oracle/expected.json")),Files.readString(Path.of(b+"-oracle/expected.json")));
-        var names=FilesUtil.read(a.resolve("manifest.json")).path("files").fieldNames();while(names.hasNext()) {String name=names.next();assertArrayEquals(Files.readAllBytes(a.resolve(name)),Files.readAllBytes(b.resolve(name)));}Files.copy(a.resolve("manifest.json"),root().resolve("reproducible-manifest.json"));
+        Fixtures.verify(a);var expected=FilesUtil.read(Path.of(a+"-oracle/expected.json"));assertEquals(count,expected.size());assertEquals(defects,expected.path("case-001").path("defects").asInt());assertEquals(count*3,FilesUtil.read(a.resolve("manifest.json")).path("files").size());
+        var names=FilesUtil.read(a.resolve("manifest.json")).path("files").fieldNames();while(names.hasNext()) {String name=names.next();assertArrayEquals(Files.readAllBytes(a.resolve(name)),Files.readAllBytes(b.resolve(name)));}Files.copy(a.resolve("manifest.json"),root().resolve("reproducible-"+profile+"-manifest.json"));
     }
     @Test void tamperRejected() throws Exception {Path a=root().resolve("tamper");Fixtures.generate(a,Path.of(a+"-oracle"));Files.writeString(a.resolve("case-001/note.txt"),"changed");assertThrows(IllegalStateException.class,()->Fixtures.verify(a));}
     @Test void providerAllocation() {assertEquals(3,Fixtures.assignments("openai").size());assertEquals(3,Fixtures.assignments("anthropic").size());assertEquals(2,Fixtures.assignments("openrouter").size());assertThrows(IllegalArgumentException.class,()->Fixtures.assignments("ollama"));}

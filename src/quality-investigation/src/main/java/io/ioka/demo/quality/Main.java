@@ -7,7 +7,7 @@ public final class Main {
     public static void main(String[] args) {try {run(args);}catch(Exception e) {System.err.println(e.getClass().getSimpleName()+": "+e.getMessage());System.exit(2);}}
     private static void run(String[] args) throws Exception {
         switch(args[0]) {
-            case "generate"->Fixtures.generate(Path.of(args.length>1?args[1]:"/inputs"),Path.of(args.length>2?args[2]:"/oracle"));
+            case "generate"->Fixtures.generate(Path.of(args.length>1?args[1]:"/inputs"),Path.of(args.length>2?args[2]:"/oracle"),args.length>3?args[3]:FilesUtil.env("DEMO_PROFILE","default"));
             case "bootstrap"->Bootstrap.run(args[1],Arrays.asList(args).contains("--approve"));
             case "provider"->ProviderFixture.run();case "faults"->FaultProxy.run();
             case "packet","recover","crash"->{var output=Workflow.packet(Path.of(args[1]),args[2],args[3],args[0].equals("recover"),args[0].equals("crash"),Bootstrap.endpoint());System.out.println(Files.readString(Path.of(args[1],"packet.md")));if(output.path("status").asText().equals("incomplete")) System.exit(3);}

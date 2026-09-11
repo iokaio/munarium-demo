@@ -88,3 +88,23 @@ The generator fixes seed 10091, template revision 1, the eight-lot profile, ROOT
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/quality-investigation/fixture-profiles.json) select `default` (seed 10091, eight lots), `heldout` (seed 90091, eight lots with changed observed/narrative/corrected defect counts), or `stress` (seed 100091, 80 lots, 80 inspection records and 160 documents). Stress repeats the eight authored agreement/disagreement/missing-observation types with unique lot identities. Every lot is independently checked against private expectations, including required evidence order, reviewed child-version corrections and preserved parent facts.
+
+Manifests record profile, seed, generator/template revisions, record counts, logical date, timezone, locale and hashes. Two separate network-disabled Java processes reproduce every corpus and oracle byte for each profile. Generation refuses a different profile in existing state. Only the canned provider budget scales with corpus size; online runs require the default profile.
+
+Run `./tools/measure_demo.ps1 -Demo quality-investigation -Project quality-heldout -Profile heldout`, or `sh tools/measure_demo.sh quality-investigation quality-stress stress`, with new project state.
+
+All profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `4d8a332c07db461da8f9c1ec785bc521` | 24 | 274.64 s | 406.37% | 1,290,230,822 bytes |
+| Stress, POSIX | `20260911T092000Z-b9bb1c21ea17dc36` | 96 | 294 s | 424.39% | 1,188,210,669 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T091949Z-32ce300844d9cdcf` | 24 | 337 s | 455.03% | 1,131,292,916 bytes |
+
+Every profile also passed compilation with warnings treated as errors and 63 SDK checks with the one documented chronology skip. Final source matches fresh-checkout snapshot `2ffd33043102ad23a4496b790c315fc16b4f5e1b`, tested with empty project state. Test IDs are `75736cadc0794a51901411ff4cd2b3cc` (held-out), `20260911T092002Z-7aa4e8532790f8b2` (stress), and `20260911T091950Z-6fc44a9b17718025` (fresh default). Online run `cd4f2f8cd5e141b1981def5febfbff7d` passed eight fresh cases: three OpenAI, three Anthropic and two OpenRouter, with 60 seconds before each OpenRouter case. No local model inference ran.
+
+Held-out retained volumes occupy 54,020,637 logical bytes; stress occupies 87,479,572 bytes. The development runner is 843,311,071 bytes unpacked. Reports remain under `artifacts/quality-investigation/`. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.
