@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: {name: meeting-commitment, version: 1}
+spec:
+  fact:
+    schema:
+      type: object
+      required: [subject, key, value]
+      properties:
+        subject: {type: string, pattern: '^commitment_[0-9]{3}$'}
+        key: {type: string, enum: [owner, due_date, description]}
+        value: {type: string, minLength: 1, maxLength: 300}
+    supersession: {identity: [subject, key]}

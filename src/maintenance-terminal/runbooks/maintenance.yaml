@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Runbook
+metadata: {name: __NAME__, version: 1}
+spec:
+  collections:
+    - name: __COLLECTION__
+      shape: maintenance-documents@1
+      accessLevel: 0
+      sources: {filenamePrefix: '__COLLECTION__/'}
+  retrieval: {topK: 6, rrfK: 60, candidateN: 30}
+__COMPLETION__
+  steps:
+    - resolveSources: {}
+    - buildIndex: {}
+    - verify: {}
+    - cutover: {approval: required}

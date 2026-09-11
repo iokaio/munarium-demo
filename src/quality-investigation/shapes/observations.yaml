@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: {name: quality-observation, version: 1}
+spec:
+  fact:
+    schema:
+      type: object
+      required: [subject, key, value]
+      properties:
+        subject: {type: string, pattern: '^lot_[0-9]{3}$'}
+        key: {type: string, enum: [sample_size, defects]}
+        value: {type: string, pattern: '^[0-9]{1,3}$'}
+    supersession: {identity: [subject, key]}

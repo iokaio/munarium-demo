@@ -2,6 +2,121 @@
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
     {
+      "path": "src/inventory-replenishment/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/retrieval-evaluation/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/engineering-change-review/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/quality-investigation/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/meeting-commitments/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/policy-change-digest/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/shift-handover/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/master-data-reconciliation/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/records-intake/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/maintenance-terminal/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/order-exception-triage/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/invoice-exception/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/engineering-change-review/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/quality-investigation/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/retrieval-evaluation/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/policy-change-digest/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/shift-handover/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/master-data-reconciliation/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/records-intake/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/records-intake/Records/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/records-intake/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/maintenance-terminal/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
       "path": "data/manifest.json",
       "license": "Apache-2.0",
       "notice": "NOTICE"
@@ -223,6 +338,61 @@
     },
     {
       "path": "docs/images/overview.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/invoice-exception/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/order-exception-triage/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/employee-policy-assistant/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Core/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Desktop/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Harness/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/meeting-commitments/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/meeting-commitments/Meetings/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/meeting-commitments/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/inventory-replenishment/application.png",
       "license": "Apache-2.0",
       "notice": "NOTICE"
     }

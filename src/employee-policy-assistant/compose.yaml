@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-policy-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - credentials:/credentials:ro
+    - ../../artifacts/employee-policy-assistant:/work
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: { POSTGRES_USER: policy, POSTGRES_PASSWORD: policy-local-only, POSTGRES_DB: policy }
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U policy -d policy']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://policy:policy-local-only@postgres:5432/policy
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: policy-rw:policy:rw,policy-mgmt:policy:mgmt
+      MUNARIUM_TOKEN_SECRET: policy-local-only-signing-secret-at-least-32-bytes
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    command: [provider]
+  generator:
+    <<: *runner
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: policy-rw
+      MUNARIUM_MGMT_TOKEN: policy-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - ../../artifacts/employee-policy-assistant:/work
+    command: [bootstrap, fixture, --approve]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: http://server:50051
+      MUNARIUM_TOKEN: policy-rw
+      MUNARIUM_MGMT_TOKEN: policy-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - ../../artifacts/employee-policy-assistant:/work
+    entrypoint: [sh, /app/coordinator.sh]
+    command: [test]
+volumes:
+  inputs:
+  oracle:
+  credentials:
+  database:

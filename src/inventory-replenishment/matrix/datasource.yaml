@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: DataSource
+metadata: {name: inventory, version: 2}
+spec:
+  adapter: postgres
+  connection: {host: inventory-db, database: inventory, sslmode: disable}
+  credentialRef: inventory-reader
+  egress: {allowHosts: [inventory-db]}
+  role:
+    mustBe: {readOnly: true, subjectToRowSecurity: true, notOwner: true}
+  authorization:
+    strategy: per_class_principals
+    classes:
+      - {name: planner, accessLevel: 0, compartments: [], credentialRef: inventory-reader}
+      - {name: restricted-planner, accessLevel: 2, compartments: [], credentialRef: inventory-reader}
+  limits: {maxRows: 1000, maxBytes: 1048576, statementTimeoutMs: 8000, budgetPerHour: 1000}
+  snapshot: {kind: pg_snapshot, replayLevel: sealed_result}
+  schemaFingerprint: {onDrift: refuse}

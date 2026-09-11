@@ -1,0 +1,5 @@
+{
+  "default": {"seed": 41017, "events": 8},
+  "heldout": {"seed": 841017, "events": 8},
+  "stress": {"seed": 941017, "events": 80}
+}

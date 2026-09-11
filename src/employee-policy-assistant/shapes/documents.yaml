@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: Shape
+metadata: { name: policy-document, version: 1 }
+spec:
+  fact:
+    schema: { type: object }

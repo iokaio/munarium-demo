@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-maintenance-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - inputs:/inputs:ro
+    - credentials:/credentials:ro
+    - ../../artifacts/maintenance-terminal:/work
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: {POSTGRES_USER: maintenance, POSTGRES_PASSWORD: maintenance-local-only, POSTGRES_DB: maintenance}
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U maintenance -d maintenance']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://maintenance:maintenance-local-only@postgres:5432/maintenance
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: maintenance-rw:maintenance:rw,maintenance-mgmt:maintenance:mgmt
+      MUNARIUM_TOKEN_SECRET: maintenance-local-only-signing-secret-at-least-32-bytes
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    command: [provider]
+  generator:
+    <<: *runner
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: maintenance-rw
+      MUNARIUM_MGMT_TOKEN: maintenance-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - ../../artifacts/maintenance-terminal:/work
+    command: [bootstrap, fixture, --approve]
+  app:
+    <<: *runner
+    stdin_open: true
+    tty: true
+    command: [tui, /work/interactive]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: http://server:50051
+      MUNARIUM_TOKEN: maintenance-rw
+      MUNARIUM_MGMT_TOKEN: maintenance-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - ../../artifacts/maintenance-terminal:/work
+    entrypoint: [sh, /app/coordinator.sh]
+    command: [controlled]
+  unit:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: [../../artifacts/maintenance-terminal:/work]
+    entrypoint: [sh, /app/coordinator.sh]
+    command: [unit]
+volumes:
+  inputs:
+  oracle:
+  credentials:
+  database:

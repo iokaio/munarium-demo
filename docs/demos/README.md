@@ -1,0 +1,18 @@
+# Demo applications
+
+Each new demo has its own code, Docker setup, and tests under `src/<demo-name>/`. Each `docs/demos/<demo-name>/` folder contains a `README.md` walkthrough, recorded validation, and a linked `application.png` rendering. Every walkthrough begins with a business case explaining why a company might build a similar solution.
+
+- [Invoice exception batch](invoice-exception/README.md): Python CLI with synthetic invoices, deterministic checks, cited review packets, and tests across three AI providers. Source: [src/invoice-exception](../../src/invoice-exception).
+- [Employee policy assistant](employee-policy-assistant/README.md): C# Avalonia desktop with identity-scoped policy answers, real streaming progress, source inspection, and local Docker tests. Source: [src/employee-policy-assistant](../../src/employee-policy-assistant).
+- [Order exception triage](order-exception-triage/README.md): Java queue consumer with a durable inbox, cited routing proposals, duplicate-event handling, and transcript recovery. Source: [src/order-exception-triage](../../src/order-exception-triage).
+- [Maintenance procedure terminal](maintenance-terminal/README.md): Rust terminal with explicit revision selection, retrieval-only operation, source inspection and optional cited explanations. Source: [src/maintenance-terminal](../../src/maintenance-terminal).
+- [Records intake service](records-intake/README.md): C# background worker with stable-file reconciliation, explicit binding and separately approved index activation. Source: [src/records-intake](../../src/records-intake).
+- [Master-data reconciliation](master-data-reconciliation/README.md): Java CLI with cited stewardship drafts, explicit reviews, retained disputes, corrections and historical fact reads. Source: [src/master-data-reconciliation](../../src/master-data-reconciliation).
+- [Shift handover journal](shift-handover/README.md): Rust daemon and CLI with reviewed events, durable write receipts, commitments and consistently pinned historical briefs. Source: [src/shift-handover](../../src/shift-handover).
+- [Policy change impact digest](policy-change-digest/README.md): Python scheduled job with explicit policy revisions, textual diffs, cited candidate impacts and durable pair checkpoints. Source: [src/policy-change-digest](../../src/policy-change-digest).
+- [Retrieval evaluation bench](retrieval-evaluation/README.md): Python CLI with independent source labels, separate access profiles, controlled setting comparisons, repeated completions and measured plots. Source: [src/retrieval-evaluation](../../src/retrieval-evaluation).
+- [Meeting commitment recorder](meeting-commitments/README.md): C# console workflow with reviewed candidates, durable imports, open commitments and pinned date corrections. Source: [src/meeting-commitments](../../src/meeting-commitments).
+- [Quality investigation packet](quality-investigation/README.md): Java batch job combining frozen ledger observations and procedures, explicit disagreements and child-version corrections. Source: [src/quality-investigation](../../src/quality-investigation).
+- [Engineering change review](engineering-change-review/README.md): Rust CI executable with trusted component scopes, cited advisory findings, deterministic exit codes and transcript recovery. Source: [src/engineering-change-review](../../src/engineering-change-review).
+- [Inventory replenishment briefing](inventory-replenishment/README.md): Python CLI combining governed Matrix rows, completeness and freshness checks, sealed citations and supporting procedures. Source: [src/inventory-replenishment](../../src/inventory-replenishment).
+- [Demo plan](../other-demo-plans.md): portfolio, recorded status and implementation guidance.

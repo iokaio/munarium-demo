@@ -1,0 +1,11 @@
+*
+!Dockerfile
+!fixture-profiles.json
+!requirements.lock
+!invoice_demo/**
+!shapes/**
+!runbooks/**
+!tests/**
+!pytest.ini
+!ruff.toml
+**/__pycache__

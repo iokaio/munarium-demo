@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+  models:
+    tasks:
+      completion: {provider: __PROVIDER__, tier: fast}
+  completion:
+    contextCharBudget: 9000
+    maxTokens: 768
+    promptTemplate: |
+      Explain the selected fictional maintenance revision using only this evidence.
+      Return only JSON with fields status, revision, code, explanation, citations.
+      status is available, historical, or insufficient. Historical evidence is never a current procedure.
+      Missing inspection or missing manual means insufficient, with no invented procedure.
+      code is the exact Procedure code in the evidence. revision is the selected revision.
+      explanation must describe ONLY the Procedure code line and whether it is historical or insufficient.
+      Write one short sentence with this structure: exact code, its meaning, then [the label of the chunk containing that exact Procedure code].
+      The inline citation MUST identify the code-bearing manual chunk, not the separate revision notice or inspection note.
+      citations is an array containing that same exact collection/chunk_id label, without brackets. Do not list every retrieved source.
+      Do not explain the revision notice or inspection note separately. Do not guess a current revision or add steps.
+      EVIDENCE_START
+      {context}
+      EVIDENCE_END
+      QUESTION_START
+      {query}
+      QUESTION_END

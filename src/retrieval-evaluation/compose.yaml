@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-bench-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - inputs:/inputs:ro
+    - credentials:/credentials:ro
+    - ../../artifacts/retrieval-evaluation:/work
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment:
+      POSTGRES_USER: bench
+      POSTGRES_PASSWORD: bench-local-only
+      POSTGRES_DB: bench
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U bench -d bench"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://bench:bench-local-only@postgres:5432/bench
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: bench-rw:bench:rw,bench-mgmt:bench:mgmt
+      MUNARIUM_TOKEN_SECRET: bench-local-only-signing-secret-at-least-32-bytes
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, -m, bench_demo.provider_fixture]
+  sdk-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, /opt/munarium/clients/python/conformance/ollama_fixture.py, --bind, 0.0.0.0]
+  faults:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, -m, bench_demo.faults]
+  unit:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: [../../artifacts/retrieval-evaluation:/work]
+    command: [unit]
+  generator:
+    <<: *runner
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: bench-rw
+      MUNARIUM_MGMT_TOKEN: bench-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - privileged_credentials:/privileged_credentials
+      - ../../artifacts/retrieval-evaluation:/work
+    command: [bootstrap]
+  app:
+    <<: *runner
+    command: [run]
+  privileged-app:
+    <<: *runner
+    volumes: [inputs:/inputs:ro, privileged_credentials:/credentials:ro, ../../artifacts/retrieval-evaluation:/work]
+    command: [run, --case, case-008]
+  scorer:
+    <<: *runner
+    network_mode: none
+    environment: {}
+    volumes: [oracle:/oracle:ro, ../../artifacts/retrieval-evaluation:/work]
+    command: [score, --work, /work/manual]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: server:50051
+      MUNARIUM_TOKEN: bench-rw
+      MUNARIUM_MGMT_TOKEN: bench-mgmt
+      MUNARIUM_OLLAMA_FIXTURE_URL: http://sdk-fixture:11434
+      MUNARIUM_OLLAMA_SERVER_ENDPOINT: http://sdk-fixture:11434
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - privileged_credentials:/privileged_credentials:ro
+      - ../../artifacts/retrieval-evaluation:/work
+    command: [controlled]
+
+volumes:
+  inputs:
+  oracle:
+  credentials:
+  privileged_credentials:
+  database:

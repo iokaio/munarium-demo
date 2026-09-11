@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-invoice-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - inputs:/inputs:ro
+    - credentials:/credentials:ro
+    - ../../artifacts/invoice-exception:/work
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment:
+      POSTGRES_USER: invoice
+      POSTGRES_PASSWORD: invoice-local-only
+      POSTGRES_DB: invoice
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U invoice -d invoice"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://invoice:invoice-local-only@postgres:5432/invoice
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: invoice-rw:invoice:rw,invoice-mgmt:invoice:mgmt
+      MUNARIUM_TOKEN_SECRET: invoice-local-only-signing-secret-at-least-32-bytes
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, -m, invoice_demo.provider_fixture]
+  sdk-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, /opt/munarium/clients/python/conformance/ollama_fixture.py, --bind, 0.0.0.0]
+  generator:
+    <<: *runner
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: invoice-rw
+      MUNARIUM_MGMT_TOKEN: invoice-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - ../../artifacts/invoice-exception:/work
+    command: [bootstrap, --approve]
+  app:
+    <<: *runner
+    command: [process]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: server:50051
+      MUNARIUM_TOKEN: invoice-rw
+      MUNARIUM_MGMT_TOKEN: invoice-mgmt
+      MUNARIUM_OLLAMA_FIXTURE_URL: http://sdk-fixture:11434
+      MUNARIUM_OLLAMA_SERVER_ENDPOINT: http://sdk-fixture:11434
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - ../../artifacts/invoice-exception:/work
+    command: [test]
+
+volumes:
+  inputs:
+  oracle:
+  credentials:
+  database:

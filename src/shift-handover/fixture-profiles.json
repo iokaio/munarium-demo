@@ -1,0 +1,5 @@
+{
+  "default": {"seed": 7091, "shifts": 8},
+  "heldout": {"seed": 87091, "shifts": 8},
+  "stress": {"seed": 97091, "shifts": 80}
+}
