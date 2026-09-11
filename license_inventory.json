@@ -2,6 +2,11 @@
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
     {
+      "path": "docs/demos/maintenance-terminal/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
       "path": "data/manifest.json",
       "license": "Apache-2.0",
       "notice": "NOTICE"

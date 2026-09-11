@@ -1,5 +1,11 @@
 # Invoice exception packet
 
+## Business case
+
+A company processing supplier invoices needs to identify mismatched prices, partial deliveries and missing purchase records before staff approve payment. Reviewing each exception by searching several systems and purchasing policies takes time and can lead to inconsistent decisions. A similar batch solution could perform exact accounting checks, attach the relevant evidence and produce a cited explanation for the accounts-payable reviewer. The business value is a more consistent review queue with less document hunting and a clearer audit trail; payment approval remains with the company's authorized workflow. This synthetic demo does not measure financial savings.
+
+## Application
+
 ![Invoice batch terminal and generated review packet](application.png)
 
 Rendered terminal and review-packet preview using the demo's generated fictional inputs; this is a CLI output illustration.

@@ -1,5 +1,11 @@
 # Order exception triage
 
+## Business case
+
+A distributor or retailer can accumulate order holds caused by stock shortages, address problems, missing export documents or substitution requests. Staff must identify the right team and consult the relevant procedure before resolving each hold, and duplicate events can create repeated work. A similar consumer could turn those events into durable, cited review packets and route proposed work consistently. The business value is a clearer exception queue, fewer repeated investigations and traceable handoffs between fulfillment, procurement and customer service. People and existing order systems retain control of shipment and cancellation; the demo's synthetic results are not a measured throughput improvement.
+
+## Application
+
 This Java 21 queue consumer reads fictional order-hold events from a local inbox, asks Munarium Server for a cited explanation and proposed team, and writes a review packet. H2 persists input hashes, session IDs, submission state, saved responses, and an outbox. Two bounded workers process independent events. Duplicate delivery reuses the saved packet; an uncertain turn stays pending until explicit transcript reconciliation. Order cancellation, shipment, and ERP updates belong to future adapters.
 
 ![Order consumer terminal and persisted review packet](application.png)

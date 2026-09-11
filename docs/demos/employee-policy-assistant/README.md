@@ -1,5 +1,11 @@
 # Employee policy assistant
 
+## Business case
+
+A company with policies spread across employee handbooks, regional guidance and HR documents may receive the same equipment, training and leave questions repeatedly. Employees need answers that reflect their location and access rights, while HR needs a way to inspect the policy behind an answer. A similar desktop assistant could reduce routine policy searches and support requests by presenting scoped answers with source excerpts. The business value is easier self-service and more consistent policy interpretation, with HR retaining responsibility for exceptions and final decisions. This synthetic demo does not establish a measured reduction in support volume.
+
+## Application
+
 ![Employee policy desktop window with an answer and source excerpt](application.png)
 
 Rendered from the running Avalonia window during the controlled headless integration test, using generated fictional policies. The displayed `ollama / policy-selected` identifies the canned protocol fixture; no local model runs. Native window decorations vary by operating system.
