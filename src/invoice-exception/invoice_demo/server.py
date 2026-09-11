@@ -43,6 +43,8 @@ def ready() -> None:
 def bootstrap(
     inputs: Path, credentials: Path, work: Path, provider: str, model: str, approve: bool
 ) -> dict:
+    if provider not in ("fixture", "openai", "anthropic", "openrouter"):
+        raise ValueError("Unsupported demo provider")
     manifest = verify(inputs)
     ready()
     revision = digest((inputs / "manifest.json").read_bytes())[:12]
@@ -58,10 +60,8 @@ def bootstrap(
         "models": {"complete": [model], "fast": model},
         "budgets": {"rpm": 60, "dailyTokens": {"fast": 150000}},
     }
-    if provider in ("fixture", "ollama"):
-        spec["endpoint"] = (
-            "http://provider-fixture:11434" if provider == "fixture" else "http://ollama:11434"
-        )
+    if provider == "fixture":
+        spec["endpoint"] = "http://provider-fixture:11434"
     else:
         spec["credentialRef"] = {"env": provider.upper() + "_API_KEY"}
     report = {

@@ -52,7 +52,7 @@ def main():
     parser.add_argument("--groups", type=int, default=3)
     parser.add_argument(
         "--provider",
-        choices=["fixture", "ollama", "openai", "anthropic", "openrouter"],
+        choices=["fixture", "openai", "anthropic", "openrouter"],
         default="fixture",
     )
     parser.add_argument("--model", default="invoice-fixture")

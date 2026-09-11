@@ -17,6 +17,8 @@ are not distributed.
 
 ## .NET dependencies
 
+The employee policy desktop demo records its separate runtime and test graphs in `src/employee-policy-assistant/{Policy.Core,Policy.Desktop,Policy.Harness,tests}/packages.lock.json`. Its original synthetic inputs and PNG renderings are Apache-2.0 application material. Third-party components retain their own licenses: Avalonia 11.3.12 and Tmds.DBus.Protocol 0.21.3 use MIT; SkiaSharp 2.88.9 and HarfBuzzSharp 8.3.1.1 include their native dependency notices in the installed NuGet package license files. The pinned Munarium checkout retains its client LICENSE and NOTICE. Preserve those package notices and the .NET runtime's notices when distributing published binaries. The headless renderer uses the container's DejaVu fonts; rendered text does not distribute the font files. Desktop source and tests do not relicense these dependencies.
+
 The resolved NuGet graph is recorded in `src/Demo.Web/packages.lock.json`.
 
 | Package | License |

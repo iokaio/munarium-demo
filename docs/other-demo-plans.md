@@ -2,7 +2,7 @@
 
 These proposals show everyday enterprise AI workflows as command-line tools, native desktop applications, scheduled jobs, queue consumers, and background services. None requires a browser application. They use new synthetic inputs, new shapes, and new runbooks; the existing demo scenarios and bundled data are outside the plan.
 
-The recommended first wave is an invoice exception batch, an employee policy desktop assistant, an order exception consumer, and a maintenance terminal. Together they give each Server client language a practical entry point. The invoice batch is now the implemented reference for repository layout and testing; the remaining applications are proposals. Later demos teach ingestion operations, governed memory, historical reconstruction, and evaluation. Recorded test results describe synthetic workloads, not measured business outcomes.
+The recommended first wave is an invoice exception batch, an employee policy desktop assistant, an order exception consumer, and a maintenance terminal. Together they give each Server client language a practical entry point. The invoice batch and employee policy desktop assistant are implemented references for repository layout and testing; the remaining applications are proposals. Later demos teach ingestion operations, governed memory, historical reconstruction, and evaluation. Recorded test results describe synthetic workloads, not measured business outcomes.
 
 Every proposal must generate its own synthetic testing documents and data and run its complete automated test and integration suite locally through Docker. Support Docker Desktop using Linux containers on Windows and macOS, and Docker Engine with Compose or Docker Desktop on Linux. A fresh checkout must be sufficient to reproduce the fixtures and execute the tests after downloading the pinned dependencies, images, and models; no private dataset, enterprise account, paid model service, or hosted CI runner may be required.
 
@@ -59,7 +59,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 ### 1. Invoice exception packet — Python batch CLI
 
-**Implementation status.** The [invoice exception demo](demos/invoice-exception.md) has source and tests in `src/invoice-exception/`, seeded synthetic inputs, the official Python client, and an isolated Docker workflow. After reorganization, its 29 application tests, 175 Python client tests, and 20 controlled invoice acceptance cases passed on Docker Desktop for Windows; four upstream chronology skips remain explicit. The distributed cloud suite also passed again with two tests on OpenAI `gpt-5.4-mini`, two on Anthropic `claude-haiku-4-5-20251001`, and four on OpenRouter `qwen/qwen3.8-flash`, without uncertain or unverified outcomes. Local Ollama and Linux/macOS qualification remain pending. The remaining Wave 1 applications have not been built; build them one at a time after this demo is reviewed.
+**Implementation status.** The [invoice exception demo](demos/invoice-exception/README.md) has source and tests in `src/invoice-exception/`, seeded synthetic inputs, the official Python client, and an isolated Docker workflow. After reorganization, its 29 application tests, 175 Python client tests, and 20 controlled invoice acceptance cases passed on Docker Desktop for Windows; four upstream chronology skips remain explicit. The distributed cloud suite also passed again with two tests on OpenAI `gpt-5.4-mini`, two on Anthropic `claude-haiku-4-5-20251001`, and four on OpenRouter `qwen/qwen3.8-flash`, without uncertain or unverified outcomes. Native Linux/macOS and ARM64 qualification remain pending. Its README and rendered PNG now share `docs/demos/invoice-exception/`.
 
 **Use case and merit.** Accounts payable staff routinely compare invoices, purchase orders, goods receipts, and internal purchasing rules. A batch tool can explain discrepancies with citations and produce a review packet without requiring staff to ask the same questions repeatedly. It teaches where ordinary code should make exact calculations and where grounded AI adds useful prose.
 
@@ -70,6 +70,8 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 **Acceptance.** Totals match the independent fixture oracle; every rule cited resolves to a retrieved source; missing receipts never become fabricated confirmations. Re-running completed cases does not create duplicate packets.
 
 ### 2. Employee policy assistant — C# native desktop
+
+**Implementation status.** The [employee policy assistant](demos/employee-policy-assistant/README.md) is implemented in `src/employee-policy-assistant/` with C#/.NET 10, Avalonia, and the official .NET client. Its documentation folder contains a README and PNG rendered from the actual window. The Docker harness generates seven fictional policy documents and eight independent business scenarios, tests desktop input and exports, and qualifies scoped sessions, bounded follow-ups, provider routing, expiry, and transcript recovery. On 2026-09-10, all 24 application tests and 82 .NET SDK tests passed, with two documented chronology skips. Six fresh cloud cases passed: equipment/training on OpenAI, regional access on Anthropic, and HR access on OpenRouter. Real AI testing uses only these three online providers. Consult the walkthrough for recorded results and remaining native OS limits. The Java order consumer is next; continue building one application per commit on `newdemos`, without pushing until requested.
 
 **Use case and merit.** An employee or HR specialist wants a quick answer about equipment requests, training allowances, or leave procedures while working in desktop tools. This demonstrates an actual distributable client and the credential boundary that a backend-only sample does not teach.
 
@@ -95,7 +97,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Build.** Create a Tokio application with a simple terminal interface and a plain stdout mode for scripts. Generate maintenance manuals, inspection notes, and revision notices for a few fictional assets. Select the applicable runbook/collection scope from trusted configuration. First issue a retrieval turn with `complete: false`; offer a separate explain action that requests completion. Display source path, chunk identity, content hash, and the actual collections searched. REST supports progress events; a later gRPC variant can use unary turns.
 
-**Developer walkthrough.** Find a procedure, inspect an older revision as historical evidence, and ask about an unsupported asset. Show how the application identifies the applicable revision instead of asking the model to guess. A retrieval-only preset should disable model query expansion and omit model overrides when demonstrating operation without a completion provider. The explain action can use a named Ollama config with installed models and explicit tiers, showing how the same Rust client connects to Server for local-model completion.
+**Developer walkthrough.** Find a procedure, inspect an older revision as historical evidence, and ask about an unsupported asset. Show how the application identifies the applicable revision instead of asking the model to guess. A retrieval-only preset should disable model query expansion and omit model overrides when demonstrating operation without a completion provider. The explain action uses a named OpenAI, Anthropic, or OpenRouter configuration with preferred models and explicit tiers, showing how the same Rust client connects to Server for online completion.
 
 **Acceptance.** Unsupported assets produce no actionable invented procedure. The chosen revision is visible in the evidence. Retrieval works with the completion provider unavailable under that preset. No machine-control command is part of this demo.
 
@@ -201,27 +203,47 @@ Each demo should be independently runnable and explain the application/Server bo
 
 ### Repository structure and first successful run
 
-Use a separate `src/<demo-name>/` directory per application for native-language source, dependency locks, fixture generators, `runbooks/`, `shapes/`, Docker configuration, and tests. Put each developer walkthrough and its recorded validation in `docs/demos/<demo-name>.md`, indexed by `docs/demos/README.md`. Commit generator code, templates, schemas, and oracle definitions; generate documents and data into ignored directories. Provide equivalent PowerShell and POSIX shell entry points for the containerized workflow. A shared bootstrap helper may reduce repetition, but each demo's documentation must show the actual client calls in its language.
+Use a separate `src/<demo-name>/` directory per application for native-language source, dependency locks, fixture generators, `runbooks/`, `shapes/`, Docker configuration, and tests. Put each developer walkthrough and its recorded validation in `docs/demos/<demo-name>/README.md`, indexed by `docs/demos/README.md`. Commit generator code, templates, schemas, and oracle definitions; generate documents and data into ignored directories. Provide equivalent PowerShell and POSIX shell entry points for the containerized workflow. A shared bootstrap helper may reduce repetition, but each demo's documentation must show the actual client calls in its language.
 
-Use the following repository-relative locations. Only the invoice paths are implemented; reserve the others as each demo is built. Keep native project structure beneath each source folder, including any desktop and worker projects belonging to that demo.
+Use the following repository-relative locations. The invoice demo and employee policy assistant are implemented; reserve the others as each demo is built. Keep native project structure beneath each source folder, including any desktop and worker projects belonging to that demo. Each documentation folder must contain its `README.md` walkthrough and an `application.png` rendering linked from that README.
 
 | # | Source, fixtures, tests, and Docker files | Developer walkthrough |
 |---|---|---|
-| 1 | `src/invoice-exception/` | [docs/demos/invoice-exception.md](demos/invoice-exception.md) |
-| 2 | `src/employee-policy-assistant/` | `docs/demos/employee-policy-assistant.md` |
-| 3 | `src/order-exception-triage/` | `docs/demos/order-exception-triage.md` |
-| 4 | `src/maintenance-terminal/` | `docs/demos/maintenance-terminal.md` |
-| 5 | `src/records-intake/` | `docs/demos/records-intake.md` |
-| 6 | `src/master-data-reconciliation/` | `docs/demos/master-data-reconciliation.md` |
-| 7 | `src/shift-handover/` | `docs/demos/shift-handover.md` |
-| 8 | `src/policy-change-digest/` | `docs/demos/policy-change-digest.md` |
-| 9 | `src/meeting-commitments/` | `docs/demos/meeting-commitments.md` |
-| 10 | `src/quality-investigation/` | `docs/demos/quality-investigation.md` |
-| 11 | `src/engineering-change-review/` | `docs/demos/engineering-change-review.md` |
-| 12 | `src/retrieval-evaluation/` | `docs/demos/retrieval-evaluation.md` |
-| 13 | `src/inventory-replenishment/` | `docs/demos/inventory-replenishment.md` |
+| 1 | `src/invoice-exception/` | [docs/demos/invoice-exception/README.md](demos/invoice-exception/README.md) |
+| 2 | `src/employee-policy-assistant/` | `docs/demos/employee-policy-assistant/README.md` |
+| 3 | `src/order-exception-triage/` | `docs/demos/order-exception-triage/README.md` |
+| 4 | `src/maintenance-terminal/` | `docs/demos/maintenance-terminal/README.md` |
+| 5 | `src/records-intake/` | `docs/demos/records-intake/README.md` |
+| 6 | `src/master-data-reconciliation/` | `docs/demos/master-data-reconciliation/README.md` |
+| 7 | `src/shift-handover/` | `docs/demos/shift-handover/README.md` |
+| 8 | `src/policy-change-digest/` | `docs/demos/policy-change-digest/README.md` |
+| 9 | `src/meeting-commitments/` | `docs/demos/meeting-commitments/README.md` |
+| 10 | `src/quality-investigation/` | `docs/demos/quality-investigation/README.md` |
+| 11 | `src/engineering-change-review/` | `docs/demos/engineering-change-review/README.md` |
+| 12 | `src/retrieval-evaluation/` | `docs/demos/retrieval-evaluation/README.md` |
+| 13 | `src/inventory-replenishment/` | `docs/demos/inventory-replenishment/README.md` |
 
 Each source folder owns its `Dockerfile`, `.dockerignore`, `compose.yaml`, optional `compose.cloud.yaml`, dependency locks, `tests/`, `local.ps1`, and `local.sh`. Write generated exports, journals, manifests, and test reports under ignored `artifacts/<demo-name>/`; keep private oracle and capability mounts separate from those reviewable outputs. Share the repository-root `.env.local` and [`.env.local.sample`](../.env.local.sample) across demos. Exclude secrets and generated artifacts from build contexts. Add each completed walkthrough to the [demo index](demos/README.md), and keep commands runnable from the repository root. Write prose paragraphs on single physical lines.
+
+### Application rendering for every demo
+
+Commit a PNG at `docs/demos/<demo-name>/application.png` and embed it near the beginning of that demo's `README.md` with descriptive alt text and a caption. Show the implemented application using newly generated fictional inputs. Render native windows or terminal interfaces directly where possible; for background workers and batch programs, render a representative terminal run and its actual exported output. Label an illustrated terminal/output composition as a rendering rather than an operating-system screenshot. Use readable text and enough context to show the workflow's purpose. Never include credentials or private inputs. Record a reproducible capture command and refresh the PNG whenever the demonstrated interface or output materially changes. Review the resulting image and run the documentation link checker before committing.
+
+| Demo | Required subject for `application.png` in its documentation folder |
+|---|---|
+| 1. Invoice exception | Batch terminal and generated invoice review packet with deterministic amounts and citations |
+| 2. Employee policy assistant | Desktop question, selected identity/model, phase progress, answer, and source excerpt |
+| 3. Order exception triage | Queue-consumer terminal with a processed exception and duplicate-event disposition |
+| 4. Maintenance terminal | TUI question, applicable manual revision, and inspected source |
+| 5. Records intake | Worker status showing ingest, index verification, pending approval, and activation |
+| 6. Master-data reconciliation | CLI dispute, reviewed correction, and resulting recorded head |
+| 7. Shift handover | Journal CLI with open commitments and a historical view |
+| 8. Policy change digest | Scheduler terminal and generated change-impact digest |
+| 9. Meeting commitments | Console candidate review and approved commitment record |
+| 10. Quality investigation | Batch status and generated evidence packet with missing/conflicting observations |
+| 11. Engineering change review | Local CI command and cited review output with access boundaries |
+| 12. Retrieval evaluation | Evaluation command and measured retrieval/grounding report |
+| 13. Inventory replenishment | CLI briefing with governed counts, cited rows, and completeness status |
 
 Use these implemented files as references, adapting them to each application's language and business cases:
 
@@ -239,7 +261,7 @@ Keep first-run fixtures to tens of records, with an explicit larger stress profi
 
 The walkthrough should move through the same concrete stages:
 
-1. Run the local preflight, generate and verify synthetic fixtures, then start or attach to compatible local Server 1.1.1 and PostgreSQL containers. Verify `GET /version` and record the client commit and image digests. Use the controlled provider for protocol tests and a separate real Ollama container for model-quality tests; configure named providers only where needed.
+1. Run the local preflight, generate and verify synthetic fixtures, then start or attach to compatible local Server 1.1.1 and PostgreSQL containers. Verify `GET /version` and record the client commit and image digests. Use the controlled provider for protocol tests and the three configured online providers for real answer-quality tests; configure named providers only where needed.
 2. Run a separate bootstrap command to apply shapes, providers where required, and versioned runbooks. Provision application identities and credentials.
 3. Load the new inputs, build indexes where applicable, inspect the recorded run, and explicitly approve its cutovers. Check an actual retrieval result; process readiness alone does not prove the corpus is usable.
 4. Run one business case and inspect its output, evidence, and call sequence. For a ledger demo, inspect accepted/disputed status and the recorded head.
@@ -275,11 +297,11 @@ The generated scenarios must cover each proposal's business boundary:
 
 Use the same Linux Compose services and test commands on all three host operating systems. Keep paths repository-relative and pass arguments without shell-specific interpolation; thin `.ps1` and `.sh` wrappers must execute equivalent container commands and failure checks. The host prerequisites are Git and a running local Docker installation with Compose. Put each demo's native language runtime, generators, and test tooling in pinned runner images. Fetch the complete Munarium checkout at the pinned commit during the runner build, as the invoice Dockerfile does, so a second host checkout is unnecessary. Do not change Server or Matrix source. Keep platform-specific build outputs and dependency caches in separate named volumes rather than sharing host-built binaries with Linux containers.
 
-Preflight must verify the Docker context is local, the Linux engine and Compose are available, required ports are free, and adequate memory and disk space are available for the selected profile. During implementation, measure and document CPU, memory, disk, download sizes, and approximate runtime for the smallest complete CPU-only workload. GPU acceleration is optional; the required suite must work without it. Pin image digests and model artifact identities. Check every dependency's architecture support and record the selected platform; qualify native `linux/amd64` and `linux/arm64` where available, and document and test an explicit emulation profile for images unavailable natively, including Apple Silicon. Do not claim cross-platform qualification until runs on Windows, Linux, and macOS are recorded.
+Preflight must verify the Docker context is local, the Linux engine and Compose are available, required ports are free, and adequate memory and disk space are available for the selected profile. During implementation, measure and document CPU, memory, disk, download sizes, and approximate runtime for the smallest complete CPU-only workload. No local completion inference or GPU is required. Pin image digests and record the exact online provider/model identifiers. Check every dependency's architecture support and record the selected platform; qualify native `linux/amd64` and `linux/arm64` where available, and document and test an explicit emulation profile for images unavailable natively, including Apple Silicon. Do not claim cross-platform qualification until runs on Windows, Linux, and macOS are recorded.
 
-Inventory existing containers before provisioning. Reuse a compatible local development service only when explicitly selected, healthy, version-checked, and able to provide isolated test state. Prefer reusing cached images and model downloads while creating fresh project-scoped containers and volumes for qualification. Create any missing service through Compose. Never reset an unrelated database or stop an unrelated container; restart, outage, and corruption tests must use dedicated disposable resources. Attach selected existing services through documented network/endpoint settings, and record their identities in the report.
+Inventory existing containers before provisioning. Reuse a compatible local development service only when explicitly selected, healthy, version-checked, and able to provide isolated test state. Prefer reusing cached images and dependencies while creating fresh project-scoped containers and volumes for qualification. Create any missing service through Compose. Never reset an unrelated database or stop an unrelated container; restart, outage, and corruption tests must use dedicated disposable resources. Attach selected existing services through documented network/endpoint settings, and record their identities in the report.
 
-The base stack contains Server 1.1.1, PostgreSQL with the required extensions, the controlled Ollama-protocol fixture, and separate language test runners. Add real Ollama under a model-quality profile and Matrix with its configured dependencies under the inventory profile. Use service DNS names for container-to-container traffic, including provider endpoints resolved by Server; `localhost` inside a test runner is not Server. Publish only necessary host ports on loopback for native desktop use and diagnostics. Separate generated inputs, private test oracles, outputs, database state, and model caches into appropriate mounts or volumes.
+The base stack contains Server 1.1.1, PostgreSQL with the required extensions, the controlled Ollama-protocol fixture, and separate language test runners. Real AI tests use only OpenAI, Anthropic, and OpenRouter; do not provision Ollama containers or download local completion models. Add Matrix with its configured dependencies under the inventory profile. The lightweight protocol fixture serves canned responses without loading a model. This restriction applies to the new demos; preserve Ollama support in the original web demo. Use service DNS names for container-to-container traffic, including provider endpoints resolved by Server; `localhost` inside a test runner is not Server. Publish only necessary host ports on loopback for native desktop use and diagnostics. Separate generated inputs, private test oracles, outputs, and database state into appropriate mounts or volumes.
 
 Run integration dependencies locally as well. Proposal 3's broker adapter requires a local broker container and synthetic duplicate/redelivery events. Proposals 8 and 9 use a local mail sink if delivery adapters are implemented. ERP and source-control adapters use local contract fixtures that record requests and inject failures; these tests establish the declared adapter contract, not qualification of a live vendor deployment. Proposal 13 requires a real local Matrix container and a separately seeded inventory database. Proposal 5 must exercise a repository-relative host folder mounted into its worker container, testing periodic reconciliation even when file notifications differ across hosts. Proposals 6 and 7 use competing worker containers to exercise write conflicts. Proposal 11 runs its CI executable locally, and proposal 12 executes any tested notebooks headlessly in its Python container.
 
@@ -295,7 +317,7 @@ The sample must use UTF-8 dotenv text with one `KEY=value` assignment per line, 
 # Copy this file to .env.local and enter keys only in that ignored file.
 # Format: one KEY=value per line; leave unused provider values empty.
 # Use single quotes around values containing spaces, #, or $.
-# Required local fixture and Ollama tests do not need provider keys.
+# Controlled fixtures need no keys and run no models; real AI tests use the three online providers.
 
 # OpenAI: consumed by the optional named OpenAI provider configuration.
 OPENAI_API_KEY=
@@ -314,7 +336,7 @@ Document copying the sample from the repository root with `Copy-Item .env.local.
 
 Configure preferred models through `OPENAI_MODEL`, `ANTHROPIC_MODEL`, and `OPENROUTER_MODEL`, using the defaults above. Each demo that uses cloud completion must assign at least two independently asserted business scenarios to each provider. Distinct assignments are sufficient; repeating the full corpus on every provider is optional. Keep the complete controlled corpus as the regression baseline. The invoice-specific `INVOICE_PROVIDER` and `INVOICE_MODEL` settings in the sample support manual single-provider bootstrap; the distributed suite uses the three provider model variables. Add documented, namespaced settings only when another demo needs an equivalent manual selection.
 
-Have the optional cloud-provider Compose profile load `.env.local` explicitly and pass only each configured provider's required variables to Server, where provider `credentialRef` values resolve them. Do not mount the key file into demo applications, fixture generators, or test runners. The default fixture/Ollama profiles must work when `.env.local` is absent or contains no keys. Never print resolved secrets in commands, Compose configuration dumps, logs, or exported run bundles; include checks that `.env.local` is ignored, `.env.local.sample` is tracked, and every sample key placeholder is empty.
+Have the optional cloud-provider Compose profile load `.env.local` explicitly and pass only each configured provider's required variables to Server, where provider `credentialRef` values resolve them. Do not mount the key file into demo applications, fixture generators, or test runners. The default controlled profile must work when `.env.local` is absent or contains no keys. Never print resolved secrets in commands, Compose configuration dumps, logs, or exported run bundles; include checks that `.env.local` is ignored, `.env.local.sample` is tracked, and every sample key placeholder is empty.
 
 ### Credentials, state, and recovery
 
@@ -331,7 +353,7 @@ Resolve model citation labels such as `[collection/chunk_id]` against actual ret
 
 ### Model configuration on Server 1.1.1
 
-For a local-model tutorial, apply a named Ollama configuration with an endpoint reachable from Server, installed models, and explicit tier mappings. Local Ollama may omit `credentialRef`; an authenticated proxy can use a Server-resolved secret reference. Munarium API authentication is still required. Inventory's `credential_ok` means credentials resolve or are unnecessary, not that the endpoint is healthy. Use named provider health to check connectivity and model availability; `/healthai` only probes cloud defaults. Ollama provider embeddings do not replace the index builder's existing local embedder.
+For real AI tutorials, apply named OpenAI, Anthropic, and OpenRouter configurations with Server-resolved credentialRef values, preferred models, and explicit tier mappings. Munarium API authentication is still required. Inventory credential_ok means credentials resolve or are unnecessary, not that the endpoint is healthy. Use named provider health to check connectivity and model availability; /healthai only probes cloud defaults. The keyless fixture uses the Ollama wire protocol with canned responses; it does not run Ollama or perform local model inference.
 
 Set `complete: true` when sending a nonempty session `model_override`, allow its provider reference in the runbook, and teach that Server 1.1.1 applies it to both model query expansion and completion. Without an override, each task retains its configured model. Retrieval-only turns reject nonempty overrides. Capture actual provider/model identities and usage for each paid stage; selecting a higher tier can increase expansion cost too. Existing SDK request fields already express this behavior, so applications should not issue an extra provider call to implement the override.
 
@@ -342,19 +364,18 @@ Provide the following separate actions with equivalent PowerShell and POSIX entr
 | Action | PowerShell from repository root | POSIX from repository root | Coverage and prerequisites |
 |---|---|---|---|
 | `test` | `./src/invoice-exception/local.ps1 -Action test` | `sh src/invoice-exception/local.sh test` | Keyless build, lint/unit checks, generated fixtures, real-Server controlled integrations, chosen SDK conformance, failure recovery, and the complete business acceptance corpus |
-| `cloud` | `./src/invoice-exception/local.ps1 -Action cloud` | `sh src/invoice-exception/local.sh cloud` | Explicit optional run using all three configured providers, preferred models, and at least two business tests per provider |
-| `ollama` | `./src/invoice-exception/local.ps1 -Action ollama` | `sh src/invoice-exception/local.sh ollama` | Separate keyless real local-model acceptance over the complete corpus after model provisioning |
+| `cloud` | `./src/invoice-exception/local.ps1 -Action cloud` | `sh src/invoice-exception/local.sh cloud` | Explicit real-AI qualification using all three configured online providers, preferred models, and at least two business tests per provider |
 | `stop` | `./src/invoice-exception/local.ps1 -Action stop` | `sh src/invoice-exception/local.sh stop` | Stop this project's containers while retaining volumes, journals, and artifacts |
 
-The default `test` action must work without `.env.local` and must not start paid calls merely because keys exist. A controlled pass establishes application and protocol behavior; report real-model qualification separately. Complete local qualification requires both controlled tests and applicable local-model acceptance, plus Matrix checks for proposal 13. Record any unexecuted profile or host platform as pending. Smaller development commands are useful but do not satisfy the complete corpus requirement.
+The default `test` action must work without `.env.local` and must not start paid calls merely because keys exist. A controlled pass establishes application and protocol behavior; report real-model qualification separately. Complete local qualification requires both controlled tests and the three-provider cloud acceptance suite for demos that use AI, plus Matrix checks for proposal 13. Record any unexecuted profile or host platform as pending. Smaller development commands are useful but do not satisfy the complete corpus requirement.
 
 Begin with the merged client qualification assets: `clients/python/conformance/compose.server-111.yaml`, `ollama_fixture.py`, and `test_server_111.py` in the Munarium repository, and the invoice container harness linked above. Supply the fixture endpoint variables explicitly using container-reachable addresses; an opt-in test skip is not a pass. For each demo, run its chosen client's documented build, lint, unit, and REST/gRPC conformance checks; Python demos also use the sync/async release-specific routing and REST streaming checks. Keep each language's native test tooling in its runner. Recheck compatibility with `clients/check_compatibility.py` when changing the pinned client revision, and preserve documented transport gaps.
 
 Every demo needs a real-Server smoke run and all of its named acceptance cases against freshly generated business inputs. Verify ingestion, retrieval, and intended cutovers before judging business results. Exercise access denial, expired credentials, provider unavailability, interrupted streams, duplicate work, worker restarts, and applicable head conflicts. Use a local fault proxy or controlled fixture for network failures and dedicated containers for service restarts; preserve checkpoints and verify recovery after the dependency returns. Test time-sensitive cases with explicit logical time where supported and bounded waits for real expiry behavior.
 
-The controlled provider returns canned responses, so separately run answer-quality and grounding cases against pinned real models in the local Ollama container. Provision all completion models and index-embedding assets during setup and verify cached availability before testing. Cloud-provider extensions must have local protocol fixtures; real cloud calls are optional and excluded from the required suite. After initial dependency/model provisioning, the required tests and synthetic generator must run without external services. Record repeated-run quality results with declared acceptance thresholds; identical synthetic inputs do not imply identical model prose or latency across hardware.
+The controlled provider returns canned responses, so separately run answer-quality and grounding cases against the preferred OpenAI, Anthropic, and OpenRouter models. Do not run these new demo tests against Ollama or provision local completion models. After initial dependency provisioning, the controlled suite and synthetic generator must run using local containers without external services. Real AI qualification requires Internet access and the configured provider keys; a keyless pass alone does not establish answer quality. Record exact provider/model identifiers, usage, quality results, and declared acceptance thresholds; identical synthetic inputs do not imply identical model prose or latency.
 
-For the optional cloud action, keep an explicit provider-to-case assignment in source and assert every assigned case against the private oracle. The invoice reference distributes eight tests as follows:
+For the explicit cloud action, keep an explicit provider-to-case assignment in source and assert every assigned case against the private oracle. The invoice reference distributes eight tests as follows:
 
 | Provider and preferred model | Generated cases | Business assertions |
 |---|---|---|
@@ -368,7 +389,9 @@ Give every cloud invocation a fresh run ID so saved completions cannot satisfy a
 
 Export a local run bundle with fixture manifests, repository revisions, image/model identities, host OS and architecture, exact commands, test counts, machine-readable test reports, logs, business outputs, and quality measurements. Fail the coordinator on a failed test, missing required dependency, unexecuted required suite, or unexpected skip. Report documented upstream chronology skips separately with their reasons; never count them as passes. Retain failed-run evidence before cleanup, and remove only resources owned by that test project. A clean-room check on each supported OS must regenerate matching fixture hashes and pass the same required assertions from a fresh checkout and empty application state; retain those reports as the evidence for reproducibility.
 
-The post-reorganization invoice run on 2026-09-10 is the current reference: 22 unit and seven real-Server integration tests passed; 175 Python SDK unit/conformance tests passed with four documented chronology skips; all 20 generated controlled cases passed; a repeated batch reused all 20 saved responses without new completions; and eight fresh cloud cases passed across the three providers. Documentation links, public-material and license checks, and wrapper syntax checks also passed. The [invoice walkthrough](demos/invoice-exception.md) records commands, report locations, and limits. These results qualify Docker Desktop on Windows with Linux/AMD64 containers. Real local Ollama, native Linux and macOS hosts, and ARM64 remain pending; the other demos must record their own results.
+The earlier post-reorganization invoice run on 2026-09-10 is a successful reference: 22 unit and seven real-Server integration tests passed; 175 Python SDK unit/conformance tests passed with four documented chronology skips; all 20 generated controlled cases passed; a repeated batch reused all 20 saved responses without new completions; and eight fresh cloud cases passed across the three providers. Documentation links, public-material and license checks, and wrapper syntax checks also passed. The [invoice walkthrough](demos/invoice-exception/README.md) records commands, report locations, and limits. These results qualify Docker Desktop on Windows with Linux/AMD64 containers. Native Linux and macOS hosts and ARM64 remain pending; the other demos must record their own results.
+
+The later invoice recheck after removing real Ollama testing passed the same controlled checks and seven of eight cloud cases. OpenRouter case-005 remained uncertain and had no recoverable completed transcript; the coordinator correctly failed and retained the journal and initial failure reports. This run does not replace the earlier successful cloud qualification. The employee policy assistant passed all six online cases in its latest run. Preserve this distinction between passed, failed, recovered, and unresolved outcomes in every demo; never count missing packets as successful cases.
 
 Implement Wave 1 one demo at a time. For each application, create the source folder and walkthrough, implement deterministic fixtures and the complete controlled suite, then run applicable real-model profiles using the shared configuration. Verify documentation links and both entry points after any move, rerun affected tests, and record passed, failed, skipped, and pending coverage before proceeding to the next demo. Preserve existing journals and failed-run reports; make destructive volume reset an explicit operation scoped to that demo's Compose project.
 
@@ -383,7 +406,7 @@ These paths are relative to the reviewed `munarium` repository, not this demo re
 | Language surface, transport gaps, installation | `clients/README.md`; `clients/{python,dotnet,java,rust}/README.md`; `clients/compatibility.json` |
 | Server 1.1.1 alignment and recorded validation | `clients/docs/guides/server-1.1.1.md`; `clients/CHANGELOG.md`; `clients/check_compatibility.py` |
 | Repeatable provider and routing qualification | `clients/python/conformance/compose.server-111.yaml`; `clients/python/conformance/ollama_fixture.py`; `clients/python/conformance/test_server_111.py` |
-| Local providers, health, tiers, and model routing | `clients/docs/guides/providers.md`; `server/docs/guides/ollama.md` |
+| Named providers, health, tiers, and model routing | `clients/docs/guides/providers.md` |
 | Sessions, streaming, verification, transcript recovery | `clients/docs/guides/sessions.md`; `clients/python/src/munarium_client/rest_planes.py` |
 | Writes, disputes, corrections, retry limits | `clients/docs/guides/write-loop.md`; `clients/docs/concepts/fact-ledger.md` |
 | Historical reads and composition budgets | `clients/docs/guides/pins.md` |

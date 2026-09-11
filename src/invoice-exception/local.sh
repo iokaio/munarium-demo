@@ -4,7 +4,7 @@ set -eu
 cd "$(dirname "$0")"
 action=${1:-test}
 project=${2:-invoice-wave1}
-case "$action" in test|cloud|ollama|stop) ;; *) echo 'Use test, cloud, ollama, or stop.' >&2; exit 2;; esac
+case "$action" in test|cloud|stop) ;; *) echo 'Use test, cloud, or stop.' >&2; exit 2;; esac
 case "$project" in invoice-*) ;; *) echo 'Use a project beginning invoice-.' >&2; exit 2;; esac
 case "$project" in *[!a-z0-9-]*) echo 'Project must contain lowercase letters, digits, and hyphens.' >&2; exit 2;; esac
 endpoint=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
@@ -13,8 +13,6 @@ case "$endpoint" in unix://*|npipe://*) ;; *) echo 'Select a local Docker contex
 compose() {
     if [ "$action" = cloud ]; then
         docker compose --env-file ../../.env.local -p "$project" -f compose.yaml -f compose.cloud.yaml "$@"
-    elif [ "$action" = ollama ]; then
-        docker compose --env-file ../../.env.local.sample -p "$project" -f compose.yaml --profile local-model "$@"
     else
         docker compose --env-file ../../.env.local.sample -p "$project" -f compose.yaml "$@"
     fi
@@ -44,13 +42,7 @@ if [ "$action" = cloud ]; then
     echo "Cloud reports: artifacts/invoice-exception/cloud/$cloud_run"
     exit "$cloud_failed"
 fi
-if [ "$action" = ollama ]; then
-    compose up -d ollama
-    compose exec -T ollama ollama pull qwen3:1.7b
-    compose run --rm --no-deps bootstrap bootstrap --approve --provider ollama --model qwen3:1.7b
-else
-    compose run --rm --no-deps bootstrap
-fi
+compose run --rm --no-deps bootstrap
 if [ "$action" = test ]; then
     compose run --rm --no-deps tests test
     compose run --rm --no-deps tests qualify

@@ -1,6 +1,16 @@
 # Invoice exception packet
 
-This Python batch application compares fictional invoices with purchase orders and receipts, then uses the official Munarium client to request a cited explanation from Server 1.1.1. It writes Markdown review packets, JSON evidence sidecars, and a CSV processing summary. Integer arithmetic decides amounts and exceptions; model output cannot authorize payment or replace the calculated delivery status. This is the first Wave 1 implementation; the other Wave 1 demos have not been started.
+![Invoice batch terminal and generated review packet](application.png)
+
+Rendered terminal and review-packet preview using the demo's generated fictional inputs; this is a CLI output illustration.
+
+To regenerate the PNG, first run this demo's controlled tests to produce a review packet, then build the shared headless renderer with `docker build -t munarium-policy-runner:local src/employee-policy-assistant`. From the repository root, the following command works in PowerShell and POSIX shells; it selects the first sorted controlled `case-001.md`, and `INVOICE_PACKET_PATH` can select another file inside the `/invoice` mount. Review the resulting `artifacts/employee-policy-assistant/previews/invoice-application.png` and copy it to `docs/demos/invoice-exception/application.png`. This renderer is documentation tooling; invoice runtime and tests remain independent of the desktop demo.
+
+```sh
+docker run --rm --network none --mount "type=bind,source=$PWD/artifacts/invoice-exception,target=/invoice,readonly" --mount "type=bind,source=$PWD/artifacts/employee-policy-assistant,target=/work" -e POLICY_REPORT_DIR=/work/previews --entrypoint sh munarium-policy-runner:local /app/coordinator.sh preview
+```
+
+This Python batch application compares fictional invoices with purchase orders and receipts, then uses the official Munarium client to request a cited explanation from Server 1.1.1. It writes Markdown review packets, JSON evidence sidecars, and a CSV processing summary. Integer arithmetic decides amounts and exceptions; model output cannot authorize payment or replace the calculated delivery status. This is the first Wave 1 implementation; the employee policy desktop assistant is the second.
 
 ## Run the local tests
 
@@ -18,7 +28,7 @@ sh src/invoice-exception/local.sh test
 
 Both entry points check for a local Linux Docker engine, build the test image, run unit checks, start the isolated services, generate fixtures, bootstrap and approve the case indexes, run application integrations and Python SDK conformance, then export and assess all 20 review packets. Any failed command or unexpected test skip stops the workflow with a nonzero exit code. The four upstream chronology skips are reported separately and do not count as passes. Container names and volumes belong to the `invoice-wave1` Compose project. Existing compatible cached images are reused; unrelated containers are untouched. No service publishes a host port. The included Munarium and database credentials are public, local-test-only values.
 
-The containerized suite is intended to run identically on Windows, Linux, and macOS. Recorded validation on this checkout uses Docker Desktop on Windows with Linux/AMD64 containers. Native Linux, macOS, ARM64, and additional provider/model combinations must be qualified separately before claiming those results. Use the same seed and compare manifest hashes; timing and generated prose can vary with hardware. The controlled workload needs no GPU. Allow space for the Python runner, Server, PostgreSQL, and their build caches; local Ollama adds a separate model download and inference memory requirement.
+The containerized suite is intended to run identically on Windows, Linux, and macOS. Recorded validation on this checkout uses Docker Desktop on Windows with Linux/AMD64 containers. Native Linux, macOS, ARM64, and additional provider/model combinations must be qualified separately before claiming those results. Use the same seed and compare manifest hashes; timing and generated prose can vary with hardware. The controlled workload needs no GPU. Allow space for the Python runner, Server, PostgreSQL, and their build caches. Real AI acceptance uses the three configured online providers; no local completion model is loaded.
 
 Revalidated on 2026-09-10 after moving the source to `src/invoice-exception/` and documentation to `docs/demos/`: 29 application tests passed, including 22 unit cases; 175 Python client unit/conformance tests passed with four documented chronology skips; all 20 controlled invoice packets passed their independent acceptance checks. Repeating the batch in a new container reused all 20 saved responses without another completion. Documentation links, the public-material scan, license checks, and both wrapper syntax checks passed. The application tests took about 7 seconds and SDK tests about 9 seconds after setup. The runner image was approximately 329 MB; the four idle service containers used approximately 125 MiB combined, excluding Docker's VM, build caches, active test runners, and real models. These observations are not measured minimum host requirements or production performance figures.
 
@@ -30,11 +40,11 @@ The distributed cloud suite passed both before and after reorganization. The fre
 
 | Step | Code | Lesson |
 |---|---|---|
-| Generate inputs | [fixtures.py](../../src/invoice-exception/invoice_demo/fixtures.py) | Stable seed, fixed logical date, hashes, and a separate oracle |
-| Calculate discrepancies | [accounting.py](../../src/invoice-exception/invoice_demo/accounting.py) | Integer cents, receipt completeness, and batch-wide duplicate detection |
-| Publish evidence | [server.py](../../src/invoice-exception/invoice_demo/server.py), [shape](../../src/invoice-exception/shapes/documents.yaml), [runbook](../../src/invoice-exception/runbooks/invoice.yaml) | Apply, ingest, inspect, approve only the intended cutover, mint a scoped capability |
-| Process and recover | [batch.py](../../src/invoice-exception/invoice_demo/batch.py) | Session isolation, durable turn intent, transcript reconciliation, and repeatable local exports |
-| Assess results | [quality.py](../../src/invoice-exception/invoice_demo/quality.py), [tests](../../src/invoice-exception/tests/test_integration.py) | Independent arithmetic oracle, source resolution, missing-evidence handling, and failure cases |
+| Generate inputs | [fixtures.py](../../../src/invoice-exception/invoice_demo/fixtures.py) | Stable seed, fixed logical date, hashes, and a separate oracle |
+| Calculate discrepancies | [accounting.py](../../../src/invoice-exception/invoice_demo/accounting.py) | Integer cents, receipt completeness, and batch-wide duplicate detection |
+| Publish evidence | [server.py](../../../src/invoice-exception/invoice_demo/server.py), [shape](../../../src/invoice-exception/shapes/documents.yaml), [runbook](../../../src/invoice-exception/runbooks/invoice.yaml) | Apply, ingest, inspect, approve only the intended cutover, mint a scoped capability |
+| Process and recover | [batch.py](../../../src/invoice-exception/invoice_demo/batch.py) | Session isolation, durable turn intent, transcript reconciliation, and repeatable local exports |
+| Assess results | [quality.py](../../../src/invoice-exception/invoice_demo/quality.py), [tests](../../../src/invoice-exception/tests/test_integration.py) | Independent arithmetic oracle, source resolution, missing-evidence handling, and failure cases |
 
 The generator produces 20 cases: three each of clean matches, partial receipts, missing receipts, price differences, incorrect totals, and missing orders, plus a duplicate pair. Each case has a text invoice, available structured order/receipt exports, and a fictional purchasing policy. The generator uses seed `111`, a fixed `2026-01-15` logical date, UTF-8 and normalized newlines. `manifest.json` records every input hash. The answer key is generated into a separate `oracle` volume; neither the batch, bootstrap, Server, nor provider fixture can read that volume. The controlled provider constructs responses from its request, not from the oracle, and proves protocol wiring rather than AI quality.
 
@@ -54,7 +64,7 @@ If a capability expires, rerun bootstrap to mint a fresh capability for the same
 
 ## Real AI-provider tests and local keys
 
-The repository's [`.env.local.sample`](../../.env.local.sample) documents the dotenv format, provider-key placeholders, and explicit provider/model selection. Copy it to `.env.local` only if that local file does not exist:
+The repository's [`.env.local.sample`](../../../.env.local.sample) documents the dotenv format, provider-key placeholders, and explicit provider/model selection. Copy it to `.env.local` only if that local file does not exist:
 
 ```powershell
 if (-not (Test-Path .env.local)) { Copy-Item .env.local.sample .env.local }
@@ -88,7 +98,7 @@ Each invocation has a fresh run ID under `artifacts/invoice-exception/cloud/`, w
 
 Model query expansion is absent from this runbook. Completion output is capped at 768 tokens per initial call; Server may make a truncation retry with a larger budget. Provider token usage is reported, not converted to currency. The suite uses only generated fictional inputs and incurs provider usage. Controlled outage tests remain part of the keyless suite; they are not repeated against paid providers. The full 20-case controlled suite remains separate from the eight-case distributed cloud suite.
 
-For a CPU-only local-model pass without keys, use `-Action ollama` or `local.sh ollama`. This starts local Ollama, downloads `qwen3:1.7b`, and assesses all 20 packets. The current model tag is a starting configuration, not a quality guarantee; record and pin the downloaded model digest during real-model qualification. A controlled suite pass alone is not a full real-model acceptance pass. Local Ollama qualification remains pending and is separate from the distributed cloud suite.
+Real AI acceptance uses only OpenAI, Anthropic, and OpenRouter through the explicit cloud action. The default controlled fixture returns canned protocol responses and loads no model. Run both test and cloud for complete application and AI qualification; no Ollama container or model download is required. Ollama support in the original web demo is unchanged.
 
 ## Smaller runs, cleanup, and extending the corpus
 
@@ -98,4 +108,8 @@ Use `local.ps1 -Action stop` or `local.sh stop` to stop this project's container
 
 For another seed or larger workload, choose a fresh `invoice-...` project, run its generator with `generate --seed 112 --groups 10`, and retain its manifest and oracle. The generator refuses to overwrite nonempty directories or silently change an existing profile. Extend the generator's declared scenario rules and its independently authored expectations together, add unit/integration cases, then inspect real model output. Do not ingest generated explanations or answer keys as purchasing policy.
 
-The Python source and original templates in src/invoice-exception use Apache-2.0. Runtime dependency versions are recorded in [requirements.lock](../../src/invoice-exception/requirements.lock); their upstream licenses and notices are retained in the installed distributions and pinned Munarium checkout. All business inputs are newly generated fictional material, with no reuse of the web demo or its bundled datasets.
+The Python source and original templates in src/invoice-exception use Apache-2.0. Runtime dependency versions are recorded in [requirements.lock](../../../src/invoice-exception/requirements.lock); their upstream licenses and notices are retained in the installed distributions and pinned Munarium checkout. All business inputs are newly generated fictional material, with no reuse of the web demo or its bundled datasets.
+
+## Online-only workflow recheck
+
+After removing real local-model testing on 2026-09-10, all 29 application tests, 175 SDK tests (four documented chronology skips), and 20 controlled invoice cases passed again. The fresh cloud run 52f7978dd3b74b44882ff4550fd582a0 passed both OpenAI cases, both Anthropic cases, and three of four OpenRouter cases. OpenRouter case-005 remained uncertain with no recoverable completed transcript; its packet was absent and the cloud action correctly failed. Explicit reconciliation reused the three completed packets without another AI call and preserved the unresolved case. Initial failed reports remain as tests-initial.xml and quality-initial.json in that run's OpenRouter directory. This latest run is not a complete cloud pass; the earlier successful run above remains historical evidence. No paid turn was blindly retried.

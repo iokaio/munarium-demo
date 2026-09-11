@@ -24,7 +24,8 @@
 - [Customize the demo](guides/customize-demo.md)
 - [Other demo plans: non-web enterprise applications](other-demo-plans.md)
 - [Demo application documentation](demos/README.md)
-- [Invoice exception batch: first Wave 1 implementation](demos/invoice-exception.md)
+- [Invoice exception batch: first Wave 1 implementation](demos/invoice-exception/README.md)
+- [Employee policy assistant: C# native desktop](demos/employee-policy-assistant/README.md)
 
 ## Operate
 

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 [CmdletBinding()]
 param(
-    [ValidateSet('test', 'cloud', 'ollama', 'stop')][string]$Action = 'test',
+    [ValidateSet('test', 'cloud', 'stop')][string]$Action = 'test',
     [string]$Project = 'invoice-wave1'
 )
 $ErrorActionPreference = 'Stop'
@@ -17,7 +17,6 @@ try {
         if (-not (Test-Path -LiteralPath '../../.env.local')) { throw 'Copy .env.local.sample to .env.local and supply all three provider keys and preferred models.' }
         $composeOptions = @('compose', '--env-file', '../../.env.local', '-p', $Project, '-f', 'compose.yaml', '-f', 'compose.cloud.yaml')
     }
-    if ($Action -eq 'ollama') { $composeOptions += @('--profile', 'local-model') }
     function Invoke-InvoiceCompose {
         param([string[]]$CommandArgs)
         & docker @composeOptions @CommandArgs
@@ -54,13 +53,7 @@ try {
         if ($cloudFailed) { throw 'One or more cloud providers failed acceptance.' }
         return
     }
-    if ($Action -eq 'ollama') {
-        Invoke-InvoiceCompose @('up', '-d', 'ollama')
-        Invoke-InvoiceCompose @('exec', '-T', 'ollama', 'ollama', 'pull', 'qwen3:1.7b')
-        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'bootstrap', 'bootstrap', '--approve', '--provider', 'ollama', '--model', 'qwen3:1.7b')
-    } else {
-        Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'bootstrap')
-    }
+    Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'bootstrap')
     if ($Action -eq 'test') {
         Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'test')
         Invoke-InvoiceCompose @('run', '--rm', '--no-deps', 'tests', 'qualify')

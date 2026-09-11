@@ -1,0 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../Policy.Core/Policy.Core.csproj" /></ItemGroup>
+</Project>

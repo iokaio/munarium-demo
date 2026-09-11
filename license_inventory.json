@@ -225,6 +225,36 @@
       "path": "docs/images/overview.png",
       "license": "Apache-2.0",
       "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/invoice-exception/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/employee-policy-assistant/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Core/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Desktop/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/Policy.Harness/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/employee-policy-assistant/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
     }
   ],
   "third_party_notices": "THIRD_PARTY_NOTICES.md"

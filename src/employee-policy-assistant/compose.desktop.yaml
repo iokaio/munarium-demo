@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Explicit native desktop access; default tests publish no ports.
+services:
+  server:
+    ports: ['127.0.0.1:18082:8080']
