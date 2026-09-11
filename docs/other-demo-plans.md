@@ -207,6 +207,8 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Acceptance.** No secrets or denied sources reach the artifact. Findings cite retrieved requirements. Deterministic failures can fail CI; model suggestions are advisory by default, with a distinct exit status for unavailable or unverified analysis. A failed network call does not cause blind turn replay.
 
+**Implementation status.** Engineering change review is implemented in [its source folder](../src/engineering-change-review) and [walkthrough](demos/engineering-change-review/README.md). Controlled and fresh-checkout qualification passed all 25 application checks and 79 official Rust client checks. All eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls. Deterministic CI failures, advisory findings and unavailable analysis have separate outcomes. The remaining planned application is the Matrix-backed inventory replenishment briefing.
+
 ## Optional extension: complete structured evidence
 
 ### 13. Inventory replenishment briefing — Python CLI, then Java
