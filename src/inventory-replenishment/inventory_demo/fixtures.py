@@ -39,18 +39,30 @@ def save(path, value):
     write(path, encode(value))
 
 
-def generate(inputs, oracle, seed=None):
+def profile_settings(profile):
+    return read(Path(__file__).resolve().parents[1] / "fixture-profiles.json")[profile]
+
+
+def generate(inputs, oracle, seed=None, profile="default"):
     inputs, oracle = Path(inputs), Path(oracle)
-    rng = random.Random(13091)
+    config = profile_settings(profile)
+    if (inputs / "manifest.json").exists():
+        prior = read(inputs / "manifest.json")
+        if prior["profile"] != profile or prior["seed"] != config["seed"]:
+            raise ValueError("Use empty state for a different profile")
+    rng = random.Random(config["seed"])
     rows, expected, cases = [], {}, {}
     for number in range(1, 9):
         case = f"case-{number:03}"
         cases[case] = {"warehouse": case, "as_of": "2026-09-11", "max_age_days": 2}
         selected = []
-        for index in range(1, 6):
+        for index in range(1, config["rows_per_warehouse"] + 1):
             sku = f"SKU-{number:03}-{index}"
             level = rng.randrange(20, 50)
-            count = level - index if index <= number % 3 + 1 else level + index
+            selected_row = index <= number % 3 + 1 or (
+                profile == "stress" and number != 1 and index % 3 == 0
+            )
+            count = max(0, level - index) if selected_row else level + index
             constraint = "supplier_review" if index % 2 else "quality_hold"
             row = [case, sku, count, level, constraint, "2026-09-11", False]
             rows.append(row)
@@ -64,6 +76,7 @@ def generate(inputs, oracle, seed=None):
                         "observed_on": "2026-09-11",
                     }
                 )
+        selected.sort(key=lambda row: row["sku"])
         expected[case] = {"rows": selected, "count": len(selected)}
         write(
             inputs / case / "procedure.md",
@@ -109,10 +122,14 @@ INSERT INTO stock VALUES
     save(
         inputs / "manifest.json",
         {
-            "generator": "inventory-v1",
-            "seed": 13091,
+            "generator": "inventory-v2",
+            "seed": config["seed"],
+            "profile": profile,
+            "record_counts": {"warehouses": len(cases), "rows": len(rows), "documents": len(files)},
+            "timezone": "UTC",
+            "locale": "invariant",
             "seed_sql_hash": digest(sql.encode()),
-            "template_revision": 1,
+            "template_revision": "office-stock-v1",
             "logical_time": "2026-09-11T00:00:00Z",
             "cases": cases,
             "files": files,
@@ -124,6 +141,13 @@ INSERT INTO stock VALUES
 def verify(inputs):
     inputs = Path(inputs)
     manifest = read(inputs / "manifest.json")
+    config = profile_settings(manifest["profile"])
+    if (
+        manifest["generator"] != "inventory-v2"
+        or manifest["seed"] != config["seed"]
+        or manifest["record_counts"]["rows"] != 8 * config["rows_per_warehouse"] + 1
+    ):
+        raise ValueError("Unexpected fixture profile")
     for name, sha in manifest["files"].items():
         if (
             Path(name).is_absolute()

@@ -1,0 +1,5 @@
+{
+  "default": {"seed": 13091, "rows_per_warehouse": 5},
+  "heldout": {"seed": 93091, "rows_per_warehouse": 5},
+  "stress": {"seed": 103091, "rows_per_warehouse": 50}
+}

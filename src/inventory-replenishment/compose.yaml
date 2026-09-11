@@ -105,7 +105,7 @@ services:
     command: [unit]
   generator:
     <<: *runner
-    environment: {}
+    environment: {DEMO_PROFILE: '${DEMO_PROFILE:-default}'}
     network_mode: none
     volumes: [inputs:/inputs, oracle:/oracle, seed:/seed]
     command: [generate]

@@ -59,6 +59,8 @@ def ready():
 def bootstrap(inputs, credentials, work, provider, model):
     inputs, credentials, work = Path(inputs), Path(credentials), Path(work)
     manifest = verify(inputs)
+    if provider != "fixture" and manifest["profile"] != "default":
+        raise ValueError("Online qualification requires the default profile")
     ready()
     revision = digest((inputs / "manifest.json").read_bytes())[:12]
     namespace = (

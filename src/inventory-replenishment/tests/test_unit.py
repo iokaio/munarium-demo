@@ -6,10 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from inventory_demo.fixtures import CLOUD_CASES, generate, verify
+from inventory_demo.fixtures import CLOUD_CASES, generate, read, verify
 
 
-def test_generator_two_independent_processes(tmp_path):
+@pytest.mark.parametrize(
+    "profile,rows,selected,level",
+    [("default", 41, 3, "37"), ("heldout", 41, 3, "48"), ("stress", 401, 18, "44")],
+)
+def test_generator_two_independent_processes(tmp_path, profile, rows, selected, level):
     for name in ("a", "b"):
         subprocess.run(
             [
@@ -17,6 +21,8 @@ def test_generator_two_independent_processes(tmp_path):
                 "-m",
                 "inventory_demo",
                 "generate",
+                "--profile",
+                profile,
                 "--inputs",
                 str(tmp_path / name),
                 "--oracle",
@@ -27,6 +33,7 @@ def test_generator_two_independent_processes(tmp_path):
                 str(tmp_path / "work"),
             ],
             check=True,
+            timeout=30,
         )
     for suffix in ("", "-oracle", "-seed"):
 
@@ -37,9 +44,26 @@ def test_generator_two_independent_processes(tmp_path):
             }
 
         assert tree("a") == tree("b")
-    (Path(os.environ["INVENTORY_REPORT_DIR"]) / "reproducible-manifest.json").write_bytes(
-        (tmp_path / "a/manifest.json").read_bytes()
+    manifest = verify(tmp_path / "a")
+    assert manifest["record_counts"]["rows"] == rows
+    assert (tmp_path / "a-seed/seed.sql").read_text().count("('case-") == rows
+    expected = read(tmp_path / "a-oracle/expected.json")
+    assert len(expected) == 8 and expected["case-001"]["count"] == 2
+    assert expected["case-002"]["count"] == selected
+    assert expected["case-001"]["rows"][0]["reorder_level"] == level
+    with pytest.raises(ValueError, match="empty state"):
+        generate(
+            tmp_path / "a",
+            tmp_path / "a-oracle",
+            tmp_path / "a-seed",
+            "heldout" if profile == "default" else "default",
+        )
+    assert expected["case-002"]["rows"] == sorted(
+        expected["case-002"]["rows"], key=lambda row: row["sku"]
     )
+    (
+        Path(os.environ["INVENTORY_REPORT_DIR"]) / f"reproducible-{profile}-manifest.json"
+    ).write_bytes((tmp_path / "a/manifest.json").read_bytes())
 
 
 def test_tamper_rejected(tmp_path):

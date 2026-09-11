@@ -70,3 +70,25 @@ The official Matrix Dockerfile targets Linux/AMD64. Native Linux/macOS hosts and
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/inventory-replenishment/fixture-profiles.json) select `default` (seed 13091, 41 database rows), `heldout` (seed 93091, 41 rows with independently generated stock levels), or `stress` (seed 103091, 401 rows: 50 per warehouse plus the restricted sentinel). Stress returns 17–18 governed rows in each of seven warehouses, exercising the application's two-row evidence pages; the first warehouse retains two selected rows for the explicit contract-verification question. All eight warehouses are independently checked against private exact rows/counts and grounded row citations. Selected rows are sorted by SKU to match the declared SQL ordering.
+
+Manifests record profile, seed, generator/template revisions, warehouse/row/document counts, logical date, timezone, locale, procedure hashes and the SQL seed hash. Two separate network-disabled Python processes reproduce every public input, private oracle and SQL byte for each profile. Generation refuses a different profile in existing state. Raw stock rows and the private oracle remain outside the application mount. Online runs require the default profile.
+
+Run `./tools/measure_demo.ps1 -Demo inventory-replenishment -Project inventory-heldout -Profile heldout`, or `sh tools/measure_demo.sh inventory-replenishment inventory-stress stress`, with new project state.
+
+All profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `aaee95564e114a52ab8248f1cd42e9e6` | 30 | 108.84 s | 117.70% | 292,508,659 bytes |
+| Stress, POSIX | `20260911T094927Z-77ede71f8d622248` | 30 | 108 s | 115.24% | 298,962,644 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T095023Z-132aa9c88610bb6d` | 30 | 151 s | 107.68% | 286,707,937 bytes |
+
+Every profile also passed Ruff formatting/lint, 175 Server SDK checks with the four documented chronology skips, and 20 Matrix SDK checks including the live service test. Stress independently verified all 126 selected rows across eight warehouses. Final source matches fresh-checkout snapshot `3323de2ab9c8e59b2ca801aa78702f0f0559d16a`, tested with empty project state. Test IDs are `74f76d093bc94352abf07927a5654359` (held-out), `20260911T094928Z-1eead84b11df0993` (stress), and `20260911T095026Z-74cff75da810d9ac` (fresh default). Online run `824f35179e0a4e67a8d5a35afc491881` passed eight fresh cases: three OpenAI, three Anthropic and two OpenRouter, with 60 seconds before each OpenRouter case. No local model inference ran.
+
+Initial WSL measurement `20260911T094918Z-8e459c0adbade82a` stopped before testing because Docker's existing credential helper failed while resolving the public Dockerfile frontend. Its failed report is retained. The successful retry set `DOCKER_CONFIG` to a separate temporary directory containing an empty `config.json` (`{}`), allowing anonymous public-image resolution without changing the user's Docker configuration. The checkout contained no private environment file.
+
+Held-out retained volumes occupy 151,641,929 logical bytes; stress occupies 151,923,882 bytes. The development runner is 380,965,901 bytes unpacked and the pinned Matrix runtime is 28,185,690 bytes unpacked. Reports remain under `artifacts/inventory-replenishment/`. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified. Matrix's upstream pinned build still selects AMD64 explicitly.

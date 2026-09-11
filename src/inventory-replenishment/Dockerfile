@@ -16,4 +16,5 @@ COPY tests /app/tests
 COPY pytest.ini /app/pytest.ini
 COPY ruff.toml /app/ruff.toml
 COPY support.py /app/support.py
+COPY fixture-profiles.json /app/fixture-profiles.json
 ENTRYPOINT ["python", "-m", "inventory_demo"]
