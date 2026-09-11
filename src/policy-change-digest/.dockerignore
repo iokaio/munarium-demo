@@ -1,0 +1,12 @@
+*
+!Dockerfile
+!requirements.lock
+!digest_demo/**
+!shapes/**
+!runbooks/**
+!tests/**
+!pytest.ini
+!ruff.toml
+**/__pycache__
+
+!support.py
