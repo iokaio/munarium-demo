@@ -108,7 +108,20 @@ pub fn events(path: impl AsRef<Path>) -> Result<Vec<Event>> {
     }
     Ok(rows)
 }
-pub fn generate(inputs: &str, oracle: &str) -> Result<()> {
+pub fn generate(inputs: &str, oracle: &str, profile: &str) -> Result<()> {
+    let profiles = read("/app/fixture-profiles.json")?;
+    let config = &profiles[profile];
+    let seed = config["seed"]
+        .as_u64()
+        .ok_or_else(|| anyhow::anyhow!("Unknown fixture profile"))?;
+    let count = config["shifts"].as_u64().unwrap() as usize;
+    if Path::new(&format!("{inputs}/manifest.json")).exists() {
+        let prior = read(format!("{inputs}/manifest.json"))?;
+        ensure!(
+            prior["profile"] == profile && prior["seed"] == seed,
+            "Use empty state for a different profile"
+        );
+    }
     let mut expected = BTreeMap::new();
     let mut hashes = BTreeMap::new();
     let milestones = [
@@ -121,7 +134,15 @@ pub fn generate(inputs: &str, oracle: &str) -> Result<()> {
         "delivery desk checked",
         "archive desk checked",
     ];
-    for (i, milestone) in milestones.iter().enumerate() {
+    for i in 0..count {
+        let suffix = if profile == "default" {
+            String::new()
+        } else {
+            format!(" ({seed}-{})", i + 1)
+        };
+        let milestone = format!("{}{suffix}", milestones[i % milestones.len()]);
+        let prior_status = format!("awaiting follow-up{suffix}");
+        let current_status = format!("follow-up reviewed{suffix}");
         let id = format!("shift-{:03}", i + 1);
         let subject = format!("station_{:03}", i + 1);
         let event = |suffix: &str, kind: &str, key: &str, value: &str| Event {
@@ -135,8 +156,8 @@ pub fn generate(inputs: &str, oracle: &str) -> Result<()> {
             reviewer: "synthetic-supervisor".into(),
         };
         let initial = vec![
-            event("status", "fact", "status", "awaiting follow-up"),
-            event("inspection", "anchor", "inspection", milestone),
+            event("status", "fact", "status", &prior_status),
+            event("inspection", "anchor", "inspection", &milestone),
             event(
                 "commitment",
                 "promise",
@@ -145,7 +166,7 @@ pub fn generate(inputs: &str, oracle: &str) -> Result<()> {
             ),
         ];
         let later = vec![
-            event("update", "update", "status", "follow-up reviewed"),
+            event("update", "update", "status", &current_status),
             event("fulfilled", "fulfill", "follow-up", "review confirmed"),
         ];
         for (suffix, rows) in [("initial", initial), ("later", later)] {
@@ -159,11 +180,11 @@ pub fn generate(inputs: &str, oracle: &str) -> Result<()> {
             write(format!("{inputs}/{name}"), &text)?;
             hashes.insert(name, hash(text));
         }
-        expected.insert(id,json!({"prior_status":"awaiting follow-up","current_status":"follow-up reviewed","promise_key":"follow-up","prior_promise":"open","current_promise":"fulfilled","milestone":milestone}));
+        expected.insert(id,json!({"prior_status":prior_status,"current_status":current_status,"promise_key":"follow-up","prior_promise":"open","current_promise":"fulfilled","milestone":milestone}));
     }
     save(
         format!("{inputs}/manifest.json"),
-        &json!({"seed":7091,"generator_version":1,"template_revision":"office-shifts-1","logical_date":"2026-09-11","timezone":"UTC","locale":"invariant","shifts":8,"files":hashes}),
+        &json!({"seed":seed,"generator_version":2,"template_revision":"office-shifts-1","profile":profile,"record_counts":{"shifts":count,"events":count*5,"arrival_files":count*2},"logical_date":"2026-09-11","timezone":"UTC","locale":"invariant","shifts":count,"files":hashes}),
     )?;
     save(format!("{oracle}/expected.json"), &expected)
 }
@@ -184,17 +205,37 @@ mod tests {
         assert!(events(root.join("arrivals")).is_err());
     }
     #[test]
-    fn fixtures_have_eight_independent_reviewed_shifts() {
+    fn profiles_have_independent_reviewed_shifts_and_changed_statuses() {
         let root = std::env::temp_dir().join(uuid::Uuid::new_v4().to_string());
-        generate(
-            root.to_str().unwrap(),
-            root.join("oracle").to_str().unwrap(),
-        )
-        .unwrap();
-        for i in 1..=8 {
-            let rows = events(root.join(format!("shift-{i:03}-initial.ndjson"))).unwrap();
-            assert_eq!(rows.len(), 3);
-            assert!(rows.iter().all(|e| e.reviewed));
+        let mut statuses = Vec::new();
+        for (profile, count) in [("default", 8), ("heldout", 8), ("stress", 80)] {
+            let inputs = root.join(profile);
+            let oracle = root.join(format!("{profile}-oracle"));
+            generate(inputs.to_str().unwrap(), oracle.to_str().unwrap(), profile).unwrap();
+            let expected = read(oracle.join("expected.json")).unwrap();
+            assert_eq!(expected.as_object().unwrap().len(), count);
+            assert_eq!(
+                read(inputs.join("manifest.json")).unwrap()["files"]
+                    .as_object()
+                    .unwrap()
+                    .len(),
+                count * 2
+            );
+            statuses.push(expected["shift-001"]["prior_status"].clone());
+            for i in 1..=count {
+                let rows = events(inputs.join(format!("shift-{i:03}-initial.ndjson"))).unwrap();
+                assert_eq!(rows.len(), 3);
+                assert!(rows.iter().all(|e| e.reviewed));
+                assert_eq!(
+                    events(inputs.join(format!("shift-{i:03}-later.ndjson")))
+                        .unwrap()
+                        .len(),
+                    2
+                );
+            }
+            assert!(!inputs.join("expected.json").exists());
         }
+        assert_ne!(statuses[0], statuses[1]);
+        assert_ne!(statuses[1], statuses[2]);
     }
 }

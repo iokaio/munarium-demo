@@ -144,11 +144,10 @@ pub async fn run(kind: &str, dir: &str) -> Result<()> {
             "Only keyless ledger qualification applies"
         );
         let expected = read("/oracle/expected.json")?;
-        for i in 1..=8 {
-            let shift = format!("shift-{i:03}");
+        for shift in expected.as_object().unwrap().keys() {
             check!(
-                &shift,
-                case(&format!("{dir}/{shift}"), &shift, &expected[&shift])
+                shift,
+                case(&format!("{dir}/{shift}"), shift, &expected[shift])
             );
         }
         check!("unreviewed-and-partial-arrivals", async {

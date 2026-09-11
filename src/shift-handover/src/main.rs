@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
             .ok_or_else(|| anyhow::anyhow!("Missing argument {n}"))
     };
     match arg(1)? {
-        "generate"=>data::generate(args.get(2).map(String::as_str).unwrap_or("/inputs"),args.get(3).map(String::as_str).unwrap_or("/oracle"))?,
+        "generate"=>data::generate(args.get(2).map(String::as_str).unwrap_or("/inputs"),args.get(3).map(String::as_str).unwrap_or("/oracle"),&args.get(4).cloned().unwrap_or_else(||env::var("DEMO_PROFILE").unwrap_or("default".into())))?,
         "bootstrap"=>bootstrap::run().await?,
         "race"=>competing_workers::run(arg(2)?,arg(3)?).await?,
         "faults"=>faults::run().await?,

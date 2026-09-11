@@ -58,7 +58,7 @@ pub async fn run() -> Result<()> {
         .await?;
     let run = uuid::Uuid::new_v4().to_string();
     let mut versions = BTreeMap::new();
-    for i in 1..=8 {
+    for i in 1..=manifest["shifts"].as_u64().unwrap() {
         let shift = format!("shift-{i:03}");
         let key = uuid::Uuid::new_v4().to_string();
         let req = dto::CreateVersionRequest {
@@ -80,6 +80,9 @@ pub async fn run() -> Result<()> {
         format!("/work/bootstrap/{run}/manifest.json"),
         &json!({"inputs":manifest,"client_revision":REVISION,"versions":versions,"model_calls":0}),
     )?;
-    println!("Eight ledger versions initialized; no model or document index required.");
+    println!(
+        "{} ledger versions initialized; no model or document index required.",
+        versions.len()
+    );
     Ok(())
 }

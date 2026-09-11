@@ -76,3 +76,23 @@ Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these ar
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/shift-handover/fixture-profiles.json) select `default` (seed 7091, eight shifts), `heldout` (seed 87091, eight shifts with changed status and milestone values), or `stress` (seed 97091, 80 shifts and 400 events across 160 arrival files). Stress repeats the eight authored office milestone types with unique shift/station/event identifiers. Every shift is independently checked against its private prior/current status, anchor and open/fulfilled promise expectations, including historical reconstruction after later writes.
+
+Manifests record seed, generator/template revisions, profile, shift/event/file counts, logical date, timezone, locale and hashes. Native unit checks confirm all records and changed profile values; two separate network-disabled generator processes reproduce every corpus and oracle byte for all three profiles. Generation refuses a different profile in existing input state. No model inference or query expansion is configured.
+
+Run `./tools/measure_demo.ps1 -Demo shift-handover -Project shift-heldout -Profile heldout`, or `sh tools/measure_demo.sh shift-handover shift-stress stress`, with new project state.
+
+The complete profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `464f0b6328dc48e7a3818fba5481734c` | 21 | 117.66 s | 239.11% | 646,237,388 bytes |
+| Stress, POSIX | `20260911T085117Z-06276186d5b7dad3` | 93 | 167 s | 212.35% | 539,177,779 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T085107Z-39b191c5b6efb03f` | 21 | 230 s | 214.32% | 735,156,633 bytes |
+
+Every profile also passed Rust formatting/Clippy and all 79 SDK checks, with no skips and the previously documented kernel-chronology coverage gap. Application totals include the two-container race verification. The final source matches fresh-checkout snapshot `a9d0a159941c42d814d9be768a9736add21b487d`; that run used empty project state. Test IDs are `57cc78b703bd42fba32a4ca51f27e174` (held-out), `20260911T085119Z-7825a2ac992ee773` (stress), and `20260911T085108Z-3bc3f407c8625f40` (fresh default). Reports and earlier failures remain beneath `artifacts/shift-handover/`.
+
+Held-out retained volumes occupy 52,182,045 logical bytes; stress occupies 72,246,188 bytes. The development runner is 5,786,959,217 bytes unpacked. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.
