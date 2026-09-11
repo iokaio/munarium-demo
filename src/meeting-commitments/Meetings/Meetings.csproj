@@ -1,0 +1,2 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App"/><ProjectReference Include="$(MunariumRoot)/clients/dotnet/src/Ioka.Munarium.Client/Ioka.Munarium.Client.csproj"/></ItemGroup></Project>

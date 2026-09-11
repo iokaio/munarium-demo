@@ -183,6 +183,8 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Acceptance.** No candidate reaches the ledger before the review step. Rejected items remain only in the local review history. Corrected dates can be read both before and after the correction with pins. Reminders are local preview output until an organization adds its own delivery adapter.
 
+**Implementation status.** Meeting commitments is implemented in [its source folder](../src/meeting-commitments) and [walkthrough](demos/meeting-commitments/README.md). Controlled qualification passed 24 application tests and 82 official .NET tests, with two documented chronology skips. The fresh-checkout POSIX run passed the same checks; all eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls. Quality investigation is next.
+
 ### 10. Quality investigation packet — Java batch job
 
 **Use case and merit.** Manufacturing teams assemble defect observations, inspection results, and applicable procedures before a quality review. Combining structured facts with explanatory documents teaches a richer form of evidence use than a single document search.

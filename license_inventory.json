@@ -16,10 +16,26 @@
       "license": "Apache-2.0",
       "notice": "NOTICE"
     },
-    {"path": "docs/demos/master-data-reconciliation/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
-    {"path": "docs/demos/records-intake/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
-    {"path": "src/records-intake/Records/packages.lock.json", "license": "Apache-2.0", "notice": "NOTICE"},
-    {"path": "src/records-intake/tests/packages.lock.json", "license": "Apache-2.0", "notice": "NOTICE"},
+    {
+      "path": "docs/demos/master-data-reconciliation/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/records-intake/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/records-intake/Records/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/records-intake/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
     {
       "path": "docs/demos/maintenance-terminal/application.png",
       "license": "Apache-2.0",
@@ -282,6 +298,21 @@
     },
     {
       "path": "src/employee-policy-assistant/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/meeting-commitments/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/meeting-commitments/Meetings/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "src/meeting-commitments/tests/packages.lock.json",
       "license": "Apache-2.0",
       "notice": "NOTICE"
     }
