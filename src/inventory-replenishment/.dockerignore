@@ -1,0 +1,13 @@
+*
+!Dockerfile
+!requirements.lock
+!inventory_demo/**
+!shapes/**
+!runbooks/**
+!tests/**
+!pytest.ini
+!ruff.toml
+**/__pycache__
+
+!support.py
+!matrix/**

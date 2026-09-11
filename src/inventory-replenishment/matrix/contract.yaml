@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: munarium.ioka.io/v1
+kind: QueryContract
+metadata: {name: below-threshold, version: 2}
+spec:
+  source: inventory
+  parameters:
+    warehouse: {type: string, required: true, allowedValues: [case-001, case-002, case-003, case-004, case-005, case-006, case-007, case-008]}
+    as_of: {type: date, required: true}
+  statementByDialect:
+    postgres:
+      inline: SELECT sku, on_hand, reorder_level, constraint_code, observed_on FROM stock WHERE observed_on <= :as_of AND warehouse = :warehouse AND on_hand < reorder_level ORDER BY sku
+  reads:
+    tables: [stock]
+    columns: [warehouse, sku, on_hand, reorder_level, constraint_code, observed_on]
+  result:
+    columns:
+      sku: {type: string, key: true}
+      on_hand: {type: int64, additivity: additive}
+      reorder_level: {type: int64, additivity: additive}
+      constraint_code: {type: string}
+      observed_on: {type: date}
+    columnOrder: [sku, on_hand, reorder_level, constraint_code, observed_on]
+    orderBy: [sku]
+  policy: {authorization: source_native, deniedColumns: [restricted]}
+  limits: {maxRows: 100, maxBytes: 1048576, timeoutMs: 8000}
+  evidence: {retentionDays: 30, replayLevel: sealed_result}
+  verifiedQuestions:
+    - question: Two visible below-threshold items in the first warehouse.
+      parameters: {warehouse: case-001, as_of: '2026-09-11'}
+      expect: {rows: 2}

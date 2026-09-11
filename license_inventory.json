@@ -1,8 +1,16 @@
 {
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
-    {"path": "docs/demos/engineering-change-review/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
-    {"path": "docs/demos/quality-investigation/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
+    {
+      "path": "docs/demos/engineering-change-review/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/quality-investigation/application.png",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
     {
       "path": "docs/demos/retrieval-evaluation/application.png",
       "license": "Apache-2.0",
@@ -315,6 +323,11 @@
     },
     {
       "path": "src/meeting-commitments/tests/packages.lock.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
+      "path": "docs/demos/inventory-replenishment/application.png",
       "license": "Apache-2.0",
       "notice": "NOTICE"
     }

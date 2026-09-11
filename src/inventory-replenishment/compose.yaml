@@ -1,0 +1,149 @@
+# SPDX-License-Identifier: Apache-2.0
+x-runner: &runner
+  image: munarium-inventory-runner:local
+  build: .
+  environment: &runtime
+    MUNARIUM_REST_URL: http://server:8080
+  volumes:
+    - inputs:/inputs:ro
+    - credentials:/credentials:ro
+    - ../../artifacts/inventory-replenishment:/work
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment:
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: inventory-local-only
+      POSTGRES_DB: inventory
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U inventory -d inventory"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  server:
+    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      MUNARIUM_STORE: postgres
+      MUNARIUM_SOURCE_STORE: pg
+      MUNARIUM_RETRIEVAL_MODE: postgres
+      MUNARIUM_DATABASE_URL: postgres://inventory:inventory-local-only@postgres:5432/inventory
+      MUNARIUM_AUTH_MODE: static
+      MUNARIUM_STATIC_TOKENS: inventory-rw:inventory:rw,inventory-mgmt:inventory:mgmt
+      MUNARIUM_TOKEN_SECRET: inventory-local-only-signing-secret-at-least-32-bytes
+      MUNARIUM_MATRIX_BASE_URL: http://matrix:8180
+      MUNARIUM_MATRIX_TOKEN: inventory-matrix-rw
+      MUNARIUM_EVIDENCE_PURGE_INTERVAL_SECS: '0'
+  matrix-db:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: {POSTGRES_USER: matrix, POSTGRES_PASSWORD: matrix-local-only, POSTGRES_DB: matrix}
+    volumes: [matrix-database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U matrix']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  inventory-db:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: {POSTGRES_USER: stock_owner, POSTGRES_PASSWORD: stock-owner-local-only, POSTGRES_DB: inventory}
+    volumes: [inventory-database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U stock_owner -d inventory']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  matrix:
+    image: munarium-inventory-matrix:local
+    depends_on:
+      server-ready: {condition: service_completed_successfully}
+      matrix-db: {condition: service_healthy}
+      inventory-db: {condition: service_healthy}
+    environment:
+      MUNARIUM_MATRIX_ROLE: all
+      MUNARIUM_MATRIX_DATABASE_URL: postgres://matrix:matrix-local-only@matrix-db:5432/matrix
+      MUNARIUM_MATRIX_AUTH_MODE: static
+      MUNARIUM_MATRIX_STATIC_TOKENS: inventory-matrix-rw:inventory:rw,inventory-matrix-mgmt:inventory:mgmt
+      MUNARIUM_MATRIX_SERVER_URL: http://server:8080
+      MUNARIUM_MATRIX_SERVER_TOKEN_REF: env:MATRIX_SEAL_TOKEN
+      MATRIX_SEAL_TOKEN: inventory-rw
+      MUNARIUM_MATRIX_TARGET_SERVER_VERSION: '1.1.1'
+      MUNARIUM_MATRIX_SECRET_INVENTORY_READER: postgres://stock_reader:stock-reader-local-only@inventory-db:5432/inventory
+  server-ready:
+    <<: *runner
+    depends_on:
+      server: {condition: service_started}
+    volumes: []
+    entrypoint: [python, -c, 'from inventory_demo.server import ready_server; ready_server()']
+  seed:
+    image: pgvector/pgvector:pg16@sha256:ccc6e83d6e35e931dc7c5def2022729d5a6c370318d099181995567ff1fb4d6b
+    environment: {PGPASSWORD: stock-owner-local-only}
+    volumes: [seed:/seed:ro]
+    entrypoint: [psql, -h, inventory-db, -U, stock_owner, -d, inventory, -v, ON_ERROR_STOP=1, -f, /seed/seed.sql]
+  provider-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, -m, inventory_demo.provider_fixture]
+  sdk-fixture:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, /opt/munarium/clients/python/conformance/ollama_fixture.py, --bind, 0.0.0.0]
+  faults:
+    <<: *runner
+    environment: {}
+    volumes: []
+    entrypoint: [python, -m, inventory_demo.faults]
+  unit:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: [../../artifacts/inventory-replenishment:/work]
+    command: [unit]
+  generator:
+    <<: *runner
+    environment: {}
+    network_mode: none
+    volumes: [inputs:/inputs, oracle:/oracle, seed:/seed]
+    command: [generate]
+  bootstrap:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_TOKEN: inventory-rw
+      MUNARIUM_MGMT_TOKEN: inventory-mgmt
+    volumes:
+      - inputs:/inputs:ro
+      - credentials:/credentials
+      - ../../artifacts/inventory-replenishment:/work
+    command: [bootstrap]
+  app:
+    <<: *runner
+    command: [process]
+  tests:
+    <<: *runner
+    environment:
+      <<: *runtime
+      MUNARIUM_GRPC_URL: server:50051
+      MUNARIUM_TOKEN: inventory-rw
+      MUNARIUM_MGMT_TOKEN: inventory-mgmt
+      MUNARIUM_OLLAMA_FIXTURE_URL: http://sdk-fixture:11434
+      MUNARIUM_OLLAMA_SERVER_ENDPOINT: http://sdk-fixture:11434
+    volumes:
+      - inputs:/inputs:ro
+      - oracle:/oracle:ro
+      - credentials:/credentials:ro
+      - ../../artifacts/inventory-replenishment:/work
+    command: [controlled]
+
+volumes:
+  seed:
+  matrix-database:
+  inventory-database:
+  inputs:
+  oracle:
+  credentials:
+  database:
