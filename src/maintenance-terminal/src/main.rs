@@ -10,8 +10,9 @@ async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
     match args.as_slice() {
-        ["generate"]=>data::generate("/inputs","/oracle"),
+        ["generate"]=>data::generate_profile("/inputs","/oracle",&std::env::var("DEMO_PROFILE").unwrap_or("default".into())),
         ["generate",inputs,oracle]=>data::generate(inputs,oracle),
+        ["generate",inputs,oracle,profile]=>data::generate_profile(inputs,oracle,profile),
         ["provider"]=>fixture::run().await,
         ["bootstrap",provider,"--approve"]=>bootstrap::run(provider,true).await,
         ["qualify",kind,dir]=>qualification::run(kind,dir).await,

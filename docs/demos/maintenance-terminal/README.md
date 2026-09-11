@@ -132,3 +132,25 @@ Documentation links, public-material and license checks, PowerShell parsing and 
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/maintenance-terminal/fixture-profiles.json) select `default` (seed 1742, eight asset/revision cases), `heldout` (seed 81742, eight cases with changed procedure codes), or `stress` (seed 91742, 80 cases and 240 documents). Stress covers 40 assets with current and historical revisions, repeating the eight authored scenario types with independent scoped collections. Every generated case is checked against its private status, procedure code and revision expectation. The larger fixture increases ingestion and session work; it is not 80 distinct business scenario types.
+
+The native generator records generator/template revisions, profile, seed, case/document counts, logical date, UTC, locale and hashes. Its unit checks confirm corpus size and changed held-out expectations; the coordinator invokes two separate network-disabled generator processes for every profile and compares all corpus and oracle bytes. Generation refuses a different profile in existing input state. Real-provider qualification requires default fixtures; only the canned provider budget scales with corpus size.
+
+Run `./tools/measure_demo.ps1 -Demo maintenance-terminal -Project maintenance-heldout -Profile heldout`, or `sh tools/measure_demo.sh maintenance-terminal maintenance-stress stress`, using new project state.
+
+On 2026-09-11, the following complete profiles passed:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `e7d74d332df84da8991a575a354f49a7` | 25 | 198.09 s | 209.61% | 721,210,572 bytes |
+| Stress, POSIX | `20260911T081858Z-cfb1ee9f81063c8e` | 97 | 242 s | 208.01% | 695,205,888 bytes |
+| Default, final fresh checkout through Ubuntu WSL | `20260911T082221Z-676e60e805ad9486` | 25 | 163 s | 203.64% | 705,691,648 bytes |
+
+Each profile also passed Rust formatting/Clippy and all 79 official SDK checks, with no skips and the previously documented kernel-chronology coverage gap. The final fresh checkout used snapshot `d14c72645d84040b748393f2405439f3b2f30a0a`, identical to the final source, and empty project state. Its test ID is `20260911T082222Z-a1480d3fef03bbdf`. Held-out and stress test IDs are `47b70d6e3caa4abc814a93568a2d3d4b` and `20260911T081859Z-775f23c38b0b70d9`. An earlier fresh-checkout run also passed under `20260911T081840Z-f7034e6175c5d509`; the final run includes the subsequent status-message correction from “eight” to “selected” scopes. No workflow logic changed in that correction.
+
+Cloud run `2456c4fcb2964c32b5b1b9f8e3f9018a` passed eight fresh cases: three OpenAI, three Anthropic, and two OpenRouter, with 60-second OpenRouter pacing. The reports retain actual model identities, completion usage and bounded Server retries. Earlier failures remain distinct from these passing runs.
+
+The held-out project's retained volumes occupy 53,769,201 logical bytes; stress occupies 84,891,969 bytes. The development runner is 5,800,666,280 bytes unpacked. Measurements used isolated projects on a shared host with other qualification work active; elapsed times include cache/build effects. Sampled CPU uses 100% per core; memory excludes host/VM/build-daemon overhead and may miss brief peaks. The shared guide records compressed base-image transfers separately. WSL exercises Linux userspace with Docker Desktop; native Linux/macOS, native ARM64 and Apple Silicon emulation remain unqualified.

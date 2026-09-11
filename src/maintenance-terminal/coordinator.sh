@@ -14,11 +14,13 @@ case "$action" in
     cat "$report/unit.log"
     python3 /app/support.py report "$report/unit.log" "$report/tests.xml" unit
     # Two separate generator processes, each without network; compare all bytes.
-    "$app" generate /tmp/fixtures-a /tmp/oracle-a
-    "$app" generate /tmp/fixtures-b /tmp/oracle-b
-    diff -r /tmp/fixtures-a /tmp/fixtures-b
-    diff -r /tmp/oracle-a /tmp/oracle-b
-    cp /tmp/fixtures-a/manifest.json "$report/reproducible-manifest.json"
+    for profile in default heldout stress; do
+      "$app" generate "/tmp/$profile-a" "/tmp/$profile-oracle-a" "$profile"
+      "$app" generate "/tmp/$profile-b" "/tmp/$profile-oracle-b" "$profile"
+      diff -r "/tmp/$profile-a" "/tmp/$profile-b"
+      diff -r "/tmp/$profile-oracle-a" "/tmp/$profile-oracle-b"
+      cp "/tmp/$profile-a/manifest.json" "$report/reproducible-$profile-manifest.json"
+    done
     exit "$status" ;;
   qualify)
     cd /opt/munarium/clients/rust

@@ -55,6 +55,22 @@ pub fn assignments(provider: &str) -> Result<Vec<&'static str>> {
     })
 }
 pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
+    generate_profile(root, oracle_root, "default")
+}
+pub fn generate_profile(root: &str, oracle_root: &str, profile: &str) -> Result<()> {
+    let profiles = read("fixture-profiles.json")?;
+    let config = &profiles[profile];
+    let seed = config["seed"]
+        .as_u64()
+        .ok_or_else(|| anyhow::anyhow!("Unknown fixture profile"))?;
+    let count = config["cases"].as_u64().unwrap() as usize;
+    if Path::new(&format!("{root}/manifest.json")).exists() {
+        let prior = read(format!("{root}/manifest.json"))?;
+        ensure!(
+            prior["profile"] == profile && prior["seed"] == seed,
+            "Use empty state for a different profile"
+        );
+    }
     fs::create_dir_all(format!("{root}/documents"))?;
     let mut assets = Vec::new();
     let mut oracle = BTreeMap::new();
@@ -79,7 +95,13 @@ pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
         "Procedure code: MANUAL-REQUIRED. No approved manual is available. Request the approved manual; no actionable procedure is supported.",
         "Procedure code: WHITE-04. The retired manual recorded the white display indicator.",
     ];
-    for i in 0..8 {
+    for i in 0..count {
+        let scenario = i % 8;
+        let code = if profile == "default" {
+            expectations[scenario].1.to_owned()
+        } else {
+            format!("{seed}-{}", expectations[scenario].1)
+        };
         let asset = Asset {
             id: format!("case-{:03}", i + 1),
             asset: format!("SIM-{}", 100 + i / 2),
@@ -87,7 +109,7 @@ pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
             historical: i % 2 == 1,
         };
         let heading = format!(
-            "Synthetic seed 1742; logical date 2026-09-10. Fictional asset {} revision {}.",
+            "Synthetic seed {seed}; logical date 2026-09-10. Fictional asset {} revision {}.",
             asset.asset, asset.revision
         );
         let mode = if asset.historical {
@@ -95,10 +117,13 @@ pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
         } else {
             "CURRENT revision R2."
         };
-        let manual = format!("{heading}\n{mode}\n{}\n", procedures[i]);
+        let manual = format!(
+            "{heading}\n{mode}\n{}\n",
+            procedures[scenario].replace(expectations[scenario].1, &code)
+        );
         let inspection = format!(
             "{heading}\nInspection note: {}.\n{mode}\n",
-            if i == 4 {
+            if scenario == 4 {
                 "missing; do not infer completion"
             } else {
                 "synthetic display label reviewed on 2026-09-09"
@@ -122,7 +147,7 @@ pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
         }
         oracle.insert(
             asset.id.clone(),
-            json!({"status":expectations[i].0,"code":expectations[i].1,"revision":asset.revision}),
+            json!({"status":expectations[scenario].0,"code":code,"revision":asset.revision}),
         );
         assets.push(asset);
     }
@@ -141,12 +166,17 @@ pub fn generate(root: &str, oracle_root: &str) -> Result<()> {
     }
     save(
         format!("{root}/manifest.json"),
-        &json!({"seed":1742,"logical_date":"2026-09-10","files":files}),
+        &json!({"seed":seed,"generator":"maintenance-v2","template_revision":"display-procedures-v1","profile":profile,"record_counts":{"cases":count,"documents":count*3},"logical_date":"2026-09-10","timezone":"UTC","locale":"en-US","files":files}),
     )?;
     save(format!("{oracle_root}/expected.json"), &oracle)
 }
 pub fn verify(root: &str) -> Result<()> {
     let manifest = read(format!("{root}/manifest.json"))?;
+    ensure!(
+        manifest["files"].as_object().unwrap().len()
+            == manifest["record_counts"]["documents"].as_u64().unwrap() as usize + 1,
+        "Fixture count mismatch"
+    );
     for (name, expected) in manifest["files"].as_object().unwrap() {
         ensure!(
             hash(fs::read(format!("{root}/{name}"))?) == expected.as_str().unwrap(),
@@ -159,6 +189,29 @@ pub fn verify(root: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn profiles_scale_catalogue_and_change_private_business_expectations() -> Result<()> {
+        let root = std::env::temp_dir().join(uuid::Uuid::new_v4().to_string());
+        let mut codes = Vec::new();
+        for (profile, count) in [("default", 8), ("heldout", 8), ("stress", 80)] {
+            let inputs = root.join(profile).to_string_lossy().into_owned();
+            let oracle = root
+                .join(format!("{profile}-oracle"))
+                .to_string_lossy()
+                .into_owned();
+            generate_profile(&inputs, &oracle, profile)?;
+            verify(&inputs)?;
+            assert_eq!(catalogue(&inputs)?.len(), count);
+            let expected = read(format!("{oracle}/expected.json"))?;
+            assert_eq!(expected.as_object().unwrap().len(), count);
+            codes.push(expected["case-001"]["code"].clone());
+            assert_eq!(expected["case-005"]["status"], "insufficient");
+            assert!(!Path::new(&format!("{inputs}/expected.json")).exists());
+        }
+        assert_ne!(codes[0], codes[1]);
+        assert_ne!(codes[1], codes[2]);
+        Ok(())
+    }
     #[test]
     fn exact_revision_selection() {
         let a = vec![Asset {

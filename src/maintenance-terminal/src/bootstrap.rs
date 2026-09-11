@@ -80,6 +80,10 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
     );
     assignments(provider)?;
     verify("/inputs")?;
+    ensure!(
+        provider == "fixture" || read("/inputs/manifest.json")?["profile"] == "default",
+        "Online qualification requires default fixtures"
+    );
     let model = if provider == "fixture" {
         "maintenance-selected".into()
     } else {
@@ -119,7 +123,12 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
         provider
     };
     let model_json = serde_json::to_string(&model)?;
-    c.providers.apply_config(&format!("apiVersion: munarium.ioka.io/v1\nkind: ProviderConfig\nmetadata: {{name: {config}}}\nspec:\n  provider: {family}\n  {connection}\n  models:\n    complete: [{model_json}]\n    fast: {model_json}\n  budgets: {{rpm: 30, dailyTokens: {{fast: 100000}}}}\n")).await?;
+    let rpm = if provider == "fixture" {
+        (catalogue("/inputs")?.len() * 3).max(30)
+    } else {
+        30
+    };
+    c.providers.apply_config(&format!("apiVersion: munarium.ioka.io/v1\nkind: ProviderConfig\nmetadata: {{name: {config}}}\nspec:\n  provider: {family}\n  {connection}\n  models:\n    complete: [{model_json}]\n    fast: {model_json}\n  budgets: {{rpm: {rpm}, dailyTokens: {{fast: 100000}}}}\n")).await?;
     ensure!(
         c.providers.health(&config).await?.healthy,
         "Named provider health failed: {provider}"
@@ -212,6 +221,6 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
             scopes,
         },
     )?;
-    println!("Ready: {provider}; eight asset/revision scopes; query capability issued.");
+    println!("Ready: {provider}; selected asset/revision scopes; query capability issued.");
     Ok(())
 }

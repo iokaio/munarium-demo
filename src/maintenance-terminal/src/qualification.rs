@@ -118,7 +118,11 @@ pub async fn run(kind: &str, dir: &str) -> Result<()> {
             fs::remove_file(format!("{path}/answer.txt"))?;
             explain(&g, a, path, None).await?;
             ensure!(
-                fs::read_to_string(format!("{path}/answer.txt"))?.contains("BLUE-17"),
+                fs::read_to_string(format!("{path}/answer.txt"))?.contains(
+                    read("/oracle/expected.json")?[&assets[0].id]["code"]
+                        .as_str()
+                        .unwrap()
+                ),
                 "Export not restored"
             );
             ensure!(calls().await? == before, "Restart repeated completion");
@@ -137,8 +141,16 @@ pub async fn run(kind: &str, dir: &str) -> Result<()> {
         let provider = kind.strip_prefix("cloud-").unwrap_or("fixture");
         ensure!(g.provider == provider, "Bootstrap provider mismatch");
         let expected = read("/oracle/expected.json")?;
-        for id in assignments(provider)? {
-            let a = assets.iter().find(|a| a.id == id).unwrap();
+        let ids: Vec<String> = if provider == "fixture" {
+            expected.as_object().unwrap().keys().cloned().collect()
+        } else {
+            assignments(provider)?
+                .into_iter()
+                .map(str::to_owned)
+                .collect()
+        };
+        for id in &ids {
+            let a = assets.iter().find(|a| a.id == *id).unwrap();
             if provider == "openrouter" {
                 let delay = env::var("MAINTENANCE_OPENROUTER_CASE_DELAY_SECONDS")
                     .unwrap_or("60".into())

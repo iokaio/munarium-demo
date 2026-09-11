@@ -2,6 +2,11 @@
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
     {
+      "path": "src/maintenance-terminal/fixture-profiles.json",
+      "license": "Apache-2.0",
+      "notice": "NOTICE"
+    },
+    {
       "path": "src/order-exception-triage/fixture-profiles.json",
       "license": "Apache-2.0",
       "notice": "NOTICE"
