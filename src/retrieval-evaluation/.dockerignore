@@ -10,3 +10,4 @@
 **/__pycache__
 
 !support.py
+!fixture-profiles.json

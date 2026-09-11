@@ -37,6 +37,8 @@ def ready():
 
 def bootstrap(inputs, work, provider, model):
     manifest = verify(inputs)
+    if provider != "fixture" and manifest["profile"] != "default":
+        raise ValueError("Online qualification requires the default profile")
     ready()
     revision = digest((inputs / "manifest.json").read_bytes())
     config_hash = digest(

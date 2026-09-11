@@ -43,16 +43,28 @@ def read(path):
     return json.loads(Path(path).read_text())
 
 
-def generate(inputs, oracle):
+def profile_settings(profile):
+    return read(Path(__file__).resolve().parents[1] / "fixture-profiles.json")[profile]
+
+
+def generate(inputs, oracle, profile="default"):
     inputs, oracle = Path(inputs), Path(oracle)
+    config = profile_settings(profile)
+    seed = config["seed"]
+    if (inputs / "manifest.json").exists():
+        prior = read(inputs / "manifest.json")
+        if prior["profile"] != profile or prior["seed"] != seed:
+            raise ValueError("Use empty state for a different profile")
+    suffix = "" if profile == "default" else f"-{seed}"
+    marker = "LILAC-731" if profile == "default" else f"LILAC-{seed}"
     documents, questions, labels = {}, {}, {}
     topics = ["purchasing", "travel", "equipment", "training", "visitors", "équipe archives"]
     for i, topic in enumerate(topics, 1):
         case = f"case-{i:03}"
         names = []
         for stage, instruction in (
-            ("submission", f"submit form F{i:03}"),
-            ("approval", f"ask reviewer R{i:03}"),
+            ("submission", f"submit form F{i:03}{suffix}"),
+            ("approval", f"ask reviewer R{i:03}{suffix}"),
         ):
             name = f"public/{case}-{stage}.md"
             documents[name] = (
@@ -67,14 +79,14 @@ def generate(inputs, oracle):
         labels[case] = {
             "sources": names,
             "abstain": False,
-            "required_terms": [f"F{i:03}", f"R{i:03}"],
+            "required_terms": [f"F{i:03}{suffix}", f"R{i:03}{suffix}"],
             "profile": questions[case]["profile"],
         }
     documents["public/distractor.md"] = (
         "# Fictional unrelated procedure\nTopic: room labels\nInstruction: label meeting rooms alphabetically.\n"
     )
     documents["restricted/retention.md"] = (
-        "# Fictional restricted procedure evidence\nTopic: private retention\nInstruction: use synthetic retention marker LILAC-731.\n"
+        f"# Fictional restricted procedure evidence\nTopic: private retention\nInstruction: use synthetic retention marker {marker}.\n"
     )
     questions["case-007"] = {
         "query": "Which lunar taxi route is required for the moon office?",
@@ -90,27 +102,43 @@ def generate(inputs, oracle):
     labels["case-008"] = {
         "sources": ["restricted/retention.md"],
         "abstain": False,
-        "required_terms": ["LILAC-731"],
+        "required_terms": [marker],
         "profile": "privileged",
     }
+    for index in range(config["documents"] - 14):
+        documents[f"public/distractor-{index:03}.md"] = (
+            f"# Fictional cabinet directory\nTopic: cabinet-{index:03}\nInstruction: keep bin {seed}-{index:03} in aisle {index % 12 + 1}.\n"
+        )
     for name, content in documents.items():
         write(inputs / name, content.encode())
     manifest = {
-        "seed": 12091,
-        "generator": "retrieval-bench-v1",
+        "seed": seed,
+        "generator": "retrieval-bench-v2",
+        "template_revision": "office-evaluation-v1",
+        "profile": profile,
+        "record_counts": {"documents": len(documents), "questions": len(questions)},
+        "timezone": "UTC",
+        "locale": "invariant",
         "logical_time": "2026-09-11T00:00:00Z",
         "questions": questions,
         "files": {name: digest(text.encode()) for name, text in documents.items()},
     }
     save(inputs / "manifest.json", manifest)
-    save(oracle / "labels.json", {"cases": labels, "restricted_marker": "LILAC-731"})
+    save(oracle / "labels.json", {"cases": labels, "restricted_marker": marker})
     return manifest
 
 
 def verify(inputs):
     inputs = Path(inputs)
     manifest = read(inputs / "manifest.json")
-    if manifest["generator"] != "retrieval-bench-v1" or len(manifest["questions"]) != 8:
+    config = profile_settings(manifest["profile"])
+    if (
+        manifest["generator"] != "retrieval-bench-v2"
+        or manifest["seed"] != config["seed"]
+        or len(manifest["questions"]) != 8
+        or len(manifest["files"]) != config["documents"]
+        or manifest["record_counts"]["documents"] != config["documents"]
+    ):
         raise ValueError("Unexpected evaluation corpus")
     for name, sha in manifest["files"].items():
         path = inputs / name

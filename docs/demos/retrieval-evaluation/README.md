@@ -89,3 +89,25 @@ Docker Desktop exposed Linux/x86_64, 12 CPUs and about 31.3 GiB memory; these ar
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/retrieval-evaluation/fixture-profiles.json) select `default` (seed 12091, 14 documents), `heldout` (seed 92091, 14 documents with changed form/reviewer codes and restricted marker), or `stress` (seed 102091, 140 documents including 126 additional unrelated cabinet-directory records). Every profile retains the same eight independently labelled questions and 72-experiment comparison. Stress indexes the larger corpus before running the complete retrieval and completion matrix; it does not substitute repeated cached outputs for new retrieval work.
+
+Manifests record profile, seed, generator/template revisions, document/question counts, logical date, timezone, locale and hashes. Two separate network-disabled Python processes reproduce every corpus and oracle byte for each profile. Generation refuses a different profile in existing state. The access-leakage check uses the private profile marker. Online runs require the default profile.
+
+Run `./tools/measure_demo.ps1 -Demo retrieval-evaluation -Project bench-heldout -Profile heldout`, or `sh tools/measure_demo.sh retrieval-evaluation bench-stress stress`, with new project state.
+
+All profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `be1951a0b8b145f7a10ed5fe0dfb0080` | 25 | 74.18 s | 99.45% | 229,008,996 bytes |
+| Stress, POSIX | `20260911T093936Z-af04f9133cc3b630` | 25 | 91 s | 109.69% | 232,385,410 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T093926Z-7e7ab2bb09b734aa` | 25 | 131 s | 103.30% | 225,496,265 bytes |
+
+Every profile also passed Ruff formatting/lint and 175 SDK checks with the four documented chronology skips. Each retained 72 experiments and zero forbidden-source exposures; synthetic top-k source recall remains 1.0, versus about 0.5714 at baseline. These observations do not establish production retrieval quality. Final source matches fresh-checkout snapshot `d6a7d1d87820d021ab6c52fb08bf3ee4e6fc5f7d`, tested with empty project state. Test IDs are `ca0eb3b41c22412e8c6cf5d5daae5261` (held-out), `20260911T093938Z-4c6fcb745d1ca6c0` (stress), and `20260911T093927Z-edf494dd49203a02` (fresh default).
+
+Held-out retained volumes occupy 53,343,271 logical bytes; stress occupies 54,318,045 bytes. The development runner is 764,497,320 bytes unpacked. Reports remain under `artifacts/retrieval-evaluation/`. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.
+
+Online run `544c4a6442fc4903a717d31c9037cade` passed all eight independently asserted cases and 16 fresh completions: six OpenAI, six Anthropic and four OpenRouter, with 60 seconds before every OpenRouter repeat. No local model inference ran.

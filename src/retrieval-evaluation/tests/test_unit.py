@@ -10,7 +10,11 @@ from bench_demo.fixtures import SETTINGS, generate, read, verify
 from bench_demo.metrics import score
 
 
-def test_independent_generator_processes(tmp_path):
+@pytest.mark.parametrize(
+    "profile,count,term",
+    [("default", 14, "F001"), ("heldout", 14, "F001-92091"), ("stress", 140, "F001-102091")],
+)
+def test_independent_generator_processes(tmp_path, profile, count, term):
     for name in ("a", "b"):
         subprocess.run(
             [
@@ -18,6 +22,8 @@ def test_independent_generator_processes(tmp_path):
                 "-m",
                 "bench_demo",
                 "generate",
+                "--profile",
+                profile,
                 "--inputs",
                 str(tmp_path / name),
                 "--oracle",
@@ -26,6 +32,7 @@ def test_independent_generator_processes(tmp_path):
                 str(tmp_path / "work"),
             ],
             check=True,
+            timeout=30,
         )
     a = {
         str(p.relative_to(tmp_path / "a")): p.read_bytes()
@@ -37,10 +44,19 @@ def test_independent_generator_processes(tmp_path):
         for p in (tmp_path / "b").rglob("*")
         if p.is_file()
     }
-    assert a == b and read(tmp_path / "a-oracle/labels.json") == read(
-        tmp_path / "b-oracle/labels.json"
+    assert (
+        a == b
+        and (tmp_path / "a-oracle/labels.json").read_bytes()
+        == (tmp_path / "b-oracle/labels.json").read_bytes()
     )
-    (Path(os.environ["BENCH_REPORT_DIR"]) / "reproducible-manifest.json").write_bytes(
+    assert len(verify(tmp_path / "a")["files"]) == count
+    labels = read(tmp_path / "a-oracle/labels.json")
+    assert len(labels["cases"]) == 8
+    assert labels["cases"]["case-001"]["required_terms"][0] == term
+    assert labels["restricted_marker"] == (
+        "LILAC-731" if profile == "default" else f"LILAC-{verify(tmp_path / 'a')['seed']}"
+    )
+    (Path(os.environ["BENCH_REPORT_DIR"]) / f"reproducible-{profile}-manifest.json").write_bytes(
         (tmp_path / "a/manifest.json").read_bytes()
     )
 

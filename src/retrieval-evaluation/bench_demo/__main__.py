@@ -66,10 +66,15 @@ def main():
     parser.add_argument("--provider", choices=["fixture", *CLOUD_CASES], default="fixture")
     parser.add_argument("--inputs", type=Path, default=Path("/inputs"))
     parser.add_argument("--oracle", type=Path, default=Path("/oracle"))
+    parser.add_argument(
+        "--profile",
+        choices=["default", "heldout", "stress"],
+        default=os.environ.get("DEMO_PROFILE", "default"),
+    )
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
     if args.command == "generate":
-        generate(args.inputs, args.oracle)
+        generate(args.inputs, args.oracle, args.profile)
     elif args.command == "bootstrap":
         from .server import bootstrap
 

@@ -73,7 +73,7 @@ def test_forbidden_sources_and_denied_override():
             session.session_id, query="Which private retention marker is required?", complete=True
         )
         assert all("restricted/" not in hit.source_path for hit in result.hits)
-        assert "LILAC-731" not in result.model_dump_json()
+        assert read("/oracle/labels.json")["restricted_marker"] not in result.model_dump_json()
         assert json.loads(result.completion.text)["abstained"]
         before = calls()
         with pytest.raises(ForbiddenError):
