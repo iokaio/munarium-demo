@@ -12,11 +12,12 @@ public static class Acceptance
 {
     public static string Work => Environment.GetEnvironmentVariable("POLICY_REPORT_DIR") ?? "/work/controlled";
     public static string Credentials => Environment.GetEnvironmentVariable("POLICY_CREDENTIALS") ?? "/credentials";
+    public static Scenario ReadScenario(string caseId) => Storage.Read<Scenario[]>("/oracle/cases.json").Single(s => s.Id == caseId);
     public static IdentityGrant Grant(string identity) => Storage.Read<IdentityGrant>(Path.Combine(Credentials, identity + ".json"));
     public static PolicySession App(string suffix) => new(Bootstrap.Endpoint, Path.Combine(Work, suffix));
     public static async Task Run(string caseId)
     {
-        var scenario = Storage.Read<Scenario[]>("/oracle/cases.json").Single(s => s.Id == caseId);
+        var scenario = ReadScenario(caseId);
         var grant = Grant(scenario.Identity);
         await using var app = App(caseId);
         await app.SelectIdentityAsync(grant);
@@ -62,5 +63,9 @@ public sealed class CloudTests
     [Theory] [InlineData("west")] [InlineData("wrong-region")]
     public Task Anthropic(string id) => Acceptance.Run(id);
     [Theory] [InlineData("hr-denied")] [InlineData("hr-allowed")]
-    public Task Openrouter(string id) => Acceptance.Run(id);
+    public async Task Openrouter(string id)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(60));
+        await Acceptance.Run(id);
+    }
 }

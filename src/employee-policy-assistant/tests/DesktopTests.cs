@@ -37,12 +37,12 @@ public sealed class DesktopTests
             window.AskButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await Idle(vm);
             Assert.Equal("complete", vm.Session.Answer!.Status);
-            Assert.Contains("750", window.AnswerText.Text);
+            Assert.Contains(Acceptance.ReadScenario("equipment").Required[0], window.AnswerText.Text);
             Assert.Contains(vm.Stages, s => s.StartsWith("expansion"));
             window.SourcesBox.SelectedIndex = 0;
             Assert.Contains("SHA-256:", window.SourceText.Text);
             var path = Path.Combine(Acceptance.Work, "desktop-export.txt");
-            await vm.ExportAsync(path); Assert.Contains("750", File.ReadAllText(path));
+            await vm.ExportAsync(path); Assert.Contains(Acceptance.ReadScenario("equipment").Required[0], File.ReadAllText(path));
             Dispatcher.UIThread.RunJobs(); AvaloniaHeadlessPlatform.ForceRenderTimerTick();
             using (var bitmap = window.CaptureRenderedFrame())
             {

@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 if ($Project -notmatch '^policy-[a-z0-9-]+$') { throw 'Use a dedicated policy- project name with lowercase letters, digits, and hyphens.' }
 if ($Action -ne 'stop') {
     $fixtureProfile = if ($env:DEMO_PROFILE) { $env:DEMO_PROFILE } else { 'default' }
+    if (($Action -eq 'cloud' -or ($Action -eq 'desktop' -and $Provider -ne 'fixture')) -and $fixtureProfile -ne 'default') { throw 'Online qualification uses the default corpus' }
     & (Join-Path $PSScriptRoot '../../tools/demo_preflight.ps1') -Demo 'employee-policy-assistant' -Profile $fixtureProfile
 }
 Push-Location $PSScriptRoot

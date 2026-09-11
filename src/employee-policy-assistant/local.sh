@@ -4,8 +4,10 @@ set -eu
 cd "$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
 action=${1:-test}
 project=${POLICY_PROJECT:-policy-wave1}
+case "$action" in test|cloud|stop) project=${2:-$project} ;; esac
 desktop_provider=fixture
 if [ "$action" = desktop ]; then desktop_provider=${2:-fixture}; fi
+if [ "${DEMO_PROFILE:-default}" != default ] && { [ "$action" = cloud ] || [ "$desktop_provider" != fixture ]; }; then echo 'Online qualification uses the default corpus' >&2; exit 2; fi
 case "$desktop_provider" in fixture|openai|anthropic|openrouter) ;; *) echo 'Unsupported provider' >&2; exit 2 ;; esac
 case "$project" in policy-*) ;; *) echo 'Use a dedicated policy- project' >&2; exit 2 ;; esac
 case "$project" in *[!a-z0-9-]*) echo 'Invalid project name' >&2; exit 2 ;; esac

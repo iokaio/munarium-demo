@@ -1,0 +1,7 @@
+{
+  "license": "Apache-2.0",
+  "schema_version": 1,
+  "default": {"seed": 222, "distractors": 0, "replacements": {}},
+  "heldout": {"seed": 8222, "distractors": 0, "replacements": {"750": "925", "1200": "1450", "85": "95", "65": "75", "2400": "2600", "ORCHID-731": "IRIS-842", "10": "14"}},
+  "stress": {"seed": 9222, "distractors": 63, "replacements": {"750": "875", "1200": "1350", "85": "90", "65": "70", "2400": "2500", "ORCHID-731": "ASTER-963", "10": "12"}}
+}

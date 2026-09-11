@@ -125,3 +125,21 @@ The built runner image occupies approximately 2.23 GB. The measured Windows Dock
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Fixture profiles and native Windows qualification
+
+The [profile definitions](../../../src/employee-policy-assistant/fixture-profiles.json) select independently seeded business facts. `default` uses seed 222 and seven documents; `heldout` uses seed 8222 and seven documents with different allowances, retention values and a private canary. `stress` uses seed 9222, changed policy facts and 63 additional unrelated documents, for 70 indexed documents. All profiles retain eight independently authored access and answer scenarios. Manifests record the profile, template revision, seed, document counts, logical clock and content hashes. Three native tests compare both corpus and private oracle bytes across separate .NET processes.
+
+Run `./tools/measure_demo.ps1 -Demo employee-policy-assistant -Project policy-heldout -Profile heldout`, or `sh tools/measure_demo.sh employee-policy-assistant policy-stress stress`. Use a new project for each profile. Online qualification and online desktop setup require the default corpus. The six cloud cases retain two per provider, with a 60-second pause before each new OpenRouter case.
+
+On 2026-09-11, each profile passed 27 application tests and 82 SDK tests, with the same two upstream chronology skips:
+
+| Profile and host | Measurement ID | Elapsed | Sampled project peak memory |
+|---|---|---:|---:|
+| Held-out, Windows PowerShell | `df545524365743dda7c1c7a06915e950` | 108.04 s | 224,877,607 bytes |
+| Stress, POSIX wrapper | `20260911T074124Z-7cd5e65b52101d68` | 106 s | 250,200,717 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T074431Z-7906451e66128b41` | 106 s | 252,748,757 bytes |
+
+The fresh checkout used snapshot `48360b47613f1f790dfafffa0ea7ca48d25f7a9c`, empty project state and the final source files; its test ID is `2859219b-68f7-4ddd-ad19-1dac3e59b4f7`. Cloud run `3a80be10665e4fc3aa7beb0c805a8006` passed all six cases on the three online providers. Reports remain beneath `artifacts/employee-policy-assistant/`. Sampled container memory excludes Docker VM and build overhead. WSL shares Docker Desktop and does not establish native Linux Engine compatibility.
+
+A self-contained Windows x64 build from that snapshot also passed a native UI Automation check against the held-out backend: launch, question entry, the expected USD 925 answer, source selection with excerpt and SHA-256, export through the Windows Save dialog with a JSON evidence sidecar, and clearing answer/source state on identity change. The report and exports are under `native-validation/` in that artifact directory. The normal desktop port was occupied, so this check used a separate override with an automatically allocated loopback port. This supersedes the earlier pending Windows launch/export status; it is not a complete usability review. Native Linux/macOS desktop and ARM64 host checks remain unqualified.

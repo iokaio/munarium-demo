@@ -10,6 +10,27 @@ namespace Policy.Tests;
 [Trait("Kind", "unit")]
 public sealed class UnitTests
 {
+    [Theory]
+    [InlineData("default", 7, "750")]
+    [InlineData("heldout", 7, "925")]
+    [InlineData("stress", 70, "875")]
+    public void ProfilesReproduceInIndependentProcesses(string profile, int documents, string allowance)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "policy-profile-" + Guid.NewGuid().ToString("N"));
+        Fixtures.Generate(root + "/a", root + "/oracle-a", profile);
+        var start = new System.Diagnostics.ProcessStartInfo("dotnet") { UseShellExecute = false };
+        foreach (var value in new[] { "/app/Policy.Harness/bin/Release/net10.0/Policy.Harness.dll", "generate", root + "/b", root + "/oracle-b", profile }) start.ArgumentList.Add(value);
+        using var process = System.Diagnostics.Process.Start(start)!;
+        if (!process.WaitForExit(30000)) { process.Kill(true); throw new TimeoutException("Fixture process timed out"); }
+        Assert.Equal(0, process.ExitCode);
+        Fixtures.Verify(root + "/a"); Fixtures.Verify(root + "/b");
+        foreach (var file in Directory.GetFiles(root + "/a", "*", SearchOption.AllDirectories))
+            Assert.Equal(File.ReadAllBytes(file), File.ReadAllBytes(Path.Combine(root + "/b", Path.GetRelativePath(root + "/a", file))));
+        Assert.Equal(File.ReadAllBytes(root + "/oracle-a/cases.json"), File.ReadAllBytes(root + "/oracle-b/cases.json"));
+        Assert.Equal(documents, Directory.GetFiles(root + "/a", "*.txt", SearchOption.AllDirectories).Length);
+        Assert.Equal(allowance, Storage.Read<Scenario[]>(root + "/oracle-a/cases.json").Single(s => s.Id == "equipment").Required[0]);
+    }
+
     [Fact]
     public void CorpusIsByteIdenticalAndManifestVerified()
     {

@@ -8,6 +8,7 @@
 !runbooks/**
 !shapes/**
 !Dockerfile
+!fixture-profiles.json
 !coordinator.sh
 **/bin
 **/obj

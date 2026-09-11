@@ -6,7 +6,7 @@ try
 {
     switch (action)
     {
-        case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle"); Console.WriteLine("Generated seven fictional documents and eight independent oracle cases."); break;
+        case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle", args.ElementAtOrDefault(3) ?? Environment.GetEnvironmentVariable("DEMO_PROFILE") ?? "default"); Console.WriteLine("Generated the selected fictional corpus and eight independent oracle cases."); break;
         case "bootstrap": await Bootstrap.Run(args.ElementAtOrDefault(1) ?? "fixture", "/inputs", "/credentials", "/work", args.Contains("--approve")); break;
         case "provider": await ProviderFixture.Run(); break;
         case "reports": Reports.Check(args[1], int.Parse(args[2])); break;

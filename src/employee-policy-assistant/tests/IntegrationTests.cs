@@ -47,13 +47,13 @@ public sealed class IntegrationTests
         var hr = Acceptance.Grant("hr"); var employee = Acceptance.Grant("employee");
         await app.SelectIdentityAsync(hr);
         var answer = await app.AskAsync("What is the confidential retention review code?", hr.Models[0]);
-        Assert.Contains("ORCHID-731", answer.Result!.Completion!.Text);
+        Assert.Contains(Acceptance.ReadScenario("hr-allowed").Required[0], answer.Result!.Completion!.Text);
         await app.SelectIdentityAsync(employee);
         Assert.Null(app.Answer); Assert.Null(app.SessionId);
         await using var oldClient = MunariumClient.Rest(new() { Endpoint = Bootstrap.Endpoint, Token = hr.Token, Uid = hr.Uid });
         Assert.Equal("closed", (await oldClient.Sessions.GetAsync(answer.SessionId)).State);
         var restricted = await app.AskAsync("What is the confidential retention review code?", employee.Models[0]);
-        Assert.DoesNotContain("ORCHID-731", restricted.Result!.Completion!.Text);
+        Assert.DoesNotContain(Acceptance.ReadScenario("hr-allowed").Required[0], restricted.Result!.Completion!.Text);
         Assert.DoesNotContain(restricted.Result.Hits, h => h.SourcePath.Contains("/hr/"));
         await using var wrongUid = MunariumClient.Rest(new() { Endpoint = Bootstrap.Endpoint, Token = employee.Token, Uid = "policy-hr" });
         await Assert.ThrowsAsync<ForbiddenException>(() => wrongUid.Sessions.GetAsync(restricted.SessionId));
@@ -93,7 +93,7 @@ public sealed class IntegrationTests
         var restored = await second.AskAsync("equipment allowance", grant.Models[0], workId: "same-work");
         second.Export(Path.Combine(path, "restored.txt"));
         Assert.Equal("complete", restored.Status); Assert.Equal(before, await Calls());
-        Assert.Contains("750", File.ReadAllText(Path.Combine(path, "restored.txt")));
+        Assert.Contains(Acceptance.ReadScenario("equipment").Required[0], File.ReadAllText(Path.Combine(path, "restored.txt")));
     }
     [Fact]
     public async Task LostStreamResponseReconcilesWithoutNewPaidTurn()
