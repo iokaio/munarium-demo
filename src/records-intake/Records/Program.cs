@@ -6,7 +6,7 @@ try
 {
     switch (args.FirstOrDefault())
     {
-        case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle"); break;
+        case "generate": Fixtures.Generate(args.ElementAtOrDefault(1) ?? "/inputs", args.ElementAtOrDefault(2) ?? "/oracle", args.ElementAtOrDefault(3) ?? Environment.GetEnvironmentVariable("DEMO_PROFILE") ?? "default"); break;
         case "bootstrap": await Bootstrap.Run(); break;
         case "stage":
             foreach (var route in Storage.Read<Route[]>("/inputs/routes.json"))

@@ -87,3 +87,23 @@ Run one invocation per Compose project at a time because its credential volume i
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/records-intake/fixture-profiles.json) select `default` (seed 5091, eight records), `heldout` (seed 85091, eight records with distinct reference codes), or `stress` (seed 95091, 80 independently routed records). Stress repeats the eight authored subject types across four departments with unique business identifiers. All 80 records must pass discovery, stable-file handling, upload, binding, build verification and their own approved cutover. Publication assertions check the exact private expected reference, source path and content hash.
+
+Manifests record seed, generator/template revisions, profile, document/route counts, logical date, timezone, locale and hashes. Three native tests invoke separate .NET generator processes and compare every corpus byte and private oracle; they also assert the expected profile cardinality and seeded reference. Different profiles require empty input state. No AI completion or query expansion is configured in any profile.
+
+Run `./tools/measure_demo.ps1 -Demo records-intake -Project records-heldout -Profile heldout`, or `sh tools/measure_demo.sh records-intake records-stress stress`, choosing a new project name.
+
+On 2026-09-11, the complete profile results were:
+
+| Profile and entry point | Measurement ID | Application checks passed | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `8779334dd2ad4552840e148602341a36` | 21 | 126.23 s | 201.76% | 247,170,334 bytes |
+| Stress, POSIX | `20260911T083108Z-b12c7c5134d57df5` | 93 | 136 s | 181.05% | 269,693,747 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T083031Z-36a00cb023893603` | 21 | 134 s | 189.78% | 274,307,481 bytes |
+
+Every profile additionally passed 82 .NET SDK checks, with the same two documented chronology skips. The fresh checkout used snapshot `bc81be50a56b61f71261a2d8e261440f0df7dcbf`, matching final source, and empty project state. Test IDs are `3013b14cdc5f4c65a59dbea385e523b7` (held-out), `20260911T083109Z-d69c815a2c09cf59` (stress), and `20260911T083032Z-7cf05b5a58eeb793` (fresh default). Reports remain under `artifacts/records-intake/`; earlier failures are preserved separately.
+
+Held-out retained volumes occupy 53,781,830 logical bytes; stress occupies 83,802,568 bytes. The local runner is 1,227,287,802 bytes unpacked. These measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core, and sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. The shared guide records base-image transfer sizes separately. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.

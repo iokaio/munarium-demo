@@ -27,23 +27,29 @@ public sealed class Tests
         var c = Case(id); var bytes = File.ReadAllText(Path.Combine(c.Input, c.File)); Storage.Write(Path.Combine(c.Input, c.File), bytes.Replace("Revision A", "Revision B").Replace($"RECORD-{id:00}-A", $"RECORD-{id:00}-B"));
         await c.App.Scan(DateTimeOffset.UtcNow); await c.App.Scan(DateTimeOffset.UtcNow.AddSeconds(3));
     }
-    [Fact, Trait("Kind", "unit")]
-    public void GeneratorIsReproducibleAcrossProcesses()
+    [Theory, Trait("Kind", "unit")]
+    [InlineData("default", 8, "RECORD-01-A")]
+    [InlineData("heldout", 8, "SEED-85091-RECORD-01-A")]
+    [InlineData("stress", 80, "SEED-95091-RECORD-01-A")]
+    public void GeneratorIsReproducibleAcrossProcesses(string profile, int count, string firstReference)
     {
-        var paths = new[] { "/tmp/records-fixture-a", "/tmp/records-fixture-b" };
-        foreach (var path in paths) { using var child = Process.Start(new ProcessStartInfo("dotnet") { ArgumentList = { "/app/Records/bin/Release/net10.0/Records.dll", "generate", path, path + "-oracle" } })!; child.WaitForExit(); Assert.Equal(0, child.ExitCode); }
+        var paths = new[] { $"/tmp/records-{profile}-a", $"/tmp/records-{profile}-b" };
+        foreach (var path in paths)
+        {
+            using var child = Process.Start(new ProcessStartInfo("dotnet") { ArgumentList = { "/app/Records/bin/Release/net10.0/Records.dll", "generate", path, path + "-oracle", profile } })!;
+            if (!child.WaitForExit(30000)) { child.Kill(true); throw new TimeoutException("Generator timed out"); }
+            Assert.Equal(0, child.ExitCode);
+        }
         Assert.Equal(File.ReadAllBytes(paths[0] + "/manifest.json"), File.ReadAllBytes(paths[1] + "/manifest.json")); Assert.Equal(File.ReadAllBytes(paths[0] + "-oracle/expected.json"), File.ReadAllBytes(paths[1] + "-oracle/expected.json"));
-        Storage.Save(Path.Combine(Work, "fixture-manifest.json"), Storage.Read<JsonElement>(paths[0] + "/manifest.json"));
+        foreach (var file in Directory.GetFiles(paths[0], "*", SearchOption.AllDirectories)) Assert.Equal(File.ReadAllBytes(file), File.ReadAllBytes(Path.Combine(paths[1], Path.GetRelativePath(paths[0], file))));
+        var expected = Storage.Read<Dictionary<string, string>>(paths[0] + "-oracle/expected.json");
+        Assert.Equal(count, expected.Count); Assert.Equal(firstReference, expected["office/case-001.txt"]); Assert.Equal(count, Storage.Read<Route[]>(paths[0] + "/routes.json").Length);
+        Assert.False(File.Exists(paths[0] + "/expected.json"));
+        Storage.Save(Path.Combine(Work, $"fixture-{profile}-manifest.json"), Storage.Read<JsonElement>(paths[0] + "/manifest.json"));
     }
+    public static IEnumerable<object[]> BusinessCases() => Storage.Read<Dictionary<string, string>>("/oracle/expected.json").Keys.Order(StringComparer.Ordinal).Select(file => new object[] { int.Parse(Path.GetFileNameWithoutExtension(file)[5..], System.Globalization.CultureInfo.InvariantCulture) });
     [Theory, Trait("Kind", "business")]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    [InlineData(6)]
-    [InlineData(7)]
-    [InlineData(8)]
+    [MemberData(nameof(BusinessCases), DisableDiscoveryEnumeration = true)]
     public async Task IndependentDocumentLifecycle(int id)
     {
         var c = Case(id); var now = DateTimeOffset.UtcNow; var expected = Storage.Read<Dictionary<string, string>>("/oracle/expected.json")[c.File];

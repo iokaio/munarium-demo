@@ -113,7 +113,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 ### 5. Records intake service — C# background worker
 
-**Implementation status.** The [records intake demo](demos/records-intake/README.md) is implemented in `src/records-intake/` with .NET 10 and the official client. Its eight synthetic records exercise stable-file reconciliation, separate upload and binding, operator builds, verified cutovers and durable recovery. All 19 application tests and 82 SDK tests passed, with two documented kernel-only chronology skips. A fresh checkout repeated the complete suite through the POSIX entry point on Docker Desktop for Windows and regenerated identical fixture manifests. It configures no models, so cloud qualification is explicitly not applicable. The walkthrough contains exact report IDs and host limits.
+**Implementation status.** The [records intake service](demos/records-intake/README.md) implements the C# background worker with explicit verification and approval before index activation. Default and independently seeded held-out profiles each passed 21 application checks; the 80-record stress profile passed 93, including the full lifecycle of every record. Each profile also passed 82 SDK checks with two documented chronology skips. The final source passed from a fresh checkout through Ubuntu WSL with empty state. No AI completion or expansion is configured. The walkthrough records manifests, measurements and remaining native-host limits.
 
 **Use case and merit.** Departmental documents arrive in shared folders and must become searchable reliably. A .NET Worker Service demonstrates the often missing operational half of an AI application: publishing usable evidence.
 

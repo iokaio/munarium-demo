@@ -35,6 +35,6 @@ public static class Bootstrap
             Storage.Save($"/credentials/{kind}.json", new Grant(issued.Token, uid, routes, restricted));
         }
         Storage.Save($"/work/bootstrap/{ns}.json", new { clientRevision = Revision, server = "1.1.1", manifest = System.Text.Json.JsonDocument.Parse(manifest).RootElement, routes, restricted });
-        Console.WriteLine("Eight collections configured. No documents uploaded, no index activated, no model configured.");
+        Console.WriteLine($"{routes.Count} collections configured. No documents uploaded, no index activated, no model configured.");
     }
 }
