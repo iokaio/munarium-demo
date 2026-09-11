@@ -147,7 +147,17 @@ pub async fn run(kind: &str, dir: &str) -> Result<()> {
             &ops(true)?.reports.usage(Default::default()).await?,
         )?;
         let expected = read("/oracle/expected.json")?;
-        for n in assignments(provider)? {
+        let cases = if provider == "fixture" {
+            expected
+                .as_object()
+                .unwrap()
+                .keys()
+                .map(|id| id[5..].parse::<usize>())
+                .collect::<std::result::Result<Vec<_>, _>>()?
+        } else {
+            assignments(provider)?
+        };
+        for n in cases {
             if provider == "openrouter" {
                 println!("Pacing independent OpenRouter case for 60 seconds");
                 tokio::time::sleep(Duration::from_secs(60)).await;
@@ -343,7 +353,8 @@ pub async fn run(kind: &str, dir: &str) -> Result<()> {
                 .await?;
                 ensure!(
                     alternate["analysis_status"] == "verified"
-                        && alternate["suggestion"]["requirement_code"] == "BILLING-MIGRATE",
+                        && alternate["suggestion"]["requirement_code"]
+                            == expected["case-001"]["code"],
                     "Trusted scope not applied"
                 );
                 ensure!(

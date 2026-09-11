@@ -207,7 +207,7 @@ Size is relative implementation scope, not a delivery estimate: **small** means 
 
 **Acceptance.** No secrets or denied sources reach the artifact. Findings cite retrieved requirements. Deterministic failures can fail CI; model suggestions are advisory by default, with a distinct exit status for unavailable or unverified analysis. A failed network call does not cause blind turn replay.
 
-**Implementation status.** Engineering change review is implemented in [its source folder](../src/engineering-change-review) and [walkthrough](demos/engineering-change-review/README.md). Controlled and fresh-checkout qualification passed all 25 application checks and 79 official Rust client checks. All eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls. Deterministic CI failures, advisory findings and unavailable analysis have separate outcomes.
+**Implementation status.** Engineering change review is implemented in [its source folder](../src/engineering-change-review) and [walkthrough](demos/engineering-change-review/README.md). Controlled and fresh-checkout qualification passed all 25 application checks and 79 official Rust client checks. All eight online cases passed with the 3/3/2 allocation and paced OpenRouter calls. Deterministic CI failures, advisory findings and unavailable analysis have separate outcomes. Default and independently seeded held-out profiles now pass 26 application checks; the 80-change, 20-component stress profile passes 98. Separate-process reproducibility, fresh empty-state WSL qualification and resource measurements are recorded in the walkthrough.
 
 ## Optional extension: complete structured evidence
 

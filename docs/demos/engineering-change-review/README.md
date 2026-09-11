@@ -79,3 +79,27 @@ The generator fixes seed 11091, template revision 1, UTC logical time 2026-09-11
 
 
 Shared [capacity checks, workload measurement, image download sizes and native-host checklist](../../demo-qualification.md) apply to this demo. Reports describe the selected profile and retain failed outcomes.
+
+## Held-out and stress profiles
+
+The [profile definitions](../../../src/engineering-change-review/fixture-profiles.json) select `default` (seed 11091, eight changes), `heldout` (seed 91091, eight changes with changed requirement codes, owners and release tickets), or `stress` (seed 101091, 80 changes across 20 component scopes and 40 procedure documents). Stress repeats the eight authored migration/required-field/injection types with unique change identities and 200 input files. Every change independently checks its private finding, requirement-code and deterministic-failure expectations, plus the actual CI exit status and completed-work replay.
+
+The validator reads the selected procedure's explicit requirement code and exact requirement/release fields, checks source hashes, and requires both citations. It does not assume the original billing/catalog code literals. This remains the documented narrow procedure format; arbitrary engineering-policy interpretation is outside the tutorial.
+
+Manifests record profile, seed, generator/template revisions, record counts, logical date, timezone, locale, component scopes and hashes. Native checks assert profile sizes and changed values; two separate network-disabled Rust processes reproduce every corpus and oracle byte for each profile. Generation refuses a different profile in existing state. Only the canned provider budget scales with corpus size; online runs require the default profile.
+
+Run `./tools/measure_demo.ps1 -Demo engineering-change-review -Project engineering-heldout-final -Profile heldout`, or `sh tools/measure_demo.sh engineering-change-review engineering-stress stress`, with new project state.
+
+All profiles passed on 2026-09-11:
+
+| Profile and entry point | Measurement ID | Application checks | Elapsed | Sampled peak CPU | Sampled peak memory |
+|---|---|---:|---:|---:|---:|
+| Held-out, PowerShell | `026a6684f865440dadcbd35579088e1c` | 26 | 195.93 s | 216.72% | 769,340,211 bytes |
+| Stress, POSIX | `20260911T093138Z-3f55219ce68e1676` | 98 | 192 s | 207.60% | 617,925,836 bytes |
+| Default, fresh checkout through Ubuntu WSL | `20260911T093100Z-0a0f57124df9c3ae` | 26 | 283 s | 205.42% | 541,379,788 bytes |
+
+Every profile also passed native formatting, strict Clippy and 79 SDK checks, with no skips and the documented upstream chronology coverage gap. Final source matches fresh-checkout snapshot `28fcd99112c4efe5a7ec36f0da0fed8a89c7117e`, tested with empty project state. Test IDs are `b724e418c26f469d818d46c7bc9bf331` (held-out), `20260911T093140Z-d6880226e99b6663` (stress), and `20260911T093101Z-b1b6f6b43441d6c2` (fresh default). Initial measurement `6d1de2c383c6445faa862a9d41948dd6` failed on a redundant Rust string conversion during Clippy; its test run `82346dc449c3414a88c0da198d49ce42` remains recorded. The correction was included in all final profiles.
+
+Held-out retained volumes occupy 52,675,918 logical bytes; stress occupies 56,430,588 bytes. The development runner is 5,805,085,398 bytes unpacked. Reports remain under `artifacts/engineering-change-review/`. Measurements used isolated projects on a shared Docker Desktop host with other qualification work active. Timings include cache/build effects; 100% CPU denotes one core. Sampled memory excludes host/VM/build-daemon overhead and may miss brief peaks. See the shared guide for compressed base-image transfers. WSL qualifies Linux userspace with Docker Desktop; native Linux/macOS, ARM64 and Apple Silicon emulation remain unqualified.
+
+Online run `07954ac5b0804decba0701363cafb557` passed eight fresh cases: three OpenAI, three Anthropic and two OpenRouter, with 60 seconds before each OpenRouter case. No local model inference ran.

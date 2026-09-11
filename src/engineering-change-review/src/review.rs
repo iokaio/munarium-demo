@@ -231,9 +231,24 @@ pub fn validate(result: &Value, g: &Grant, component: &str, change: &Change) -> 
             },
         "Unsupported finding"
     );
-    let code = format!("{}-MIGRATE", component.to_uppercase());
-    let requirement = format!("Schema changes require a reviewed migration plan for {component}.");
-    let release = format!("Record rollback ownership before deploying {component}.");
+    let architecture =
+        fs::read_to_string(format!("/inputs/documents/{component}-architecture.txt"))?;
+    let procedure = fs::read_to_string(format!("/inputs/documents/{component}-release.txt"))?;
+    let field = |source: &str, prefix: &str| -> Result<String> {
+        let mut values = source.lines().filter_map(|line| line.strip_prefix(prefix));
+        let value = values
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Missing authoritative field"))?
+            .to_string();
+        ensure!(
+            !value.is_empty() && values.next().is_none(),
+            "Ambiguous authoritative field"
+        );
+        Ok(value)
+    };
+    let code = field(&architecture, "Requirement code: ")?;
+    let requirement = field(&architecture, "Requirement: ")?;
+    let release = field(&procedure, "Release: ")?;
     ensure!(
         answer["requirement_code"] == code
             && answer["requirement_quote"] == requirement

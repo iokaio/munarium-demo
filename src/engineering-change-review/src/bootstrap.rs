@@ -71,6 +71,20 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
     );
     assignments(provider)?;
     verify("/inputs")?;
+    let manifest = read("/inputs/manifest.json")?;
+    ensure!(
+        provider == "fixture" || manifest["profile"] == "default",
+        "Online qualification requires the default profile"
+    );
+    let rpm = if provider == "fixture" {
+        manifest["record_count"]
+            .as_u64()
+            .unwrap()
+            .saturating_mul(3)
+            .max(60)
+    } else {
+        60
+    };
     let model = if provider == "fixture" {
         "engineering-fixture".into()
     } else {
@@ -106,14 +120,16 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
         provider
     };
     let encoded = serde_json::to_string(&model)?;
-    api.providers.apply_config(&format!("apiVersion: munarium.ioka.io/v1\nkind: ProviderConfig\nmetadata: {{name: {config}}}\nspec:\n  provider: {family}\n  {connection}\n  models: {{complete: [{encoded}], fast: {encoded}}}\n  budgets: {{rpm: 60, dailyTokens: {{fast: 200000}}}}\n")).await?;
+    api.providers.apply_config(&format!("apiVersion: munarium.ioka.io/v1\nkind: ProviderConfig\nmetadata: {{name: {config}}}\nspec:\n  provider: {family}\n  {connection}\n  models: {{complete: [{encoded}], fast: {encoded}}}\n  budgets: {{rpm: {rpm}, dailyTokens: {{fast: 200000}}}}\n")).await?;
     ensure!(
         api.providers.health(&config).await?.healthy,
         "Provider health failed"
     );
     api.runbooks.apply_shape(&shape, None).await?;
     let mut scopes = BTreeMap::new();
-    for component in ["billing", "catalog", "security-admin"] {
+    let mut components: Vec<String> = serde_json::from_value(manifest["components"].clone())?;
+    components.push("security-admin".into());
+    for component in components {
         let name = format!("{namespace}-{component}");
         let book=template.replace("__NAME__",&name).replace("__PROVIDER__",&config).replace("__LEVEL__",if component=="security-admin"{"2"}else{"0"})+"\n  steps:\n    - resolveSources: {}\n    - buildIndex: {}\n    - verify: {}\n    - cutover: {approval: required}\n";
         api.runbooks.apply_runbook(&book).await?;
@@ -161,7 +177,7 @@ pub async fn run(provider: &str, approve: bool) -> Result<()> {
             "Incomplete index run"
         );
         if component != "security-admin" {
-            scopes.insert(component.into(), format!("{name}@1"));
+            scopes.insert(component, format!("{name}@1"));
         }
     }
     let token = mint(
