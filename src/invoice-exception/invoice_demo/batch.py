@@ -8,6 +8,7 @@ import io
 import json
 import os
 import sqlite3
+import time
 from pathlib import Path
 from uuid import uuid4
 
@@ -193,6 +194,8 @@ def process(
                     continue  # An empty transcript is never permission to resubmit.
             else:
                 try:
+                    if config["provider"] == "openrouter":
+                        time.sleep(60)
                     session = api.sessions.create(runbook)
                     session_id = session.session_id
                     with db:

@@ -401,7 +401,7 @@ Every demo needs a real-Server smoke run and all of its named acceptance cases a
 
 The controlled provider returns canned responses, so separately run answer-quality and grounding cases against the preferred OpenAI, Anthropic, and OpenRouter models. Do not run these new demo tests against Ollama or provision local completion models. After initial dependency provisioning, the controlled suite and synthetic generator must run using local containers without external services. Real AI qualification requires Internet access and the configured provider keys; a keyless pass alone does not establish answer quality. Record exact provider/model identifiers, usage, quality results, and declared acceptance thresholds; identical synthetic inputs do not imply identical model prose or latency.
 
-For the explicit cloud action, keep an explicit provider-to-case assignment in source and assert every assigned case against the private oracle. The recorded invoice reference distributes eight tests as follows; preserve its historical results, but use the preferred 3/3/2 balance for new eight-case suites:
+For the explicit cloud action, keep an explicit provider-to-case assignment in source and assert every assigned case against the private oracle. The table below preserves the historical invoice reference. The current invoice suite was rebalanced and passed on 2026-09-11 with cases 001/003/005 on OpenAI, 002/004/006 on Anthropic, and paced 019/020 on OpenRouter. Use this preferred 3/3/2 balance for eight-case suites:
 
 | Provider and preferred model | Generated cases | Business assertions |
 |---|---|---|

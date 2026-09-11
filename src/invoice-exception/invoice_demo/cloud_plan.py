@@ -2,9 +2,9 @@
 """Distinct acceptance scenarios; each cloud provider gets at least two cases."""
 
 CLOUD_CASES = {
-    "openai": ("case-001", "case-003"),  # Clean match, missing receipt.
-    "anthropic": ("case-002", "case-004"),  # Partial receipt, price variance.
-    "openrouter": ("case-005", "case-006", "case-019", "case-020"),  # Total, order, duplicates.
+    "openai": ("case-001", "case-003", "case-005"),  # Match, missing receipt, total.
+    "anthropic": ("case-002", "case-004", "case-006"),  # Partial receipt, price, order.
+    "openrouter": ("case-019", "case-020"),  # Independently checked duplicate invoices.
 }
 
 

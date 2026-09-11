@@ -96,11 +96,11 @@ The suite recreates the test Server with the supplied environment, checks each n
 
 | Provider | Cases | Acceptance scenarios |
 |---|---|---|
-| OpenAI | 001, 003 | Clean match and missing-receipt abstention |
-| Anthropic | 002, 004 | Partial receipt and price variance |
-| OpenRouter | 005, 006, 019, 020 | Incorrect total, missing order, and both duplicate submissions |
+| OpenAI | 001, 003, 005 | Clean match, missing-receipt abstention, and incorrect total |
+| Anthropic | 002, 004, 006 | Partial receipt, price variance, and missing order |
+| OpenRouter | 019, 020 | Both duplicate submissions, independently asserted |
 
-Each invocation has a fresh run ID under `artifacts/invoice-exception/cloud/`, with packet files, an independent quality report, and JUnit XML for each provider. Every assigned case must pass, and each provider executes at least two tests. Missing keys, failed provider setup, absent packets, wrong provider/model identities, and unexpected skips fail the suite. A failed provider does not prevent the remaining providers from being exercised. Case selection happens after whole-corpus duplicate detection, so selecting a subset cannot hide duplicate invoices. Fresh cloud runs request new completions; interrupted jobs within the same run retain their journal for explicit reconciliation.
+Each new OpenRouter submission waits 60 seconds before creating its session. Completed exports and transcript reconciliation do not incur that pause or a new completion. Each invocation has a fresh run ID under `artifacts/invoice-exception/cloud/`, with packet files, an independent quality report, and JUnit XML for each provider. Every assigned case must pass, and each provider executes at least two tests. Missing keys, failed provider setup, absent packets, wrong provider/model identities, and unexpected skips fail the suite. A failed provider does not prevent the remaining providers from being exercised. Case selection happens after whole-corpus duplicate detection, so selecting a subset cannot hide duplicate invoices. Fresh cloud runs request new completions; interrupted jobs within the same run retain their journal for explicit reconciliation.
 
 Model query expansion is absent from this runbook. Completion output is capped at 768 tokens per initial call; Server may make a truncation retry with a larger budget. Provider token usage is reported, not converted to currency. The suite uses only generated fictional inputs and incurs provider usage. Controlled outage tests remain part of the keyless suite; they are not repeated against paid providers. The full 20-case controlled suite remains separate from the eight-case distributed cloud suite.
 
@@ -119,3 +119,6 @@ The Python source and original templates in src/invoice-exception use Apache-2.0
 ## Online-only workflow recheck
 
 After removing real local-model testing on 2026-09-10, all 29 application tests, 175 SDK tests (four documented chronology skips), and 20 controlled invoice cases passed again. The fresh cloud run 52f7978dd3b74b44882ff4550fd582a0 passed both OpenAI cases, both Anthropic cases, and three of four OpenRouter cases. OpenRouter case-005 remained uncertain with no recoverable completed transcript; its packet was absent and the cloud action correctly failed. Explicit reconciliation reused the three completed packets without another AI call and preserved the unresolved case. Initial failed reports remain as tests-initial.xml and quality-initial.json in that run's OpenRouter directory. This latest run is not a complete cloud pass; the earlier successful run above remains historical evidence. No paid turn was blindly retried.
+
+
+On 2026-09-11, the rebalanced cloud run `c617074b08ce45c8ba1503b685d503cc` passed all eight fresh cases with a 3/3/2 OpenAI/Anthropic/OpenRouter allocation and 60-second pacing before each OpenRouter submission. No response was reused, uncertain or unverified. Recorded input/output tokens were 1872/558 for OpenAI, 2089/641 for Anthropic, and 2329/3493 for OpenRouter. The isolated `invoice-balancecheck` controlled run passed 29 application tests, 175 SDK tests with four documented chronology skips, and all 20 business cases. Prior failed and historical cloud runs remain recorded above.

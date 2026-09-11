@@ -57,8 +57,10 @@ def test_partial_cloud_assessment_requires_every_assigned_packet(tmp_path):
         {"provider": "openai", "model": "test"},
         CLOUD_CASES["openai"],
     )
-    assert report["cases"] == 2
-    assert report["failures"] == ["case-001: missing packet", "case-003: missing packet"]
+    assert report["cases"] == 3
+    assert report["failures"] == [
+        "case-001: missing packet", "case-003: missing packet", "case-005: missing packet"
+    ]
 
 
 @pytest.mark.parametrize("provider,model", [("anthropic", "fixture"), ("openai", "wrong-model")])
