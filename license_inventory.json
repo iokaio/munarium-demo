@@ -1,6 +1,9 @@
 {
   "default_license": "Apache-2.0",
   "noncommentable_assets": [
+    {"path": "docs/demos/records-intake/application.png", "license": "Apache-2.0", "notice": "NOTICE"},
+    {"path": "src/records-intake/Records/packages.lock.json", "license": "Apache-2.0", "notice": "NOTICE"},
+    {"path": "src/records-intake/tests/packages.lock.json", "license": "Apache-2.0", "notice": "NOTICE"},
     {
       "path": "docs/demos/maintenance-terminal/application.png",
       "license": "Apache-2.0",
