@@ -1,6 +1,11 @@
 bin/
 obj/
 *.user
+
+# Local agent guidance. Keep the two root copies identical and untracked.
+/AGENTS.md
+/CLAUDE.md
+
 # populated at build/deploy time by Dockerfile COPY / run-local.ps1
 src/Demo.Web/wwwroot/downloads/runbooks/*.yaml
 
