@@ -21,6 +21,14 @@ Image audits, security scans and main-branch source CI passed. See the
 [public release](https://github.com/iokaio/munarium/releases/tag/v1.2.0) for
 child digests, signature verification and the exact scope of qualification.
 
+The online web demo was upgraded to this backend on 2026-09-14. Deployment
+checks confirmed the exact image on both REST and gRPC services and passed
+web health checks. Thirteen browser checks passed for visitor/operator gates,
+persona controls and responsive layouts. These were free UI checks; a fresh
+hosted-provider streaming answer was not completed in this acceptance run.
+The isolated real-model container tests above are separate from that remaining
+online check. Server 1.2.1 is not yet a qualified or published baseline.
+
 The synthetic upgrade rehearsal preserved data/configuration from 1.1.1 to
 1.2.0, then restored the pre-upgrade backup and successfully started 1.1.1.
 An image-only rollback cannot open the new 0032/0033 migrations. This does
