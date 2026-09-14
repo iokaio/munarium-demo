@@ -13,7 +13,7 @@ python tools/setup.py verify --corpus support
 Open <http://localhost:5310/support>. Initialization creates ignored `.env` with
 six independent random secrets only when that file does not already exist. If
 it exists, `init` leaves it unchanged, including any missing or empty settings.
-Starting creates PostgreSQL, Server 1.1.1, Ollama, and the web app, then downloads
+Starting creates PostgreSQL, Server 1.2.0, Ollama, and the web app, then downloads
 the completion and embedding models. Loading verifies source hashes, applies
 the provider and shapes, binds runbook default models to your selected provider,
 uploads documents, and builds indexes. `--approve` authorizes cutover only for

@@ -1,50 +1,58 @@
 # Compatibility
 
-The [Server 1.2 upgrade guide](server-1.2.md) covers the new API/client surface,
-vocabulary defaults, original-file references and database restore rollback.
-The baseline below remains the recorded release until 1.2 image and deployment
-verification are complete.
+The [Server 1.2 upgrade guide](server-1.2.md) covers the complete API/client
+surface, vocabulary defaults, original-file references and database restore
+rollback. The default web-demo deployment now pins the published 1.2.0 image.
 
-See [standalone deployment validation](open-source-preparation.md) for the bundled-data acceptance results.
-
-The table records the demo's compatible baseline, not a release of every
-component under one version. The demo web image is built locally from this
-checkout. No release was listed in the public
-[munarium-demo GitHub releases](https://github.com/iokaio/munarium-demo/releases)
-on **2026-09-10**.
-
-| Component | Demo baseline |
+| Component | Web-demo baseline |
 |---|---|
-| Munarium Server | `iokaio/munarium:1.1.1` |
-| Server source | `91c34b1b2a416cfa5e504b5bfe945be89f6ace89` |
-| Server index digest | `sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f` |
+| Munarium Server | `iokaio/munarium:1.2.0` |
+| Server source | `d9face75f0766d93ce195f230f77d41f2ef7eec4` |
+| Server index digest | `sha256:b1ef684bdb4d432dcb3cf750d5cd51938821232f2850496557f3fa95bc213d51` |
 | Web runtime/SDK | .NET 10 |
 | PostgreSQL image | pgvector PostgreSQL 16 |
-| Ollama | 0.11.10, qwen3:1.7b and all-minilm:22m |
+| Optional local Ollama baseline | 0.11.10, qwen3:1.7b and all-minilm:22m |
 
-Server 1.1.1 was published and anonymously pulled successfully on 2026-09-10 UTC. Its signed AMD64/ARM64 images passed pulled-image Ollama and persistence checks; ARM64 ran under emulation.
+Server 1.2.0 was published on **2026-09-14**. The exact signed AMD64 and ARM64
+manifests passed public-pull, real Ollama REST/gRPC, retrieval and restart
+persistence checks. AMD64 ran natively; ARM64 ran under emulation. The
+version-aware test harness is `2aee87b1c643063513c98a25c4e95476ffa8a152`.
+Image audits, security scans and main-branch source CI passed. See the
+[public release](https://github.com/iokaio/munarium/releases/tag/v1.2.0) for
+child digests, signature verification and the exact scope of qualification.
 
-Those execution results are the recorded acceptance history. A separate public
-metadata check on 2026-09-10 confirmed the index digest above on
-[Docker Hub](https://hub.docker.com/r/iokaio/munarium/tags), including the `1.1`
-and `latest` aliases. GitHub's Server releases still ended at `v1.1.0`, with no
-public `v1.1.1` tag or release page. Use the
-[Server source changelog](https://github.com/iokaio/munarium/blob/main/server/CHANGELOG.md)
-for the 1.1.1 change and the
-[publication record](https://github.com/iokaio/munarium/blob/main/server/CONTAINER.md#versions-and-verification)
-for the gap in public 1.1.1 signing instructions. Registry metadata checking
-does not repeat the execution or signature checks recorded above.
+The synthetic upgrade rehearsal preserved data/configuration from 1.1.1 to
+1.2.0, then restored the pre-upgrade backup and successfully started 1.1.1.
+An image-only rollback cannot open the new 0032/0033 migrations. This does
+not certify recovery of an arbitrary operator's database.
 
-To pin the baseline image bytes, set the following in `.env`:
+The web app is built from this repository and uses its own HTTP adapter.
+Additional example applications keep their individually pinned Server and SDK
+versions until their own wrappers and acceptance suites are updated. This is
+not a release of all examples, Matrix or every client under one version.
+Server client source packages 1.1.0 provide the complete 1.2 API; they remain
+source-installed rather than published to language package registries.
+
+To pin these exact bytes, set the following in your ignored `.env`:
 
 ```dotenv
-MUNARIUM_IMAGE=iokaio/munarium@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+MUNARIUM_IMAGE=iokaio/munarium@sha256:b1ef684bdb4d432dcb3cf750d5cd51938821232f2850496557f3fa95bc213d51
 ```
 
-To build the compatible Server directly from public source:
+To build the same Server source locally:
 
 ```console
-docker build --build-arg SOURCE_REVISION=91c34b1b2a416cfa5e504b5bfe945be89f6ace89 -t munarium-server:source https://github.com/iokaio/munarium.git#91c34b1b2a416cfa5e504b5bfe945be89f6ace89:server
+docker build --build-arg SOURCE_REVISION=d9face75f0766d93ce195f230f77d41f2ef7eec4 --build-arg BUILD_VERSION=1.2.0 -t munarium-server:source https://github.com/iokaio/munarium.git#d9face75f0766d93ce195f230f77d41f2ef7eec4:server
 ```
 
-Set `MUNARIUM_IMAGE=munarium-server:source` in your ignored `.env` before starting. A local build has its own digest and is not the signed release artifact. See [upgrade/rollback](../ops/upgrade-rollback.md) for deployment changes.
+Set `MUNARIUM_IMAGE=munarium-server:source` before starting. A local build has
+its own digest and is not the signed release artifact. Follow
+[upgrade/rollback](../ops/upgrade-rollback.md) for changes to an existing installation.
+Review automatic vocabulary generation and configured model charges before
+the upgraded Server starts processing existing collections.
+
+The previous 1.1.1 baseline was source
+`91c34b1b2a416cfa5e504b5bfe945be89f6ace89`, index
+`sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f`.
+Its historical [standalone deployment validation](open-source-preparation.md)
+remains a separate record; it is not relabeled as a new 1.2 execution.
