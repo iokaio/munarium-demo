@@ -1,5 +1,10 @@
 # Compatibility
 
+The [Server 1.2 upgrade guide](server-1.2.md) covers the new API/client surface,
+vocabulary defaults, original-file references and database restore rollback.
+The baseline below remains the recorded release until 1.2 image and deployment
+verification are complete.
+
 See [standalone deployment validation](open-source-preparation.md) for the bundled-data acceptance results.
 
 The table records the demo's compatible baseline, not a release of every
