@@ -12,9 +12,9 @@ are selectable demonstration roles; they are not assigned to visitors by an
 organization's identity system. Local model results should be evaluated against
 your own questions and acceptance criteria.
 
-The default deployment uses **Munarium Server 1.2.0**, PostgreSQL 16, **.NET 10**
+The default deployment uses **Munarium Server 1.2.1**, PostgreSQL 16, **.NET 10**
 and optional **Ollama 0.11.10**. The web app is built from this checkout; this
-repository has no published GitHub release as of **2026-09-10**. See
+repository has no published GitHub release as of **2026-09-14**. See
 [release compatibility](docs/releases/README.md) for the pinned Server digest
 and recorded validation.
 

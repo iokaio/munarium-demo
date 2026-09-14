@@ -1,13 +1,13 @@
-# Server 1.2.1 candidate validation
+# Server 1.2.1 transition and validation
 
-Server 1.2.1 is an **unpublished candidate**. The demo's default and documented
-online baseline remain [published Server 1.2.0](README.md). Do not substitute a
-candidate test result for release qualification or an operator's acceptance of
-a deployed installation.
+Server 1.2.1 is published and the demo's default image is pinned in the
+[compatibility record](README.md). This page retains its original filename for
+existing links. Release qualification and acceptance of a particular online
+installation remain separate checks.
 
 ## Changed Server behavior
 
-The [Server draft PR](https://github.com/iokaio/munarium/pull/28) adds
+The [merged Server PR](https://github.com/iokaio/munarium/pull/28) adds
 `POST /v1.2/query`: a caller supplies the question, collection scope and optional
 governing date, with clearance carried by its capability. Server selects the
 authorized governing publications, applies collection vocabulary, retrieves
@@ -22,7 +22,7 @@ claiming to resolve conflicting rules. Verified references accompany substantive
 claims. Applications should preserve this narrative instead of displaying each
 quotation as a separate answer or discarding explanations based on status alone.
 
-The candidate also adds collection-governance GET/PUT and original-publication
+The release also adds collection-governance GET/PUT and original-publication
 authorization. Published identities, hashes and index pins remain stable;
 withdrawal and governing-version decisions stay in Server. The ingesting
 application retains its source mapping, enforces current user admission and
@@ -43,7 +43,7 @@ digest and complete these checks against those exact bytes:
    dependency/image scans. Report skipped or unavailable checks separately.
 2. Back up the Server database, configuration, index artifacts and persistent web
    state. Restore the backup into an isolated installation and verify the prior
-   image before changing the online services. Candidate migration 0034 is
+   image before changing the online services. Migration 0034 is
    additive; an image-only rollback to 1.2.0 is not a recovery procedure.
 3. Preserve configured model credentials and vocabulary preferences. Check
    sampling defaults and hosted-model costs before eligible collections can
@@ -59,5 +59,5 @@ digest and complete these checks against those exact bytes:
 Use [upgrade and rollback](../ops/upgrade-rollback.md) and
 [backup and restore](../ops/backup-restore.md) for deployment procedures. Keep
 credentials, private deployment inventories and visitor data outside this
-public repository. This page records the required transition; it does not claim
-that the online demo has been upgraded or that candidate acceptance has passed.
+public repository. Record observed online acceptance separately from the
+published container's qualification; health checks alone do not validate answers.
