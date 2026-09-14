@@ -1,5 +1,9 @@
 # Upgrade and rollback
 
+For the 1.2 upgrade, follow the [Server 1.2 procedure](../releases/server-1.2.md),
+including the automatic vocabulary generation controls and required database
+restore for rollback to 1.1.
+
 Record the current web and Server image digests, source revision, runbook versions, provider configuration, and a verified backup before changing a deployment. Test the candidate in an isolated restored database with representative searches, chat, persona restrictions, and visitor login.
 
 Server 1.1.1 fixes selected-provider routing for query expansion as well as answer generation. Its release certification includes upgrade and rollback from 1.1.0 and 1.0.0 using synthetic data. That does not certify arbitrary future schema changes or every operator's dataset.
