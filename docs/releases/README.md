@@ -4,6 +4,10 @@ The [Server 1.2 upgrade guide](server-1.2.md) covers the complete API/client
 surface, vocabulary defaults, original-file references and database restore
 rollback. The default web-demo deployment now pins the published 1.2.0 image.
 
+The separate [1.2.1 candidate validation guide](server-1.2.1-candidate.md)
+describes the pending collection-query APIs, explanatory answers and qualification
+requirements. It does not change the published baseline below.
+
 | Component | Web-demo baseline |
 |---|---|
 | Munarium Server | `iokaio/munarium:1.2.0` |
