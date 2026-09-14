@@ -27,10 +27,14 @@ rollback cannot open migration 0034. This does not certify recovery of an
 arbitrary operator's database. Preserve a coordinated database and file-store
 backup before deployment.
 
-The online deployment is qualified separately from container publication.
-Its previous 1.2.0 deployment passed exact REST/gRPC image checks and thirteen
-free browser checks; no fresh hosted-provider streaming turn was completed in
-that run. Do not treat those historical checks as 1.2.1 live acceptance.
+The online demo was upgraded on 2026-09-14 after a coordinated Azure database
+backup and file-share snapshot. Exact REST/gRPC image checks, backend/web health
+and thirteen free browser checks passed on 1.2.1, covering visitor/operator
+admission, corpus pages, persona controls and responsive layouts. The web runtime
+was built from merged demo source `e331bdc7fed129583d599f5d3b9db6e730873a2d`.
+The existing paid-test stop remains in effect, so no fresh hosted-provider
+streaming turn is claimed. The real-model container tests above are separate
+from that remaining online check.
 
 The web app is built from this repository and uses its own HTTP adapter.
 Additional example applications keep their individually pinned Server and SDK
