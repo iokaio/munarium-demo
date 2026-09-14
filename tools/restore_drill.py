@@ -62,7 +62,7 @@ def main():
         created_network = True
         for name, image, env, ports in [
             (pg, info["Config"]["Image"], pg_env, []),
-            (server, config.get("MUNARIUM_IMAGE", "iokaio/munarium:1.1.1"), server_env, ["-p", "127.0.0.1::8080"]),
+            (server, config.get("MUNARIUM_IMAGE", "iokaio/munarium@sha256:b1ef684bdb4d432dcb3cf750d5cd51938821232f2850496557f3fa95bc213d51"), server_env, ["-p", "127.0.0.1::8080"]),
         ]:
             if name == server:
                 run("docker", "cp", str(dump), pg + ":/tmp/server.dump")
@@ -93,7 +93,7 @@ def main():
                        env=config | {"MUNARIUM_BASE_URL": base}, check=True)
         record = {"status": "passed", "dump_sha256": digest, "dump_bytes": dump.stat().st_size,
                   "checked": "all bundled source counts and active indexes after PostgreSQL restore",
-                  "server_image": config.get("MUNARIUM_IMAGE", "iokaio/munarium:1.1.1"),
+                  "server_image": config.get("MUNARIUM_IMAGE", "iokaio/munarium@sha256:b1ef684bdb4d432dcb3cf750d5cd51938821232f2850496557f3fa95bc213d51"),
                   "completedUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     finally:
         for name in reversed(owned):

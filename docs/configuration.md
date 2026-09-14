@@ -33,6 +33,6 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 | `DEMO_OLLAMA_URL`, `DEMO_OLLAMA_KEY` | Backend-only model readiness endpoint; key is required in gateway mode and not sent in direct mode |
 | `DEMO_OLLAMA_FAST`, `DEMO_OLLAMA_CAPABLE` | Direct-mode installed models; fast defaults to `qwen3:1.7b`, capable defaults to the fast model; Compose explicitly sets both |
 
-Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.1.1, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
+Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.2.0, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
 
 Optional Matrix configuration uses `MATRIX_BASE_URL`, `MATRIX_MGMT_TOKEN`, and `MATRIX_ADMIN_SHOWN`. Keep it disabled unless you operate Matrix and intend to expose its operator view.
