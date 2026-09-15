@@ -131,6 +131,7 @@ builder.Services.AddHttpClient<MunariumClient>(http =>
 });
 builder.Services.AddSingleton<TokenCache>();
 builder.Services.AddSingleton<ModelCatalogCache>();
+builder.Services.AddSingleton(new ModelTierPolicy(builder.Configuration.GetValue<bool>("DEMO_FAST_ONLY")));
 builder.Services.AddHttpClient<OllamaAvailability>();
 
 var app = builder.Build();
@@ -201,6 +202,10 @@ static string VisitorUid(HttpContext http)
         http.Connection.RemoteIpAddress?.ToString()).ToLowerInvariant();
 }
 
+static string ModelLimitMessage(bool dailyCap) => dailyCap
+    ? "This model tier has reached its daily token budget. Choose another available model, or try again after midnight UTC."
+    : "This model tier is rate limited right now. Try again in a minute.";
+
 static (int Status, object Payload)? Unavailable(Exception ex) => ex switch
 {
     MunariumUnreachableException => (503, new
@@ -216,7 +221,7 @@ static (int Status, object Payload)? Unavailable(Exception ex) => ex switch
     MunariumApiException api when api.Status == 429 => (429, new
     {
         error = (api.ProblemType ?? "").EndsWith("daily-cap-reached") ? "model-budget" : "rate-limited",
-        message = "This model tier is rate limited right now — try again shortly.",
+        message = ModelLimitMessage((api.ProblemType ?? "").EndsWith("daily-cap-reached")),
         status = api.Status,
         problemType = "upstream-error",
     }),
@@ -271,7 +276,7 @@ app.MapPost("/api/session/{corpus}", async (
 app.MapPost("/api/chat/{corpus}", async (
     string corpus, ChatApiRequest request, HttpContext http,
     Dictionary<string, CorpusConfig> corporaMap, TokenCache tokens, MunariumClient munarium,
-    ConversationCondenser condenser, TurnBudget budget, DemoStore store, OllamaAvailability ollama, CancellationToken ct) =>
+    ConversationCondenser condenser, TurnBudget budget, DemoStore store, OllamaAvailability ollama, ModelTierPolicy modelTiers, CancellationToken ct) =>
 {
     if (!corporaMap.TryGetValue(corpus, out var config))
         return Results.NotFound(new { error = "unknown-corpus", message = $"No corpus '{corpus}'." });
@@ -285,7 +290,7 @@ app.MapPost("/api/chat/{corpus}", async (
             message = "Questions are capped at 1,000 characters for this demo.",
         });
 
-    if (await ValidateModelSelection(request, ollama, ct) is { } selectionError) return selectionError;
+    if (await ValidateModelSelection(request, ollama, modelTiers, ct) is { } selectionError) return selectionError;
 
     var visitor = TurnBudget.VisitorKey(
         http.Request.Cookies[GateService.CookieName],
@@ -409,7 +414,7 @@ app.MapPost("/api/chat/{corpus}", async (
 app.MapPost("/api/chat/{corpus}/stream", async (
     string corpus, ChatApiRequest request, HttpContext http,
     Dictionary<string, CorpusConfig> corporaMap, TokenCache tokens, MunariumClient munarium,
-    ConversationCondenser condenser, TurnBudget budget, DemoStore store, OllamaAvailability ollama, CancellationToken ct) =>
+    ConversationCondenser condenser, TurnBudget budget, DemoStore store, OllamaAvailability ollama, ModelTierPolicy modelTiers, CancellationToken ct) =>
 {
     if (!corporaMap.TryGetValue(corpus, out var config))
         return Results.NotFound(new { error = "unknown-corpus", message = $"No corpus '{corpus}'." });
@@ -423,7 +428,7 @@ app.MapPost("/api/chat/{corpus}/stream", async (
             message = "Questions are capped at 1,000 characters for this demo.",
         });
 
-    if (await ValidateModelSelection(request, ollama, ct) is { } selectionError) return selectionError;
+    if (await ValidateModelSelection(request, ollama, modelTiers, ct) is { } selectionError) return selectionError;
 
     var visitor = TurnBudget.VisitorKey(
         http.Request.Cookies[GateService.CookieName],
@@ -557,7 +562,12 @@ app.MapPost("/api/chat/{corpus}/stream", async (
                         errorPayload = new
                         {
                             error = errName,
-                            message = "The backend could not complete this request.",
+                            message = errName switch
+                            {
+                                "model-budget" => ModelLimitMessage(true),
+                                "rate-limited" => ModelLimitMessage(false),
+                                _ => "The backend could not complete this request.",
+                            },
                             problemType = "upstream-error",
                         };
                         break;
@@ -641,11 +651,10 @@ app.MapPost("/api/chat/{corpus}/stream", async (
 
 // Full disclosure: the concrete model each family x tier choice resolves to,
 // straight from the server's free introspection plane (GET /v1/providers —
-// zero provider calls). The RAW introspection is cached for 5 minutes; since
-// 2026-09-01 every tier (frontier included) shows to every visitor — frontier
-// is budgeted per collection per day, not hidden.
+// zero provider calls). The RAW introspection is cached for 5 minutes;
+// deployment policy filters which tiers visitors can see and request.
 app.MapGet("/api/models", async (
-    ModelCatalogCache catalogCache, MunariumClient munarium, OllamaAvailability ollama, HttpContext http,
+    ModelCatalogCache catalogCache, MunariumClient munarium, OllamaAvailability ollama, ModelTierPolicy modelTiers, HttpContext http,
     CancellationToken ct) =>
 {
     try
@@ -666,8 +675,8 @@ app.MapGet("/api/models", async (
                 config = entry.Name,
                 provider = entry.Provider,
                 fast = entry.Fast,
-                capable = entry.Capable,
-                frontier = uiFamily == "ollama" ? null : entry.Frontier,
+                capable = modelTiers.Allows("capable") ? entry.Capable : null,
+                frontier = uiFamily == "ollama" || !modelTiers.Allows("frontier") ? null : entry.Frontier,
                 credentialOk = entry.CredentialOk,
                 expiresAt = uiFamily == "ollama" ? readiness?.ExpiresAt : null,
             };
@@ -879,12 +888,14 @@ app.MapGet("/readyz", async (MunariumClient munarium, CancellationToken ct) =>
     return Results.Json(new { ok = ready, munarium = ready }, statusCode: ready ? 200 : 503);
 });
 
-static async Task<IResult?> ValidateModelSelection(ChatApiRequest request, OllamaAvailability ollama, CancellationToken ct)
+static async Task<IResult?> ValidateModelSelection(ChatApiRequest request, OllamaAvailability ollama, ModelTierPolicy modelTiers, CancellationToken ct)
 {
     var family = (request.Family ?? "claude").ToLowerInvariant();
     var tier = (request.Tier ?? "fast").ToLowerInvariant();
     if (family is not ("claude" or "gpt" or "openrouter" or "ollama") || tier is not ("fast" or "capable" or "frontier"))
         return Results.BadRequest(new { error = "unknown-model-selection", message = "Choose an available provider and tier." });
+    if (!modelTiers.Allows(tier))
+        return Results.BadRequest(new { error = "unsupported-tier", message = "This demo offers Fast models only." });
     if (family != "ollama") return null;
     if (tier == "frontier")
         return Results.BadRequest(new { error = "unsupported-tier", message = "Ollama offers Fast and Capable tiers." });

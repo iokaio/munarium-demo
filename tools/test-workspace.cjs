@@ -7,7 +7,7 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { once } = require('node:events');
 
-(async () => {
+async function check(fastOnly) {
   const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'demo-workspace-'));
   const output = process.env.DEMO_DESIGN_OUTPUT || scratch;
@@ -15,7 +15,7 @@ const { once } = require('node:events');
   const app = spawn('dotnet', [path.resolve(__dirname, '../src/Demo.Web/bin/Release/net10.0/Demo.Web.dll')], {
     cwd: path.resolve(__dirname, '../src/Demo.Web'), windowsHide: true,
     env: { ...process.env, ASPNETCORE_ENVIRONMENT: 'Development', ASPNETCORE_URLS: 'http://127.0.0.1:0',
-      Gate__Disabled: 'true', MUNARIUM_BASE_URL: 'http://127.0.0.1:1', MUNARIUM_MGMT_TOKEN: 'test-only',
+      Gate__Disabled: 'true', DEMO_FAST_ONLY: String(fastOnly), MUNARIUM_BASE_URL: 'http://127.0.0.1:1', MUNARIUM_MGMT_TOKEN: 'test-only',
       DEMO_GATE_SECRET: 'test-only', DEMO_STORE_PATH: path.join(scratch, 'demo.sqlite') },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -57,15 +57,42 @@ const { once } = require('node:events');
           ]).map(event => 'event: progress\ndata: ' + JSON.stringify(event) + '\n\n').join('');
           const ending = sent.at(-1).message === 'Failed turn'
             ? 'event: error\ndata: ' + JSON.stringify({ error: 'test', message: 'Controlled failure' })
+            : sent.at(-1).message === 'Budget exhausted'
+              ? 'event: error\ndata: ' + JSON.stringify({ error: 'model-budget' })
             : 'event: done\ndata: ' + JSON.stringify(body);
           await route.fulfill({ contentType: 'text/event-stream', body: progress + ending + '\n\n' });
           return;
         }
       } else if (url.includes('/api/search/')) body = { hits: [{ docId: 'controlled/search-result', snippet: 'Search stays available.', score: 1 }] };
+      if (fastOnly && body.families) {
+        for (const family of Object.values(body.families)) { family.capable = null; family.frontier = null; }
+      }
       await route.fulfill({ contentType: 'application/json', body: JSON.stringify(body) });
     });
     await page.goto(base + '/');
     assert.equal(await page.locator('.dm-collection-card').count(), 6);
+    if (fastOnly) {
+      for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
+        await page.goto(base + '/' + corpus);
+        await page.locator('[data-dm-family="ollama"]').waitFor({ state: 'visible' });
+        assert.equal(await page.locator('[data-dm-tier]').count(), 1);
+        assert.equal(await page.locator('[data-dm-tier="fast"]').count(), 1);
+        for (const family of ['claude', 'gpt', 'openrouter', 'ollama']) {
+          const button = page.locator('[data-dm-family="' + family + '"]');
+          await button.click();
+          assert(!/capable|frontier/i.test(await button.getAttribute('title') || ''));
+          assert.equal(await page.locator('[data-dm-tier="fast"]').getAttribute('aria-pressed'), 'true');
+        }
+      }
+      await page.locator('[data-dm-input]').fill('Fast-only question');
+      await page.locator('[data-dm-input]').press('Enter');
+      await page.locator('.dm-bubble-assistant').waitFor();
+      assert.equal(sent.length, 1);
+      assert.equal(sent[0].tier, 'fast');
+      assert.deepEqual(errors, []);
+      console.log('PASS: Fast-only controls on six pages, provider switching and submitted tier.');
+      return;
+    }
     await page.screenshot({ path: path.join(output, 'overview-desktop.png'), fullPage: true });
     for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
       const response = await page.goto(base + '/' + corpus);
@@ -158,6 +185,12 @@ const { once } = require('node:events');
     await failedTurn.waitFor();
     await failedTurn.getByRole('button', { name: 'Show server steps' }).click();
     assert.match(await failedTurn.locator('.dm-steps-details').innerText(), /history turn 4/);
+    await page.locator('[data-dm-input]').fill('Budget exhausted');
+    await page.locator('[data-dm-send]').click();
+    const budgetFailure = page.locator('.dm-bubble-error').filter({ hasText: 'daily token budget' });
+    await budgetFailure.waitFor();
+    assert.match(await budgetFailure.innerText(), /Choose another available model.*midnight UTC/);
+    assert(!(await budgetFailure.innerText()).includes('Try the Fast or Capable tier'));
     await page.getByRole('tab', { name: 'Search sources' }).click();
     await page.locator('[data-dm-search-input]').fill('source');
     await page.locator('[data-dm-search-form] button').click();
@@ -185,4 +218,5 @@ const { once } = require('node:events');
     if (browser) await browser.close();
     app.kill(); if (app.exitCode === null) await once(app, 'exit');
   }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+}
+check(false).then(() => check(true)).catch(error => { console.error(error); process.exitCode = 1; });
