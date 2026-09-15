@@ -75,6 +75,15 @@ async function check(fastOnly) {
     }
     assert(base, log);
     const question = 'What did Washington write to Congress about supplying the army at Valley Forge?';
+    for (const suffix of ['', '/stream']) {
+      const response = await fetch(base + '/api/chat/revolution' + suffix, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: question }),
+      });
+      assert.equal(response.status, 200);
+      assert.match(await response.text(), /Controlled answer/);
+      assert.equal(turns.at(-1).body.model_override.provider, 'demo-openrouter');
+      assert.equal(turns.at(-1).body.model_override.tier, 'fast');
+    }
     if (fastOnly) {
       const catalog = await (await fetch(base + '/api/models')).json();
       for (const family of ['claude', 'gpt', 'openrouter']) {

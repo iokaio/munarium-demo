@@ -179,7 +179,8 @@ static string ProviderConfigFor(string? family) => (family ?? "").ToLowerInvaria
     "gpt" => "demo-openai",
     "openrouter" => "demo-openrouter",
     "ollama" => "demo-ollama",
-    _ => "demo-anthropic",
+    "claude" => "demo-anthropic",
+    _ => "demo-openrouter",
 };
 
 // Per-email attribution (2026-09-01; per-code 2026-08-25, per-visitor
@@ -890,7 +891,7 @@ app.MapGet("/readyz", async (MunariumClient munarium, CancellationToken ct) =>
 
 static async Task<IResult?> ValidateModelSelection(ChatApiRequest request, OllamaAvailability ollama, ModelTierPolicy modelTiers, CancellationToken ct)
 {
-    var family = (request.Family ?? "claude").ToLowerInvariant();
+    var family = (request.Family ?? "openrouter").ToLowerInvariant();
     var tier = (request.Tier ?? "fast").ToLowerInvariant();
     if (family is not ("claude" or "gpt" or "openrouter" or "ollama") || tier is not ("fast" or "capable" or "frontier"))
         return Results.BadRequest(new { error = "unknown-model-selection", message = "Choose an available provider and tier." });
