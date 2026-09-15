@@ -26,7 +26,7 @@ try {
     git rev-parse HEAD | Set-Content "$local/demo-revision.txt"
     docker info --format '{{.OSType}} {{.Architecture}} {{.NCPU}} {{.MemTotal}}' | Set-Content "$local/host.txt"
     "PowerShell local.ps1 -Action $Action -Project $Project; $([Environment]::OSVersion)" | Set-Content "$local/command.txt"
-    docker build -t munarium-inventory-matrix:local 'https://github.com/iokaio/munarium.git#bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3:matrix'
+    docker build -t munarium-inventory-matrix:local 'https://github.com/iokaio/munarium.git#705316332468c3c5eb50a96943f223f1bda1f09e:matrix'
     if ($LASTEXITCODE -ne 0) { throw 'Pinned Matrix build failed.' }
     docker image inspect munarium-inventory-matrix:local --format '{{.Id}} {{.Size}}' | Set-Content "$local/matrix-image.txt"
     Invoke-Inventory @('build','tests')

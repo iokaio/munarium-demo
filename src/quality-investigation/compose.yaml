@@ -19,7 +19,7 @@ services:
       timeout: 2s
       retries: 30
   server:
-    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    image: iokaio/munarium:1.2.1@sha256:8c937f91b5ab952fa080bdfbc748e041fffd5b69270f5ea4052b96afdebb2df7
     depends_on:
       postgres: {condition: service_healthy}
     environment:

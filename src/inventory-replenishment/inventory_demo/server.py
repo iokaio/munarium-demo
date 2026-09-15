@@ -31,8 +31,8 @@ def ready_server():
     while True:
         try:
             with client("inventory-rw", "bootstrap") as api:
-                if api.server_version().version != "1.1.1":
-                    raise ValueError("Expected Server 1.1.1")
+                if api.server_version().version != "1.2.1":
+                    raise ValueError("Expected Server 1.2.1")
                 return
         except MunariumError:
             if time.monotonic() > deadline:
@@ -45,8 +45,8 @@ def ready():
     while True:
         try:
             with client("inventory-rw", "bootstrap") as api, matrix() as mx:
-                if api.server_version().version != "1.1.1":
-                    raise ValueError("Expected Server 1.1.1")
+                if api.server_version().version != "1.2.1":
+                    raise ValueError("Expected Server 1.2.1")
                 if not mx.version().lockstep_ok:
                     raise ValueError("Matrix must report exact Server compatibility")
                 return

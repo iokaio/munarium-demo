@@ -27,8 +27,8 @@ def ready():
     for _ in range(60):
         try:
             with client("bench-rw", "bootstrap") as api:
-                if api.server_version().version != "1.1.1":
-                    raise ValueError("Server 1.1.1 required")
+                if api.server_version().version != "1.2.1":
+                    raise ValueError("Server 1.2.1 required")
                 return
         except MunariumError:
             time.sleep(1)

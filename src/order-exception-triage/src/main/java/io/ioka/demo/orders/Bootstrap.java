@@ -8,7 +8,7 @@ import java.util.*;
 
 public final class Bootstrap {
     private Bootstrap() {}
-    public static final String REVISION = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+    public static final String REVISION = "705316332468c3c5eb50a96943f223f1bda1f09e";
     public record Grant(String token, String uid, String namespace, String provider, String model, String config, Map<String,String> runbooks) {}
     public static String endpoint() { return FilesUtil.env("MUNARIUM_REST_URL", "http://server:8080"); }
     public static MunariumClient client(String token, String uid) {
@@ -37,7 +37,7 @@ public final class Bootstrap {
         try (var ops = ops(false)) {
             for (int attempt = 0; ; attempt++) {
                 try {
-                    if (!ops.serverVersion().version().equals("1.1.1")) throw new IllegalStateException("Server 1.1.1 required.");
+                    if (!ops.serverVersion().version().equals("1.2.1")) throw new IllegalStateException("Server 1.2.1 required.");
                     break;
                 } catch (io.ioka.munarium.client.errors.MunariumException e) { if (attempt == 59) throw e; Thread.sleep(2000); }
             }

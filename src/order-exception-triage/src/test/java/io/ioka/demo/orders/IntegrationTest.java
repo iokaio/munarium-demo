@@ -40,7 +40,7 @@ class IntegrationTest {
     @Test void expiredCapabilityFailsBeforeProviderWork() throws Exception {
         try (var issuer = Bootstrap.ops(true)) {
             var token = issuer.tokens.mint(new Tokens.IssueTokenRequest(grant.uid(), 0, List.of(), List.of("query"), List.of(grant.runbooks().get("event-001").split("@")[0]), 1L));
-            // Server 1.1.1 allows 30 seconds of JWT clock skew. Wait beyond the issued expiry and allowance.
+            // Server 1.2.1 allows 30 seconds of JWT clock skew. Wait beyond the issued expiry and allowance.
             long remaining = java.time.Duration.between(java.time.Instant.now(), java.time.Instant.parse(token.expiresAt()).plusSeconds(32)).toMillis();
             if (remaining > 0) Thread.sleep(remaining);
             int before = calls();

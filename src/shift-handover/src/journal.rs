@@ -246,7 +246,7 @@ pub async fn reconcile(dir: &str, id: &str) -> Result<()> {
         return Ok(());
     }
     let claim = &found[0];
-    // Findings require trusted read access on Server 1.1.1; the writer retrieves them for this explicit recovery command.
+    // Findings require trusted read access on Server 1.2.1; the writer retrieves them for this explicit recovery command.
     let findings = writer_at(&endpoint())?
         .query
         .findings(version, FindingsQuery::default())

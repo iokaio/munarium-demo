@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::{collections::BTreeMap, fs, io::Write, path::Path};
-pub const REVISION: &str = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+pub const REVISION: &str = "705316332468c3c5eb50a96943f223f1bda1f09e";
 pub fn hash(bytes: impl AsRef<[u8]>) -> String {
     hex::encode(Sha256::digest(bytes.as_ref()))
 }

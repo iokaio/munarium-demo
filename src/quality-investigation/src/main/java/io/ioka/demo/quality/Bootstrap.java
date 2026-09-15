@@ -11,7 +11,7 @@ import java.util.*;
 @SuppressWarnings("try")
 public final class Bootstrap {
     private Bootstrap() {}
-    public static final String REVISION="bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+    public static final String REVISION="705316332468c3c5eb50a96943f223f1bda1f09e";
     public record Grant(String token,String uid,String namespace,String provider,String model,String config,Map<String,String> runbooks) {}
     public static String endpoint() {return FilesUtil.env("MUNARIUM_REST_URL","http://server:8080");}
     public static MunariumClient client(String token,String uid,String endpoint) {return MunariumClient.rest(MunariumClientOptions.of(endpoint).withToken(token).withUid(uid).withReadRetries(0));}
@@ -19,7 +19,7 @@ public final class Bootstrap {
     public static MunariumClient reader() {return client("quality-ro","quality-reader",endpoint());}
     public static Grant grant() throws Exception {return Json.MAPPER.treeToValue(FilesUtil.read(Path.of("/credentials/query.json")),Grant.class);}
     public static ObjectNode registry() throws Exception {return (ObjectNode)FilesUtil.read(Path.of("/credentials/registry.json"));}
-    public static void ready() throws Exception {try(var api=reader()) {for(int n=0;;n++) {try {Fixtures.require(api.serverVersion().version().equals("1.1.1"),"Server 1.1.1 required");return;}catch(io.ioka.munarium.client.errors.MunariumException error) {if(n==59) throw error;Thread.sleep(1000);}}}}
+    public static void ready() throws Exception {try(var api=reader()) {for(int n=0;;n++) {try {Fixtures.require(api.serverVersion().version().equals("1.2.1"),"Server 1.2.1 required");return;}catch(io.ioka.munarium.client.errors.MunariumException error) {if(n==59) throw error;Thread.sleep(1000);}}}}
     private static void save(ObjectNode value) throws Exception {FilesUtil.save(Path.of("/credentials/registry.json"),value);}
     public static void run(String provider,boolean approve) throws Exception {
         Fixtures.require(approve,"Explicit --approve required for isolated verified index cutovers");Fixtures.assignments(provider);Fixtures.verify(Path.of("/inputs"));

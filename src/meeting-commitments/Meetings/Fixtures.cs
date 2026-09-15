@@ -5,7 +5,7 @@ namespace Meetings;
 
 public static class Fixtures
 {
-    public const string Revision = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+    public const string Revision = "705316332468c3c5eb50a96943f223f1bda1f09e";
     public static System.Text.Json.JsonElement Settings(string profile) => Storage.Read<System.Text.Json.JsonElement>("/app/fixture-profiles.json").GetProperty(profile);
     public static Manifest Generate(string inputs, string oracle, string profile = "default")
     {

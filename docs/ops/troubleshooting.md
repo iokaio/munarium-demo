@@ -17,5 +17,11 @@
 | `verify` fails after loading only support | Use `setup.py verify --corpus support`; the default checks all six corpora |
 | Verification rejects `history`, `dd` or `fin` | `verify_demo.py` uses browser IDs `revolution`, `dataroom`, `advisory`; setup uses manifest IDs |
 | A setting in `.env` has no effect on the web app | Add it to the container's `environment:` configuration; Compose does not forward arbitrary `.env` entries |
+| Server or restore drill rejects migration 0034 | The database has reached 1.2.1. Use its matching image, or restore the pre-upgrade backup before starting 1.2.0; the drill defaults to 1.2.1 unless `MUNARIUM_IMAGE` is set |
+| No vocabulary/governance editor after upgrading Server | The web adapter still uses `/v1` sessions; the new Server APIs need a separate authorized integration |
+| Collection-query or publication route is unavailable | Verify `/version` is 1.2.1; all demo defaults pin 1.2.1, but an existing image override or running container can retain an older version |
+
+Use the [1.2.1 integration and acceptance guide](../releases/server-1.2.1.md)
+for the exact image, API requirements and restore procedure.
 
 Use `docker compose logs --tail 100 server demo-web` locally, but redact operational logs before sharing an issue. Never paste bearer tokens, visitor emails/codes, private deployment origins, or database connection strings. Historical experiment notes are diagnostic context, not instructions to patch a live database directly.

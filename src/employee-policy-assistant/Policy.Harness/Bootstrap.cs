@@ -6,7 +6,7 @@ namespace Policy.Harness;
 
 public static class Bootstrap
 {
-    public const string ClientRevision = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+    public const string ClientRevision = "705316332468c3c5eb50a96943f223f1bda1f09e";
     public static string Endpoint => Environment.GetEnvironmentVariable("MUNARIUM_REST_URL") ?? "http://server:8080";
     public static MunariumClient Ops(bool management = false) => MunariumClient.Rest(new() { Endpoint = Endpoint, Token = Environment.GetEnvironmentVariable(management ? "MUNARIUM_MGMT_TOKEN" : "MUNARIUM_TOKEN") ?? throw new InvalidOperationException("Bootstrap credential absent."), Uid = "policy-bootstrap" });
     public static string Model(string provider) => provider switch { "fixture" => "policy-selected", _ => Environment.GetEnvironmentVariable(provider.ToUpperInvariant() + "_MODEL") ?? throw new InvalidOperationException("Preferred model missing.") };
@@ -17,7 +17,7 @@ public static class Bootstrap
         await using var ops = Ops();
         for (var attempt = 0; ; attempt++)
         {
-            try { var version = await ops.ServerVersionAsync(); if (version.Version != "1.1.1") throw new InvalidDataException("Server 1.1.1 required."); break; }
+            try { var version = await ops.ServerVersionAsync(); if (version.Version != "1.2.1") throw new InvalidDataException("Server 1.2.1 required."); break; }
             catch (MunariumException) when (attempt < 60) { await Task.Delay(2000); }
         }
         var template = File.ReadAllText("runbooks/policy.yaml");

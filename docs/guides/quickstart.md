@@ -19,6 +19,12 @@ the provider and shapes, binds runbook default models to your selected provider,
 uploads documents, and builds indexes. `--approve` authorizes cutover only for
 runs recorded by this checkout.
 
+These defaults pin the published Server 1.2.1 digest. Existing installations
+should preserve their settings and follow the
+[upgrade and acceptance guide](../releases/server-1.2.1.md#web-stack-upgrade-and-acceptance).
+Review automatic vocabulary generation before starting an upgraded installation
+with provider credentials. Existing session-based search/chat remains the UI path.
+
 `verify --corpus support` checks the support runbook, populated active indexes
 and document count. To check its actual page, retrieval and local-model answer:
 

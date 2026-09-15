@@ -29,8 +29,8 @@ def ready() -> None:
         try:
             with client("digest-rw", "bootstrap") as ops:
                 version = ops.server_version()
-                if (version.name, version.version) != ("munarium-server", "1.1.1"):
-                    raise ValueError("This demo requires Munarium Server 1.1.1")
+                if (version.name, version.version) != ("munarium-server", "1.2.1"):
+                    raise ValueError("This demo requires Munarium Server 1.2.1")
                 return
         except ValueError:
             raise
@@ -70,12 +70,12 @@ def bootstrap(
     else:
         spec["credentialRef"] = {"env": provider.upper() + "_API_KEY"}
     report = {
-        "server_version": "1.1.1",
+        "server_version": "1.2.1",
         "fixture_manifest": manifest,
         "provider": provider,
         "model": model,
         "namespace": namespace,
-        "client_revision": "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3",
+        "client_revision": "705316332468c3c5eb50a96943f223f1bda1f09e",
         "runs": {},
         "runbooks": {},
         "revision_runbooks": {},
@@ -181,7 +181,7 @@ def bootstrap(
         grant = issuer.tokens.mint(
             uid="digest-reviewer",
             scopes=["query"],
-            # Server 1.1.1 checks the metadata name; sessions still pin name@version.
+            # Server 1.2.1 checks the metadata name; sessions still pin name@version.
             runbook_refs=[
                 ref.rsplit("@", 1)[0]
                 for ref in list(report["runbooks"].values())

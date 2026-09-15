@@ -14,7 +14,7 @@ public static class Bootstrap
         await using var api = Reader();
         for (var attempt = 0; attempt < 60; attempt++)
         {
-            try { Storage.Require((await api.ServerVersionAsync()).Version == "1.1.1", "Server 1.1.1 required"); return; }
+            try { Storage.Require((await api.ServerVersionAsync()).Version == "1.2.1", "Server 1.2.1 required"); return; }
             catch (MunariumException) { await Task.Delay(1000); }
         }
         throw new InvalidOperationException("Server not ready");

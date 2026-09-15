@@ -2,7 +2,7 @@
 
 - **Business evaluation:** start with [what the demo shows](../README.md),
   [the bundled datasets](guides/corpora.md) and
-  [recorded validation and its limits](releases/open-source-preparation.md).
+  [release compatibility and recorded validation](releases/README.md).
 - **Technical evaluation:** follow the [quickstart](guides/quickstart.md), then
   read [architecture](architecture.md) and [configuration](configuration.md).
 - **Hosting:** start with [deployment](ops/deployment.md) and
@@ -14,6 +14,7 @@
 - [Configuration reference](configuration.md)
 - [Security boundaries](security.md)
 - [Release compatibility](releases/README.md)
+- [Server 1.2.1 release and demo integration](releases/server-1.2.1.md)
 
 ## Build and customize
 

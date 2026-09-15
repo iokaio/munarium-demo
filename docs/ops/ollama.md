@@ -2,7 +2,7 @@
 
 `python tools/setup.py start --provider ollama` starts the optional Compose profile and downloads `qwen3:1.7b` for completion and `all-minilm:22m` for embedding. The model volume is local to this deployment. Cloud-provider keys are not required for this path.
 
-The embedding model is available through the Server provider API. Server 1.1.1
+The embedding model is available through the Server provider API. Server 1.2.1
 index builds still use the built-in local embedder; downloading or changing
 `all-minilm:22m` does not change the corpus index embeddings. Ollama model tags
 are pulled by name by `setup.py`; this bootstrap does not verify model digests.
@@ -17,3 +17,8 @@ Gateway mode requires a nonempty key and HTTPS, except for HTTP on loopback.
 Readiness expiry must be no more than three hours and one minute in the future.
 Direct mode calls `/api/tags` without a bearer key and advertises availability
 for 45 seconds when both configured model names are present.
+
+On Server 1.2.1, vocabulary generation and checked answers use Ollama's native
+structured-output schema control. The existing web session flow continues to
+use ordinary completion. Installed-model readiness alone does not prove either
+path produces useful answers; qualify the selected model on the intended task.

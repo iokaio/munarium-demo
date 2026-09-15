@@ -4,6 +4,8 @@
 
 Teams deploying internal knowledge tools need to know whether retrieval finds the right sources before spending time tuning answer wording. A company might build a similar evaluation CLI to compare settings on a fixed, labeled workload and catch access regressions before release. Plausible benefits include more repeatable configuration decisions and earlier discovery of weak evidence; these synthetic measurements do not establish production accuracy, savings or productivity. Domain owners maintain representative questions and relevance labels, security teams define access policy, and people decide whether measured changes justify deployment.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 This Python CLI collects real Server responses and scores them offline against an independent source-label file. It exports Markdown, CSV, raw JSON and static Matplotlib plots. The baseline and three candidates vary one setting at a time. Completion experiments retain individual repeats, so variable model output can be inspected without requiring identical prose.
@@ -14,7 +16,7 @@ The figure plots actual recorded measurements, not an operating-system screensho
 
 ## Run locally
 
-Use local Docker with Linux containers and Compose. The image contains Python 3.12, locked pip dependencies and the complete official Munarium client checkout at `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`. Server 1.1.1, pgvector and the Python image are digest-pinned. A separate system Python installation runs Matplotlib and Pillow for artifact rendering. No host Python environment or notebook is required.
+Use local Docker with Linux containers and Compose. The image contains Python 3.12, locked pip dependencies and the complete official Munarium client checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`. Server 1.2.1, pgvector and the Python image are digest-pinned. A separate system Python installation runs Matplotlib and Pillow for artifact rendering. No host Python environment or notebook is required.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|
@@ -51,7 +53,7 @@ Source recall is the fraction of independently labeled relevant source documents
 
 Per-experiment rows retain schema validity, required answer terms, abstention correctness, remaining verification violations, access leakage, observed latency and cumulative completion tokens. Missing measurements remain null. A recovered turn has no fabricated latency. Token counts are not monetary cost. Reports retain repeat counts and raw outcomes; two synthetic replicates are not enough to estimate production confidence or rank models. Any forbidden-source exposure fails the offline scorer and the acceptance suite.
 
-The runbooks configure no query expansion. Named model overrides are restricted to the configured provider and tested explicitly; normal benchmark turns omit overrides. On Server 1.1.1 an override can affect both expansion and completion when expansion is configured, so such an experiment must be reported as a combined change. To isolate completion behavior, hold expansion settings fixed and omit the override, as the ordinary workload does here.
+The runbooks configure no query expansion. Named model overrides are restricted to the configured provider and tested explicitly; normal benchmark turns omit overrides. On Server 1.2.1 an override can affect both expansion and completion when expansion is configured, so such an experiment must be reported as a combined change. To isolate completion behavior, hold expansion settings fixed and omit the override, as the ordinary workload does here.
 
 ## Trust and durable collection
 

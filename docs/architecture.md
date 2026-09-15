@@ -16,8 +16,24 @@ Razor pages render the six workspaces. JavaScript calls the demo's `/api/` endpo
 Raw documents and indexes live in PostgreSQL in the supplied Compose deployment. YAML runbooks define collection bindings, retrieval, query expansion, model policy, and index/cutover steps. The loader verifies bundled documents, uploads them, and drives only its own recorded indexing runs.
 
 The application uses its own HTTP client in `src/Demo.Web/Services/MunariumClient.cs`;
-it does not depend on a published Munarium SDK package. Server 1.1.1 supplies the
-model-routing behavior this demo expects. Matrix is not part of the local Compose stack.
+it does not depend on a published Munarium SDK package. The root Compose stack
+pins Server 1.2.1. Server 1.1.1 and later supply the model-routing behavior this
+demo expects. Both search and chat use `/v1` runbook sessions; search submits
+`complete:false`, while chat may stream a completing turn over REST.
+Matrix is not part of the local Compose stack.
+
+Server 1.2.1 is published and preserves that API. Its collection query,
+publication governance and original-file authorization operations are separate
+interfaces that this web adapter does not call. Installing the image does not
+add those workflows or a vocabulary editor to the UI. Session retrieval on
+Server 1.2 can apply collection vocabulary while retaining runbook model policy.
+See [the 1.2.1 integration guide](releases/server-1.2.1.md).
+
+The thirteen additional applications have separate Compose files and SDK builds:
+they pin Server 1.2.1 and the official clients at
+`705316332468c3c5eb50a96943f223f1bda1f09e`. The inventory example also builds
+Matrix from that checkout. Their recorded qualification is independent of the
+web stack and upstream Server release qualification.
 
 The web app stores visitor emails, code hashes, blocking and allowance records in SQLite. Turn counters and some revocation state remain in memory. Operate a single web replica. Matrix is an optional integration, and is not needed for any bundled corpus.
 

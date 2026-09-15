@@ -9,3 +9,14 @@ Apply providers before runbooks and shapes before the runbooks that refer to the
 Index runs have explicit cutover steps. Upload completion alone does not activate a searchable collection. Inspect a run and approve only the intended cutovers; the bootstrap's `--approve` applies to its own saved run IDs. The [loading guide](../ops/corpus-loading.md) describes resuming.
 
 If you edit assets, update their checksums and provenance and review the change in a signed-off commit. Existing Server configurations are versioned: use a new runbook version for a changed deployment rather than treating a version number as mutable configuration.
+
+On Server 1.2, session retrieval can apply collection vocabularies in addition
+to runbook retrieval settings. Vocabulary generation/editing is a separate
+Server API, not a change to these bundled YAML files. Review its default-on
+generation and provider costs when upgrading.
+
+Server 1.2.1 publication snapshots and collection queries are also separate from
+runbook versions and cutover steps. The current loader does not create those
+snapshots, and the web app continues to query sessions. Adopting the new path
+requires deliberate publication bindings, model/processing policy and original
+source mappings; see [1.2.1 integration](../releases/server-1.2.1.md).

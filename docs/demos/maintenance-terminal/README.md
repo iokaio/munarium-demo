@@ -4,6 +4,8 @@
 
 A company maintaining equipment across several sites needs technicians to find the manual that applies to the exact asset revision in front of them. Searching a shared document store can surface obsolete instructions or hide a missing inspection record. A similar terminal could make revision selection explicit, keep source inspection usable during an AI-provider outage and offer a cited explanation when requested. The business value is quicker access to applicable evidence and a clearer distinction between current procedures, historical material and missing documentation. Qualified staff retain responsibility for maintenance decisions; this fictional display-equipment demo does not demonstrate operational safety or measured downtime savings.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 This Rust/Tokio terminal finds maintenance evidence for an explicitly selected fictional asset revision. `find` retrieves sources without calling a model. The separate `explain` action requests a cited explanation. Current and historical revisions remain visibly distinct, and unsupported assets or revisions produce no procedure.
@@ -16,7 +18,7 @@ Source and isolated harness: [src/maintenance-terminal](../../../src/maintenance
 
 ## Run locally
 
-Use Git and Docker Desktop with Linux containers on Windows/macOS, or Docker Engine with Compose on Linux. No host Rust installation is required. The runner uses Rust 1.98 and a complete official client checkout at `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`. Server 1.1.1, PostgreSQL/pgvector and the Rust image are pinned by digest. [Cargo.lock](../../../src/maintenance-terminal/Cargo.lock) locks the app dependencies; the SDK uses its own upstream lockfile. Cargo runs offline after image provisioning.
+Use Git and Docker Desktop with Linux containers on Windows/macOS, or Docker Engine with Compose on Linux. No host Rust installation is required. The runner uses Rust 1.98 and a complete official client checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`. Server 1.2.1, PostgreSQL/pgvector and the Rust image are pinned by digest. [Cargo.lock](../../../src/maintenance-terminal/Cargo.lock) locks the app dependencies; the SDK uses its own upstream lockfile. Cargo runs offline after image provisioning.
 
 From the repository root:
 

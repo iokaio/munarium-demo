@@ -53,7 +53,7 @@
       "policy.core": {
         "type": "Project",
         "dependencies": {
-          "Ioka.Munarium.Client": "[1.0.0, )"
+          "Ioka.Munarium.Client": "[1.1.0, )"
         }
       }
     }

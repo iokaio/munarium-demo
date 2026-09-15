@@ -29,7 +29,7 @@ pub async fn ready() -> Result<()> {
     let c = reader()?;
     for _ in 0..60 {
         if let Ok(v) = c.server_version().await {
-            ensure!(v.version == "1.1.1", "Server 1.1.1 required");
+            ensure!(v.version == "1.2.1", "Server 1.2.1 required");
             return Ok(());
         }
         tokio::time::sleep(Duration::from_secs(1)).await;

@@ -299,6 +299,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
 
 [[package]]
+name = "engineering-change-review"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum 0.8.9",
+ "base64",
+ "futures-util",
+ "hex",
+ "munarium-client",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -804,24 +822,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
 
 [[package]]
-name = "engineering-change-review"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum 0.8.9",
- "base64",
- "futures-util",
- "hex",
- "munarium-client",
- "reqwest",
- "serde",
- "serde_json",
- "sha2",
- "tokio",
- "uuid",
-]
-
-[[package]]
 name = "matchit"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -864,7 +864,7 @@ checksum = "1d87ecb2933e8aeadb3e3a02b828fed80a7528047e68b4f424523a0981a3a084"
 
 [[package]]
 name = "munarium-api-types"
-version = "1.1.1"
+version = "1.2.1"
 dependencies = [
  "munarium-proto",
  "serde",
@@ -874,7 +874,7 @@ dependencies = [
 
 [[package]]
 name = "munarium-client"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "base64",
@@ -900,7 +900,7 @@ dependencies = [
 
 [[package]]
 name = "munarium-proto"
-version = "1.1.1"
+version = "1.2.1"
 dependencies = [
  "prost",
  "prost-types",

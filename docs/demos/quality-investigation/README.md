@@ -4,6 +4,8 @@
 
 A manufacturer may need to assemble inspection records, shift notes and applicable procedures before investigating a defective lot. Those records can disagree, and a search result can omit evidence that matters to the review. A similar batch application could reduce time spent gathering material and make missing observations and conflicting values easier to see. Inspectors still own their observations, and qualified reviewers determine root cause and disposition. The fictional data demonstrates evidence handling; it does not measure production quality improvements or establish that a process meets a regulatory standard.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 This Java 21 batch job combines a recorded sample inspection with narrative notes and quality procedures. Its runbook research profile declares a controlling `facts:<version_id>` layer and a required document layer. The packet separates observations, supported conclusions, hypotheses and reviewer decisions. Deterministic Java comparisons flag disagreement; the hierarchy does not automatically establish every fact/document conflict.
@@ -14,7 +16,7 @@ The image is rendered by Java2D from an actual exported packet. It is a terminal
 
 ## Run and inspect
 
-Install Git and local Docker with Compose and Linux containers. The pinned Java image fetches the complete official source checkout at `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`; Gradle includes the official Java client as a composite build. The committed Gradle lockfile fixes application dependency versions. Server 1.1.1 and PostgreSQL/pgvector are also pinned by digest.
+Install Git and local Docker with Compose and Linux containers. The pinned Java image fetches the complete official source checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`; Gradle includes the official Java client as a composite build. The committed Gradle lockfile fixes application dependency versions. Server 1.2.1 and PostgreSQL/pgvector are also pinned by digest.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|
@@ -58,7 +60,7 @@ The app has a runbook-scoped query capability and a tutorial read-only ledger id
 
 The journal records a turn intent and session before the paid turn. Completed work is reused only when its exact input/configuration binding matches. An interrupted stream, network error or process crash leaves an uncertain journal; a normal invocation refuses to replay it. Use `app recover WORK CASE baseline|corrected` to inspect the saved session. Recovery requires exactly one matching completion and the expected identity and runbook.
 
-Server 1.1.1 transcripts do not preserve every live hierarchy or skipped-layer field. Recovery retains the completion and available citations, omits unavailable fields, and labels the packet incomplete pending review. It does not invent a successful hierarchy decision. An empty transcript remains uncertain. The coordinator saves failure logs and does not submit a replacement paid turn automatically.
+Server 1.2.1 transcripts do not preserve every live hierarchy or skipped-layer field. Recovery retains the completion and available citations, omits unavailable fields, and labels the packet incomplete pending review. It does not invent a successful hierarchy decision. An empty transcript remains uncertain. The coordinator saves failure logs and does not submit a replacement paid turn automatically.
 
 Ledger creation and claims also save intent before dispatch. A known completed receipt can be resumed; an uncertain version/claim outcome blocks further import for operator inspection. There is no blind command replay. Corrections have immutable review intent and use a file lease to serialize registry updates. Disputes retain their native findings and prevent the version from being frozen. Runbook activation records are separately inspectable.
 

@@ -19,7 +19,7 @@ public final class Render {
         g.setColor(new Color(109, 224, 189)); g.setFont(new Font("SansSerif", Font.BOLD, 34));
         g.drawString("ORDER EXCEPTION TRIAGE", 54, 68);
         g.setColor(new Color(175, 190, 210)); g.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        g.drawString("Java 21  /  Munarium Server 1.1.1  /  Fictional fulfillment workflow", 54, 107);
+        g.drawString("Java 21  /  Munarium Server 1.2.1  /  Fictional fulfillment workflow", 54, 107);
         g.setColor(new Color(24, 37, 55)); g.fillRoundRect(40, 140, 1320, 270, 18, 18);
         g.setFont(new Font("Monospaced", Font.PLAIN, 21)); g.setColor(new Color(224, 234, 244));
         String[] lines = {"$ order-exception-triage consume", "event-001  complete  -> review outbox", "Proposed team: " + answer.path("route").asText(), "Order execution: awaiting human review", "Duplicate delivery: existing packet reused", "Evidence: isolated procedure, source identity and content hash"};
