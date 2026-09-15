@@ -53,8 +53,7 @@
             return 'Your access has expired. Reload the page and enter today’s code.';
         }
         if (d.error === 'model-budget') {
-            return (d.message || 'This model tier has reached its daily token budget.') +
-                ' Try the Fast or Capable tier, or come back after midnight UTC.';
+            return d.message || 'This model tier has reached its daily token budget. Choose another available model, or try again after midnight UTC.';
         }
         if (d.error === 'frontier-budget') {
             return d.message || 'You have used your Frontier requests for this collection today — Fast and Capable remain available.';
@@ -479,6 +478,7 @@
 
     function updateTierAvailability() {
         const frontier = panel.querySelector('[data-dm-tier="frontier"]');
+        if (!frontier) return;
         frontier.disabled = state.family === 'ollama';
         if (frontier.disabled && state.tier === 'frontier') {
             state.tier = 'fast';
@@ -533,7 +533,7 @@
                 btn.classList.toggle('d-none', !fam);
             }
             if (fam) {
-                btn.title = 'fast: ' + (fam.fast || '?') + ' · capable: ' + (fam.capable || '?') +
+                btn.title = 'fast: ' + (fam.fast || '?') + (fam.capable ? ' · capable: ' + fam.capable : '') +
                     (fam.frontier ? ' · frontier: ' + fam.frontier : '');
             }
         });

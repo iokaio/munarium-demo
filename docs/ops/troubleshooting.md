@@ -6,8 +6,10 @@
 | Page loads but no documents | Correct logical prefix, upload finalization, extraction outcomes, active index cutover |
 | Some history missing | Both core and newspaper uploads; all 58 collection bindings |
 | PDF/DOCX results absent | Source media type and extraction step, then rebuild/cutover the intended collection |
-| Model button absent | Provider registered with a usable credential; Ollama installed model names and readiness expiry |
+| Model button absent | Check `DEMO_FAST_ONLY`, provider registration and credential availability; for Ollama, check installed model names and readiness expiry |
 | Wrong expansion model | Server must be compatible with 1.1.1 selected-provider routing |
+| `model-budget` after retrieval | The selected provider/tier cannot reserve the next completion within its daily token cap. Choose another available model, or wait until midnight UTC. Operators should inspect `/v1/reports/budgets`; automatic vocabulary generation also consumes provider tokens. |
+| `rate-limited` | The provider's short rate window is full; wait a minute before retrying. This differs from the daily spending cap. |
 | Old question affects a new question | Start a fresh session; inspect whether the UI marked the turn as an explicit follow-up |
 | Restricted sources missing | Persona clearance and compartments, not just the page title |
 | Mail not received | Verified sender, provider key/delivery response, address validity; Development log-only mode |

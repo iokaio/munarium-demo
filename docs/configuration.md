@@ -24,6 +24,7 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 | `DEMO_SENDGRID_API_KEY`, `DEMO_MAIL_FROM`, `DEMO_MAIL_NAME` | Optional mail credentials, verified sender, and display name |
 | `Demo__Name`, `Demo__ContactEmail`, `Demo__LogoUrl` | Branding; neutral default name and bundled original logo |
 | `DEMO_TURN_DAILY_CAP` | In-memory daily visitor turn allowance; default 50 |
+| `DEMO_FAST_ONLY` | `true` offers only Fast models in web controls and the model catalog, and rejects Capable/Frontier requests in both chat APIs before contacting Server. Default `false` retains all supported tiers. |
 | `DEMO_GATE_MAX_AGE_HOURS` | Optional cookie age ceiling, also bounded by next UTC midnight |
 | `DEMO_TRUSTED_PROXIES` | Comma-separated ingress IP addresses permitted to supply forwarding headers |
 | `OperatorConsole__Enabled` | Optional Server/Matrix console proxy; false by default and requires operator authentication |
