@@ -67,7 +67,7 @@ public sealed class IntegrationTests
         await using var app = Acceptance.App("expiry-" + Guid.NewGuid().ToString("N"));
         await app.SelectIdentityAsync(grant with { Token = shortGrant.Token, ExpiresAt = shortGrant.ExpiresAt });
         var first = await app.AskAsync("equipment allowance", grant.Models[0]);
-        // Server 1.1.1 permits 30 seconds of JWT clock skew; wait past the actual expiry plus that allowance.
+        // Server 1.2.1 permits 30 seconds of JWT clock skew; wait past the actual expiry plus that allowance.
         var remaining = DateTimeOffset.Parse(shortGrant.ExpiresAt).AddSeconds(32) - DateTimeOffset.UtcNow;
         if (remaining > TimeSpan.Zero) await Task.Delay(remaining);
         await Assert.ThrowsAsync<UnauthenticatedException>(() => app.AskAsync("training allowance", grant.Models[0]));

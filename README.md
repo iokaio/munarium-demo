@@ -18,6 +18,11 @@ repository has no published GitHub release as of **2026-09-14**. See
 [release compatibility](docs/releases/README.md) for the pinned Server digest
 and recorded validation.
 
+**All fourteen demo stacks pin Server 1.2.1.** The thirteen additional apps
+use official client packages 1.1.0 from the latest reviewed source checkout. The [1.2.1 integration and upgrade guide](docs/releases/server-1.2.1.md)
+explains the new APIs, the pinned image, and the acceptance and database
+restore needed for an upgrade. The web application continues to use runbook sessions.
+
 ![Munarium Demo overview](docs/images/overview.png)
 
 ## Run locally

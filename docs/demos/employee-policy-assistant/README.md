@@ -4,17 +4,19 @@
 
 A company with policies spread across employee handbooks, regional guidance and HR documents may receive the same equipment, training and leave questions repeatedly. Employees need answers that reflect their location and access rights, while HR needs a way to inspect the policy behind an answer. A similar desktop assistant could reduce routine policy searches and support requests by presenting scoped answers with source excerpts. The business value is easier self-service and more consistent policy interpretation, with HR retaining responsibility for exceptions and final decisions. This synthetic demo does not establish a measured reduction in support volume.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 ![Employee policy desktop window with an answer and source excerpt](application.png)
 
 Rendered from the running Avalonia window during the controlled headless integration test, using generated fictional policies. The displayed `ollama / policy-selected` identifies the canned protocol fixture; no local model runs. Native window decorations vary by operating system.
 
-This C#/.NET 10 desktop application uses the official Munarium client and Server 1.1.1 to answer workplace policy questions. Select an employee, regional, or HR tutorial identity; ask a question; inspect real Server phase progress; open a returned source excerpt; and export the answer with its evidence. Avalonia supplies the native desktop controls. The model cannot authorize purchases or disclose policies that Server withheld from the identity.
+This C#/.NET 10 desktop application uses the official Munarium client and Server 1.2.1 to answer workplace policy questions. Select an employee, regional, or HR tutorial identity; ask a question; inspect real Server phase progress; open a returned source excerpt; and export the answer with its evidence. Avalonia supplies the native desktop controls. The model cannot authorize purchases or disclose policies that Server withheld from the identity.
 
 ## Run the local tests
 
-Install Git and Docker Desktop with Linux containers on Windows or macOS, or Docker Engine with Compose on Linux. The runner downloads the complete Munarium checkout pinned at `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`; no second checkout or host .NET runtime is required for automated tests. Initial image and package provisioning needs Internet access. The controlled suite and generator then use local containers only.
+Install Git and Docker Desktop with Linux containers on Windows or macOS, or Docker Engine with Compose on Linux. The runner downloads the complete Munarium checkout pinned at `705316332468c3c5eb50a96943f223f1bda1f09e`; no second checkout or host .NET runtime is required for automated tests. Initial image and package provisioning needs Internet access. The controlled suite and generator then use local containers only.
 
 From the repository root:
 
@@ -101,7 +103,7 @@ Real AI acceptance uses only OpenAI, Anthropic, and OpenRouter. Run both test an
 
 The application records uid, session ID, exact query, and uncertain intent before dispatching a turn, then saves the completed response before export. Reusing a completed work identifier restores the saved result without another completion. Namespaces include fixture, shape, runbook, provider, and model revisions. Concurrent use of the same local state directory is outside this single-process desktop tutorial; use a separate work folder per running desktop instance.
 
-A disconnected stream leaves the turn uncertain. Use **Inspect interrupted turn** to read the session transcript, including after restarting the application and reselecting the same identity. Only exactly one matching completed transcript turn resolves the uncertainty. Empty or ambiguous transcripts remain uncertain and block automatic resubmission. Token renewal reloads a new grant for the same uid and configuration without resending the question. Server 1.1.1 accepts a 30-second expiry skew allowance; the integration test waits past it before asserting rejection.
+A disconnected stream leaves the turn uncertain. Use **Inspect interrupted turn** to read the session transcript, including after restarting the application and reselecting the same identity. Only exactly one matching completed transcript turn resolves the uncertainty. Empty or ambiguous transcripts remain uncertain and block automatic resubmission. Token renewal reloads a new grant for the same uid and configuration without resending the question. Server 1.2.1 accepts a 30-second expiry skew allowance; the integration test waits past it before asserting rejection.
 
 Exports contain the draft answer, served collection/chunk citation labels, actual source paths and hashes, excerpts, and a JSON evidence sidecar. The application rejects unserved citations and Server verification violations. Those checks do not prove every sentence is semantically faithful; a person still reviews the policy answer. Recovered responses preserve Server's nested completion routing metadata and are marked recovered; unavailable live-only fields are not invented in the sidecar. Token grants and AI-provider secrets never appear in exported answer files.
 

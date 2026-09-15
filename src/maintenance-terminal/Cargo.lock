@@ -864,7 +864,7 @@ checksum = "1d87ecb2933e8aeadb3e3a02b828fed80a7528047e68b4f424523a0981a3a084"
 
 [[package]]
 name = "munarium-api-types"
-version = "1.1.1"
+version = "1.2.1"
 dependencies = [
  "munarium-proto",
  "serde",
@@ -874,7 +874,7 @@ dependencies = [
 
 [[package]]
 name = "munarium-client"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "base64",
@@ -900,7 +900,7 @@ dependencies = [
 
 [[package]]
 name = "munarium-proto"
-version = "1.1.1"
+version = "1.2.1"
 dependencies = [
  "prost",
  "prost-types",

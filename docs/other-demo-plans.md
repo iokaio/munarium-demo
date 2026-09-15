@@ -18,6 +18,15 @@ Every proposal must generate its own synthetic testing documents and data and ru
 
 Updated on 2026-09-10 against the local `munarium-demo` checkout and `munarium` commit `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`, which includes the merged Server 1.1.1 client alignment from PR #23.
 
+This plan's SDK capability statements and qualification targets describe that
+historical pinned checkout. All thirteen applications now pin Server 1.2.1
+and SDK source `705316332468c3c5eb50a96943f223f1bda1f09e`. Upstream Server
+1.2.1 is now published, and client packages 1.1.0 provide the complete named
+REST/gRPC API targeting 1.2.1. See [current compatibility](releases/README.md)
+and [1.2.1 integration](releases/server-1.2.1.md) for the new surface and migration
+boundary; the older pins, transport limits and dated results below are not
+claims about the current upstream release.
+
 The demo's [architecture](architecture.md), [configuration](configuration.md), [runbook guide](guides/runbooks.md), [customization guide](guides/customize-demo.md), and [development guide](guides/development.md) establish useful integration lessons. Code reviewed includes [MunariumClient.cs](../src/Demo.Web/Services/MunariumClient.cs), [TokenCache.cs](../src/Demo.Web/Services/TokenCache.cs), [ConversationCondenser.cs](../src/Demo.Web/Services/ConversationCondenser.cs), [Program.cs](../src/Demo.Web/Program.cs), and the generic corpus loader control flow. The important lessons to carry forward are:
 
 - Use runbook sessions for access-filtered, multi-collection retrieval. A `complete: false` turn is a useful application capability in its own right.

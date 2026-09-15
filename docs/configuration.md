@@ -27,12 +27,20 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 | `DEMO_GATE_MAX_AGE_HOURS` | Optional cookie age ceiling, also bounded by next UTC midnight |
 | `DEMO_TRUSTED_PROXIES` | Comma-separated ingress IP addresses permitted to supply forwarding headers |
 | `OperatorConsole__Enabled` | Optional Server/Matrix console proxy; false by default and requires operator authentication |
-| `MUNARIUM_IMAGE` | Override the pinned compatible Server image for a deliberate upgrade/rehearsal |
+| `MUNARIUM_IMAGE` | Root web Compose and restore-drill image override; fallback is the signed 1.2.1 digest. Additional demo stacks have separate literal pins. See [1.2.1 selection](releases/server-1.2.1.md#web-stack-upgrade-and-acceptance). |
 | `DEMO_HOST_PORT`, `SERVER_HOST_PORT` | Compose host ports; default 5310 and 8080, bound to loopback |
 | `DEMO_OLLAMA_MODE` | `direct` for local Ollama; otherwise authenticated readiness gateway |
 | `DEMO_OLLAMA_URL`, `DEMO_OLLAMA_KEY` | Backend-only model readiness endpoint; key is required in gateway mode and not sent in direct mode |
 | `DEMO_OLLAMA_FAST`, `DEMO_OLLAMA_CAPABLE` | Direct-mode installed models; fast defaults to `qwen3:1.7b`, capable defaults to the fast model; Compose explicitly sets both |
 
-Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.2.0, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
+Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.1.1 and later, including 1.2.1, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
+
+Server 1.2 enables automatic vocabulary generation by default, including for
+eligible existing collections. Configure vocabulary defaults through Server's
+API before those collections use paid providers; the web app exposes no editor.
+Server 1.2.1 collection governance can define base and exact-clearance query
+model routes and external-processing controls. Those apply to the new collection
+query API, not this web client's session model picker. See
+[vocabulary and model policy](releases/server-1.2.1.md#integrating-collection-queries).
 
 Optional Matrix configuration uses `MATRIX_BASE_URL`, `MATRIX_MGMT_TOKEN`, and `MATRIX_ADMIN_SHOWN`. Keep it disabled unless you operate Matrix and intend to expose its operator view.

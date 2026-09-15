@@ -4,7 +4,7 @@ namespace Records;
 
 public static class Bootstrap
 {
-    public const string Revision = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3";
+    public const string Revision = "705316332468c3c5eb50a96943f223f1bda1f09e";
     public static string Endpoint => Environment.GetEnvironmentVariable("MUNARIUM_REST_URL") ?? "http://server:8080";
     public static MunariumClient Client(string token, string uid, string? endpoint = null) => MunariumClient.Rest(new() { Endpoint = endpoint ?? Endpoint, Token = token, Uid = uid, ReadRetries = 0 });
     public static MunariumClient Ops(bool management = false, string? endpoint = null) => Client(Environment.GetEnvironmentVariable(management ? "MUNARIUM_MGMT_TOKEN" : "MUNARIUM_TOKEN") ?? throw new InvalidOperationException("Operator credential absent"), "records-operator", endpoint);
@@ -14,7 +14,7 @@ public static class Bootstrap
     public static async Task Ready()
     {
         await using var c = Ops();
-        for (int i = 0; ; i++) { try { Storage.Require((await c.ServerVersionAsync()).Version == "1.1.1", "Server 1.1.1 required"); return; } catch (MunariumException) when (i < 60) { await Task.Delay(1000); } }
+        for (int i = 0; ; i++) { try { Storage.Require((await c.ServerVersionAsync()).Version == "1.2.1", "Server 1.2.1 required"); return; } catch (MunariumException) when (i < 60) { await Task.Delay(1000); } }
     }
     public static async Task Run()
     {
@@ -34,7 +34,7 @@ public static class Bootstrap
             var issued = await issuer.Tokens.MintAsync(uid, 0, [kind == "worker" ? "ingest" : "query"], [], routes.Values.Select(s => s.Runbook.Split('@')[0]).ToArray(), 3600);
             Storage.Save($"/credentials/{kind}.json", new Grant(issued.Token, uid, routes, restricted));
         }
-        Storage.Save($"/work/bootstrap/{ns}.json", new { clientRevision = Revision, server = "1.1.1", manifest = System.Text.Json.JsonDocument.Parse(manifest).RootElement, routes, restricted });
+        Storage.Save($"/work/bootstrap/{ns}.json", new { clientRevision = Revision, server = "1.2.1", manifest = System.Text.Json.JsonDocument.Parse(manifest).RootElement, routes, restricted });
         Console.WriteLine($"{routes.Count} collections configured. No documents uploaded, no index activated, no model configured.");
     }
 }

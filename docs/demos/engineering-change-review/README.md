@@ -4,6 +4,8 @@
 
 A software company may want reviewers to see relevant design decisions and release procedures beside a proposed change. Engineers otherwise need to find those requirements manually, and a missing owner or migration discussion can be noticed late. A similar CI executable could attach cited advisory findings while enforcing a small set of deterministic submission rules. Engineers retain responsibility for technical correctness, security review and release approval. The fictional changes demonstrate workflow integration; they do not establish defect reduction or the reliability of an autonomous code reviewer.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 This Rust CI executable reads a supplied diff and change manifest, selects a component's allowed runbook from trusted configuration, and exports Markdown and JSON review artifacts. It checks required owner and release-ticket fields in Rust. Model findings about the documented migration requirement remain advisory. Missing or unverified analysis has a distinct exit status.
@@ -14,7 +16,7 @@ The image is a Pillow rendering of actual CLI output, not an operating-system sc
 
 ## Run and inspect
 
-Prerequisites are Git and local Docker with Compose and Linux containers. The runner pins Rust 1.98 and fetches the complete official client checkout at `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`. The application uses the official Rust client by path dependency and commits its Cargo lockfile. Server 1.1.1 and PostgreSQL/pgvector are pinned by image digest.
+Prerequisites are Git and local Docker with Compose and Linux containers. The runner pins Rust 1.98 and fetches the complete official client checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`. The application uses the official Rust client by path dependency and commits its Cargo lockfile. Server 1.2.1 and PostgreSQL/pgvector are pinned by image digest.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|

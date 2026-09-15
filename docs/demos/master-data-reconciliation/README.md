@@ -4,6 +4,8 @@
 
 Companies often receive different supplier details from purchasing, finance and regional directories. A steward must determine whether two rows describe the same supplier, explain the discrepancy, and preserve the reason for any correction. A similar CLI could prepare a consistent review packet and retain both conflicting submissions and approved changes. Plausible benefits include less repeated investigation and clearer accountability for directory maintenance; this synthetic demo measures neither productivity nor financial outcomes. People remain responsible for source truth and approvals, and existing ERP or master-data systems remain responsible for operational updates.
 
+Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+
 ## Application
 
 This Java 21 CLI normalizes supplier keys in two CSV exports, retrieves a field-specific stewardship policy and generates a cited draft. A separate review command records a named decision and reason. A trusted import command then creates a ledger version, records the original value and disputed competing value, and optionally proposes an approved correction. It exports current and historical accepted facts, disputes and gate findings.
@@ -14,7 +16,7 @@ The image is a Java2D rendering of actual captured CLI status, not an operating-
 
 ## Run locally
 
-Use local Docker with Linux containers and Compose. Dependencies are downloaded during the first build: the pinned Java 21 image, complete official Munarium checkout `bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3`, Gradle distribution and locked application dependencies. Server 1.1.1 and pgvector are pinned by digest. Subsequent test commands use Gradle offline mode. No host JDK or database installation is required.
+Use local Docker with Linux containers and Compose. Dependencies are downloaded during the first build: the pinned Java 21 image, complete official Munarium checkout `705316332468c3c5eb50a96943f223f1bda1f09e`, Gradle distribution and locked application dependencies. Server 1.2.1 and pgvector are pinned by digest. Subsequent test commands use Gradle offline mode. No host JDK or database installation is required.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|
@@ -45,7 +47,7 @@ The CSV contract is deliberately narrow: a header and three unquoted columns (`s
 
 [LedgerImport.java](../../../src/master-data-reconciliation/src/main/java/io/ioka/demo/reconcile/LedgerImport.java) uses typed `ClaimInput` values with `reconcile-record@1`. It saves each command body, expected head and idempotency key before submission, and records claim IDs, disputes and findings afterward. The evidence object carries a reconciliation command marker and input hash; provenance uses the supported `backfilled` or `repaired` value, and connector `origin` remains absent. A block-severity conflict is a successful recorded dispute, not an exception or a claim silently discarded.
 
-Server 1.1.1 also records a claim that violates its shape as disputed, with a `shape.schema-violation` block finding. The integration test verifies that the malformed claim remains inspectable but does not enter accepted facts. Applications must inspect returned outcomes instead of assuming that every governance failure throws an exception.
+Server 1.2.1 also records a claim that violates its shape as disputed, with a `shape.schema-violation` block finding. The integration test verifies that the malformed claim remains inspectable but does not enter accepted facts. Applications must inspect returned outcomes instead of assuming that every governance failure throws an exception.
 
 The durable write loop follows the SDK's head-conflict contract while owning the keys so they can be checkpointed before dispatch. Only a typed `HeadConflictException` causes a fresh read and rebuilt attempt with a new key. A correction additionally checks that the accepted value still matches the reviewed baseline. The tests separately exercise the official `proposeClaimWithRetry` helper against a real concurrent write. Identical confirmed completed commands may replay their saved key and body; uncertain commands cannot. `reconcile WORK baseline` can adopt a uniquely matching recorded claim by its command evidence and body, then the import can continue. An ambiguous version-creation response remains blocked for operator investigation because the application has no confirmed version identity to query.
 

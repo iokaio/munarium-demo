@@ -15,3 +15,15 @@ drill checks all source counts and active indexes, removes only its labelled tes
 containers/network, and retains its dump and evidence privately under `.local/`.
 It does not replace the separate visitor SQLite backup or restore your provider
 credentials. No model endpoint is required for its database/index checks.
+
+The drill reads `MUNARIUM_IMAGE` from settings and otherwise starts Server 1.2.1;
+it does not discover the source deployment's Server image. Set it to the
+matching digest when restoring a database already migrated to 1.2.1. Vocabulary
+defaults, terms and revisions, pinned chunk provenance, and publication-governance
+snapshots are part of the Server PostgreSQL backup.
+
+Rollback from 1.2.1 to 1.2.0 requires a backup taken before migration 0034.
+Restoring a 1.2.1 backup into a new database does not make it compatible with
+1.2.0. Preserve post-backup writes for reconciliation, restore the matching
+pre-upgrade database and secrets, and then start the older image. See
+[1.2.1 upgrade/rollback](../releases/server-1.2.1.md#web-stack-upgrade-and-acceptance).

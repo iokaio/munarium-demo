@@ -2,6 +2,13 @@
 
 Each new demo has its own code, Docker setup, and tests under `src/<demo-name>/`. Each `docs/demos/<demo-name>/` folder contains a `README.md` walkthrough, recorded validation, and a linked `application.png` rendering. Every walkthrough begins with a business case explaining why a company might build a similar solution.
 
+All thirteen stacks pin Server **1.2.1** and official clients from
+`705316332468c3c5eb50a96943f223f1bda1f09e` (Server client packages **1.1.0**).
+The [current compatibility record](../releases/README.md#local-121-qualification)
+separates local upgrade qualification from the dated stress, native and online
+results in each walkthrough. The root web stack's `MUNARIUM_IMAGE` override
+does not change these independently pinned Compose files.
+
 - [Invoice exception batch](invoice-exception/README.md): Python CLI with synthetic invoices, deterministic checks, cited review packets, and tests across three AI providers. Source: [src/invoice-exception](../../src/invoice-exception).
 - [Employee policy assistant](employee-policy-assistant/README.md): C# Avalonia desktop with identity-scoped policy answers, real streaming progress, source inspection, and local Docker tests. Source: [src/employee-policy-assistant](../../src/employee-policy-assistant).
 - [Order exception triage](order-exception-triage/README.md): Java queue consumer with a durable inbox, cited routing proposals, duplicate-event handling, and transcript recovery. Source: [src/order-exception-triage](../../src/order-exception-triage).

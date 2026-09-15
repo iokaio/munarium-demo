@@ -5,15 +5,25 @@ demo web application continues to use its backend HTTP client and existing
 session API; installing the new Server does not add a vocabulary editor to the
 visitor UI. Vocabulary administration belongs to a trusted backend/operator.
 
+Server 1.2.1 is now published and adds collection queries, publication governance
+and original-publication authorization. Read the [1.2.1 integration guide](server-1.2.1.md)
+for its verified artifact and migration 0034. This page covers the
+historical 1.2.0 transition. All current demo defaults pin 1.2.1.
+
 ## API and client compatibility
 
 All documented Server REST operations have named native RPCs on
 `mmp.v1.ServerApiService`. The Rust, Python, .NET and Java Server client packages
 1.1.0 expose them through `ServerApiClient`; Python also has an async client.
 Existing typed client interfaces remain compatible. The complete API clients
-require Server 1.2 for their new gRPC methods. Additional demo applications keep
-their own pinned SDK revisions until those applications are separately updated
-and tested; a web deployment does not update every example automatically.
+require Server 1.2 for their new gRPC methods. All thirteen additional demo applications now use the reviewed 1.1.0 client
+checkout recorded in [compatibility](README.md). Their pins are independent
+of the root web image setting.
+
+The current upstream SDK source targets 1.2.1 while retaining package version
+1.1.0. The four collection-query/governance/publication methods added in 1.2.1
+require that Server patch; they are unavailable on 1.2.0. Historical typed-client
+gRPC limitations do not apply to the complete `ServerApiClient` surface.
 
 See the [Server client guide](https://github.com/iokaio/munarium/blob/main/clients/docs/guides/server-1.2.md)
 for payload representation, streaming, error limits and language examples, and

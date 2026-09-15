@@ -2,6 +2,13 @@
 
 The thirteen applications have isolated Docker workflows. Their recorded results establish the tested fixture, application, client, service and host combination. A successful default workload does not establish stress capacity or native desktop behavior.
 
+The checked-in stacks use Server **1.2.1** and official SDK source
+`705316332468c3c5eb50a96943f223f1bda1f09e` (Server client packages 1.1.0).
+See [local upgrade qualification](releases/README.md#local-121-qualification)
+for the current controlled runs. The September 11 measurements below retain
+their original Server 1.1.1 and SDK baseline; they are not new 1.2.1 resource,
+real-model or host-platform measurements.
+
 ## Capacity preflight
 
 Every demo's `local.ps1` and `local.sh` calls the shared [PowerShell](../tools/demo_preflight.ps1) or [POSIX](../tools/demo_preflight.sh) preflight before building. A pinned Python container reads available memory, CPU count, free Docker storage and free space on the output mount. It has no network, Docker socket, private oracle or provider credentials. Reports are retained under `artifacts/<demo>/preflight/`.

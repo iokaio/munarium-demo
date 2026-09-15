@@ -8,7 +8,7 @@ import random
 import uuid
 from pathlib import Path
 
-REV = "bb6e92a72a3944cff4d4bf0c1b470afcf3f4dfb3"
+REV = "705316332468c3c5eb50a96943f223f1bda1f09e"
 CLOUD_CASES = {"openai": (1, 3, 5), "anthropic": (2, 4, 6), "openrouter": (7, 8)}
 
 

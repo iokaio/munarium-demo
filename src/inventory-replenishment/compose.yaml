@@ -23,7 +23,7 @@ services:
       timeout: 2s
       retries: 30
   server:
-    image: iokaio/munarium:1.1.1@sha256:e19bbe4c8cb0851771d04b509be64769bb07b46c8b490b80dceabb72faa4c64f
+    image: iokaio/munarium:1.2.1@sha256:8c937f91b5ab952fa080bdfbc748e041fffd5b69270f5ea4052b96afdebb2df7
     depends_on:
       postgres: {condition: service_healthy}
     environment:
@@ -69,7 +69,7 @@ services:
       MUNARIUM_MATRIX_SERVER_URL: http://server:8080
       MUNARIUM_MATRIX_SERVER_TOKEN_REF: env:MATRIX_SEAL_TOKEN
       MATRIX_SEAL_TOKEN: inventory-rw
-      MUNARIUM_MATRIX_TARGET_SERVER_VERSION: '1.1.1'
+      MUNARIUM_MATRIX_TARGET_SERVER_VERSION: '1.2.1'
       MUNARIUM_MATRIX_SECRET_INVENTORY_READER: postgres://stock_reader:stock-reader-local-only@inventory-db:5432/inventory
   server-ready:
     <<: *runner
@@ -133,6 +133,7 @@ services:
       MUNARIUM_OLLAMA_FIXTURE_URL: http://sdk-fixture:11434
       MUNARIUM_OLLAMA_SERVER_ENDPOINT: http://sdk-fixture:11434
     volumes:
+      - ../../tools/test_server_routing.py:/qualification/test_server_routing.py:ro
       - inputs:/inputs:ro
       - oracle:/oracle:ro
       - credentials:/credentials:ro

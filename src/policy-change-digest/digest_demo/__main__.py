@@ -26,7 +26,7 @@ def check_report(path, sdk=False):
         )
     ):
         raise RuntimeError("Missing, failed or unexpectedly skipped tests")
-    if sdk and len(cases) - len(skipped) != 175:
+    if sdk and len(cases) - len(skipped) != 188:
         raise RuntimeError("Unexpected pinned SDK test count")
     save(
         path.with_suffix(".json"),
@@ -129,7 +129,12 @@ def main():
                 [sys.executable, "/opt/munarium/clients/check_compatibility.py"], check=True
             )
             tests, sdk = (
-                ["/opt/munarium/clients/python/tests", "/opt/munarium/clients/python/conformance"],
+                [
+                    "/opt/munarium/clients/python/tests",
+                    "/opt/munarium/clients/python/conformance",
+                    "--ignore=/opt/munarium/clients/python/conformance/test_server_111.py",
+                    "/qualification/test_server_routing.py",
+                ],
                 True,
             )
         else:

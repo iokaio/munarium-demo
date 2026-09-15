@@ -14,6 +14,15 @@ the visitor's identity to an organization-approved role. To adapt this demo for
 confidential business data, derive the permitted persona and clearance from your
 own authenticated authorization policy before minting a capability.
 
+The web adapter mints `query` capabilities for runbook sessions. Server 1.2.1's
+collection queries and original-publication authorization also use `query`, but
+are not called by this adapter. Vocabulary management requires `vocabulary`;
+governance reads and writes require static `rw` credentials, not the web app's
+management credential. If adding these APIs, keep them behind the appropriate
+backend authorization. An original-publication response is an identity to check
+against a retained file, not a download grant. See
+[the 1.2.1 integration boundary](releases/server-1.2.1.md#integrating-collection-queries).
+
 Run one web replica. Turn counters, failed-login counters, and global revocation cutoff are in memory and reset on restart. Blocking records and code hashes persist in SQLite. Rotating the gate secret invalidates existing cookies, code hashes, and pseudonymous IDs, so plan reissuance and attribution changes.
 
 Use TLS and explicitly trusted ingress addresses in Production. Development can log delivery codes and bypass visitor admission; it is intended for loopback use. Set provider budgets and appropriate data retention. Follow [SECURITY.md](../SECURITY.md) for private vulnerability reporting.
