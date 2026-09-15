@@ -36,6 +36,10 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 
 Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.1.1 and later, including 1.2.1, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
 
+The web chat starts with **OpenRouter / Fast** selected. Both chat APIs use the
+same default when the request omits its provider family and tier. Visitors can
+select another configured provider; `DEMO_FAST_ONLY` controls available tiers.
+
 Server 1.2 enables automatic vocabulary generation by default, including for
 eligible existing collections. Configure vocabulary defaults through Server's
 API before those collections use paid providers; the web app exposes no editor.

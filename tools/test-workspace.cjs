@@ -75,6 +75,7 @@ async function check(fastOnly) {
       for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
         await page.goto(base + '/' + corpus);
         await page.locator('[data-dm-family="ollama"]').waitFor({ state: 'visible' });
+        assert.equal(await page.locator('[data-dm-family="openrouter"]').getAttribute('aria-pressed'), 'true');
         assert.equal(await page.locator('[data-dm-tier]').count(), 1);
         assert.equal(await page.locator('[data-dm-tier="fast"]').count(), 1);
         for (const family of ['claude', 'gpt', 'openrouter', 'ollama']) {
@@ -84,11 +85,13 @@ async function check(fastOnly) {
           assert.equal(await page.locator('[data-dm-tier="fast"]').getAttribute('aria-pressed'), 'true');
         }
       }
+      await page.goto(base + '/support');
       await page.locator('[data-dm-input]').fill('Fast-only question');
       await page.locator('[data-dm-input]').press('Enter');
       await page.locator('.dm-bubble-assistant').waitFor();
       assert.equal(sent.length, 1);
       assert.equal(sent[0].tier, 'fast');
+      assert.equal(sent[0].family, 'openrouter');
       assert.deepEqual(errors, []);
       console.log('PASS: Fast-only controls on six pages, provider switching and submitted tier.');
       return;
@@ -97,6 +100,7 @@ async function check(fastOnly) {
     for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
       const response = await page.goto(base + '/' + corpus);
       assert.equal(response.status(), 200, corpus + ' must render');
+      assert.equal(await page.locator('[data-dm-family="openrouter"]').getAttribute('aria-pressed'), 'true');
       await page.locator('[data-dm-family="ollama"]').waitFor({ state: 'visible' });
       assert.equal(await page.locator('.dm-sidebar [data-dm-family]').count(), 4);
       assert.equal(await page.locator('.dm-sidebar [data-dm-tier]').count(), 3);

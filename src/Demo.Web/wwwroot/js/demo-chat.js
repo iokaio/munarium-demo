@@ -71,7 +71,7 @@
         corpus: panel ? panel.getAttribute('data-corpus') : null,
         sessionId: null,
         history: [],
-        family: 'claude',
+        family: 'openrouter',
         tier: 'fast',
         persona: null,
         busy: false,
@@ -462,7 +462,7 @@
         clearTimeout(ollamaExpiryTimer);
         if (available) ollamaExpiryTimer = setTimeout(function () { applyOllamaAvailability(null); }, Math.min(expires - Date.now(), 10800000));
         if (!available && state.family === 'ollama') {
-            state.family = ['claude', 'gpt', 'openrouter'].find(function (name) {
+            state.family = ['openrouter', 'claude', 'gpt'].find(function (name) {
                 return state.modelCatalog && state.modelCatalog[name];
             }) || '';
             panel.querySelectorAll('[data-dm-family]').forEach(function (b) {
@@ -701,7 +701,7 @@
                     sessionId: session.data.sessionId,
                     message: question,
                     history: [],
-                    family: state.family || 'claude',
+                    family: state.family || 'openrouter',
                     tier: state.tier || 'fast',
                 });
                 if (!result.ok) {
