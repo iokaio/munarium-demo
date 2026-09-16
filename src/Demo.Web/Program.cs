@@ -774,8 +774,18 @@ app.MapGet("/admin/{**rest}", async (
     CancellationToken ct) =>
 {
     if (!app.Configuration.GetValue<bool>("OperatorConsole:Enabled")) return Results.NotFound();
+    // OperatorConsole:VisitorAccess (opt-in, default false) lets an admitted
+    // visitor read the server console through this GET-only, view-only
+    // passthrough. GateMiddleware already required the visitor cookie for
+    // every path below the exact /admin page, so reaching here is admission;
+    // without the flag the operator session stays required. Matrix's console
+    // below keeps requiring the operator session either way.
     var operatorGate = http.RequestServices.GetRequiredService<GateService>();
-    if (!operatorGate.ValidateAdminSession(http.Request.Cookies[GateService.AdminCookieName])) return Results.Unauthorized();
+    if (!app.Configuration.GetValue<bool>("OperatorConsole:VisitorAccess") &&
+        !operatorGate.ValidateAdminSession(http.Request.Cookies[GateService.AdminCookieName]))
+    {
+        return Results.Unauthorized();
+    }
     // Exact /admin became the demo's own gate-admin page (2026-09-01), so
     // the server console's OVERVIEW answers at the "console" alias; every
     // deeper path proxies unchanged. The console's own nav links to
