@@ -28,6 +28,7 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 | `DEMO_GATE_MAX_AGE_HOURS` | Optional cookie age ceiling, also bounded by next UTC midnight |
 | `DEMO_TRUSTED_PROXIES` | Comma-separated ingress IP addresses permitted to supply forwarding headers |
 | `OperatorConsole__Enabled` | Optional Server/Matrix console proxy; false by default and requires operator authentication |
+| `OperatorConsole__VisitorAccess` | `true` lets any admitted visitor read the Server console passthrough at `/admin/console` without the operator session; false by default, requires `OperatorConsole__Enabled`, and does not apply to the Matrix console |
 | `MUNARIUM_IMAGE` | Root web Compose and restore-drill image override; fallback is the signed 1.2.1 digest. Additional demo stacks have separate literal pins. See [1.2.1 selection](releases/server-1.2.1.md#web-stack-upgrade-and-acceptance). |
 | `DEMO_HOST_PORT`, `SERVER_HOST_PORT` | Compose host ports; default 5310 and 8080, bound to loopback |
 | `DEMO_OLLAMA_MODE` | `direct` for local Ollama; otherwise authenticated readiness gateway |

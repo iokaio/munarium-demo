@@ -73,6 +73,13 @@ const { once } = require('node:events');
       assert.equal((await fetch(app.base + endpoint, { headers: { Cookie: cookie }, redirect: 'manual' })).status, 401,
         'Visitor admission must not grant operator access');
     }
+    await stop(app.child); app = await start({ OperatorConsole__Enabled: 'true', OperatorConsole__VisitorAccess: 'true' }); assert(app.base, app.log);
+    assert.equal((await fetch(app.base + '/admin/console', { headers: { Cookie: cookie }, redirect: 'manual' })).status, 500,
+      'Explicit visitor access must reach the upstream Server console (the fixture backend answers 500)');
+    assert.equal((await fetch(app.base + '/admin/console', { redirect: 'manual' })).status, 302,
+      'Visitor access still requires visitor admission');
+    assert.equal((await fetch(app.base + '/matrix-admin/', { headers: { Cookie: cookie }, redirect: 'manual' })).status, 401,
+      'Visitor access must not extend to the Matrix console');
     await stop(app.child);
     const admin = { DEMO_ADMIN_USER: 'test-operator', DEMO_ADMIN_PASSWORD: crypto.randomBytes(24).toString('hex') };
     app = await start(admin); assert(app.base, app.log);

@@ -4,7 +4,7 @@ The public configuration contains local defaults. Each operator supplies deploym
 
 Visitor access uses an email and reusable generated login code. The database retains a keyed hash of the code, and the browser receives an HMAC-signed pseudonymous cookie. That cookie expires at the next UTC midnight; an optional shorter age ceiling also applies. Email remains in the web app's SQLite registry and is delivered to the configured mail provider when sending a code.
 
-`/admin` has separate operator credentials, a 30-minute signed cookie, and antiforgery validation for state-changing forms. The optional upstream console proxies are disabled by default and require operator authentication. Visitor admission alone does not authorize them.
+`/admin` has separate operator credentials, a 30-minute signed cookie, and antiforgery validation for state-changing forms. The optional upstream console proxies are disabled by default and require operator authentication. Visitor admission alone does not authorize them, unless an operator explicitly sets `OperatorConsole__VisitorAccess=true`, which opens only the GET-only, view-only Server console passthrough to admitted visitors.
 
 Collection clearances and compartments are enforced by Munarium Server. UI persona controls are a demonstration of that contract; hiding a button is not an authorization boundary. Keep the management endpoint and database on private networks.
 
