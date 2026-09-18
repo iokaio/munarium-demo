@@ -4,6 +4,10 @@ Describe the problem and resulting behavior.
 
 ## Validation
 
+List local commands, results, and any skipped checks with reasons. Run affected
+builds and regressions before pushing. Browser and Docker checks are local-first;
+link a manual `demo-ci` run if hosted validation was needed.
+
 - [ ] Every commit has a DCO sign-off.
 - [ ] Required checks pass and affected docs are updated.
 - [ ] No private hostname, secret, internal path, or visitor record is included.
