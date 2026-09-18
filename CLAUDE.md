@@ -38,34 +38,18 @@ The additional applications use official clients from pinned public source. Do n
 apply a web-client change to all SDKs by assumption or replace a pinned checkout
 with an adjacent local repository to make a build pass.
 
-## Local validation before CI
+## Local tests before pull requests
 
-Run affected builds and checks locally before pushing. Use
-[development](docs/guides/development.md) and the validation table below. Start
-with a focused check, fix failures locally, then run the relevant gates once
-before requesting review. Reuse local build caches; do not push speculative
-changes just to use hosted builds as the development loop.
+Before opening a PR, run focused local formatting, lint, builds, and tests relevant
+to the change when the required tools are available. Catching straightforward
+failures locally makes review faster and avoids repeated CI runs. Reuse local
+build caches and batch related fixes before pushing.
 
-For web changes run the locked .NET restore, Release build, format check, and
-relevant controlled/browser regressions listed below. Install the pinned browser
-with `npm ci` and `npx playwright install chromium` when needed. For Dockerfile or
-packaging changes, also run `docker build -t munarium-demo-web:local-check .`.
-For additional applications use their documented local wrapper and isolated
-resources. Documentation/workflow-only edits need their relevant checks, not
-full application builds or every demo/corpus suite.
-
-Automatic `demo-ci` retains the required `build-and-lint` job: .NET build/format,
-PowerShell analysis, workflow lint, and deployment-boundary checks. Browser
-installation/regressions and the Docker build run only when a maintainer manually
-dispatches `demo-ci` for the reviewed branch. Automatic DCO and repository hygiene
-still run. Use Actions > demo-ci > Run workflow only when hosted reproduction or
-release confidence needs the full suite; do not dispatch it after every edit.
-All jobs use standard `ubuntu-latest` runners and hold no deployment credentials.
-
-Every PR must list exact local commands, results, and skipped checks with reasons.
-If a dependency is unavailable, say so and arrange the specific manual check
-before merging. Green automatic CI alone does not establish browser or container
-coverage. Keep `AGENTS.md` and `CLAUDE.md` byte-for-byte identical and tracked.
+Use the validation commands below to choose useful checks. Record what ran, the
+results, and any unavailable checks in the PR. Do not claim skipped tests passed.
+Automatic CI retains its configured build and test suites; local checks supplement
+that coverage. Recreating every hosted integration environment or manually
+dispatching routine CI is not required. Keep AGENTS.md and CLAUDE.md aligned.
 
 ## Establish scope and preserve work
 
