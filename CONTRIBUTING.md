@@ -10,26 +10,6 @@ Disclose third-party code and licenses, generated code and inputs, AI tools used
 and your review, and any employer or contractual restrictions. You must have the
 right to submit every file.
 
-Read the tracked [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) contributor
-instructions and keep them identical. Run affected builds and checks locally
-before pushing; use the smallest relevant check while iterating, then run the
-affected gates before requesting review. Include exact commands, results, and
-reasons for skipped checks in the PR. Do not use repeated hosted builds as the
-normal development loop.
-
-Automatic CI keeps DCO, repository hygiene, the .NET build/format checks,
-PowerShell analysis, workflow lint, and deployment-boundary checks. Browser
-installation/regressions and Docker image builds are manual: a maintainer can
-select Actions > demo-ci > Run workflow for the branch, or run
-`gh workflow run demo-ci.yml --ref <branch>`. Use this when hosted reproduction
-or release validation needs the full suite. All jobs use standard `ubuntu-latest`
-runners. Green automatic CI does not prove browser or container coverage;
-arrange a manual run before merge if required local checks cannot run.
-
-The commands below describe local gates; run those relevant to the change.
-Documentation/workflow-only changes do not require rebuilding the web app,
-installing browsers, or running every demo suite.
-
 ```console
 python -m pip install -r tools/requirements.txt
 python tools/check_public.py
