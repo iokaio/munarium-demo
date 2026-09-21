@@ -74,6 +74,9 @@ These additional demos use OpenAI, Anthropic and OpenRouter for real AI tests, w
 
 ## Learn and contribute
 
+Join the [Ioka Discord server](https://discord.gg/YdDsb8Eeb) to ask questions,
+share your experiences with the demos, and connect with the community.
+
 - [Documentation index](docs/README.md), [quickstart](docs/guides/quickstart.md), and [configuration](docs/configuration.md)
 - [Data and provenance](data/README.md), [data rights](data/RIGHTS.md), and [runbooks](docs/guides/runbooks.md)
 - [Development](docs/guides/development.md), [contributing](CONTRIBUTING.md), [security reporting](SECURITY.md), and [support](SUPPORT.md)
