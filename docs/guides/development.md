@@ -31,6 +31,16 @@ python tools/corpora/unpack.py --verify-only
 python tools/corpora/emit_history_yaml.py --check
 ```
 
+The revised financial-advisory, history-revolution and threat-intelligence
+runbooks state evidence requirements without evaluation language or emphatic
+grounding warnings. Their versions and asset/import checksums have changed.
+Historical results still describe the old versions. Before qualifying these
+prompts for a deployment, compare the old and new versions in fresh sessions,
+one prompt change at a time, on the configured Claude tiers and small Ollama
+models. Keep question sets fixed and record completeness, false findings,
+grounding, refusals, truncation, token use and latency. Local asset checks do not
+measure model quality. Loading a new version does not update an existing session.
+
 For PowerShell changes, use the same analyzer version and settings as CI:
 
 ```powershell

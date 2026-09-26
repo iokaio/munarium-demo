@@ -2,7 +2,7 @@
   "files": [
     {
       "path": "vendor/providers/demo-anthropic.yaml",
-      "sha256": "e1655f885b425b3b662ec0766e998e229462f147419cf5464391f01195242620"
+      "sha256": "e0f6ab7c9fea1e89a6531e158376ff4bae8b9f530b1efcac10e566888f08c253"
     },
     {
       "path": "vendor/providers/demo-ollama.yaml",
@@ -34,11 +34,11 @@
     },
     {
       "path": "vendor/runbooks/financial-advisory.yaml",
-      "sha256": "edba4b8fdd6fb6b6bf89082db831df1f2a621622f762c91011d79d79368edc42"
+      "sha256": "998030c3354a5bc3031a10195de55b0f534618f6cdd354da38290cf92519a93c"
     },
     {
       "path": "vendor/runbooks/history-revolution.yaml",
-      "sha256": "0fb60ce4b19115532ecdd920df5b8a3463e373a55358a692c97b7581395a7571"
+      "sha256": "38df5d11a7266453c7dc7716e425a40fc4907971ce62d144907d28efb5279f81"
     },
     {
       "path": "vendor/runbooks/knowledge-sources.yaml",
@@ -58,7 +58,7 @@
     },
     {
       "path": "vendor/runbooks/threat-intelligence.yaml",
-      "sha256": "e19163d7e197b50b13ebc00f0b3a5fd36436a968811350dfdfafaa6c27b03fc3"
+      "sha256": "aa658eced6d6ef117a290cda84e6e6a643cc51a2d9c9fc183edc84f4b321bcab"
     },
     {
       "path": "vendor/runbooks/threat-reports.yaml",
