@@ -21,12 +21,14 @@ public static class ProviderFixture
             var value = await JsonSerializer.DeserializeAsync<JsonElement>(request.Body);
             var prompt = string.Join("\n", value.GetProperty("messages").EnumerateArray().Select(m => m.GetProperty("content").GetString()));
             var candidates = new List<Candidate>();
-            foreach (Match chunk in Regex.Matches(prompt, @"\[(?<label>[^\]]+)\]\s*(?<text>.*?)(?=\n\n\[|\nQuestion:|\z)", RegexOptions.Singleline))
+            foreach (var line in prompt.Split('\n').Select(line => line.StartsWith("Evidence: ") ? line[10..] : line).Where(line => line.StartsWith("{")))
             {
-                foreach (Match item in Regex.Matches(chunk.Groups["text"].Value, @"Item (?<id>(?:commitment|proposal)_[0-9]{3})\nDescription: (?<description>[^\n]+)\nOwner: (?<owner>[^\n]+)\nDue: (?<due>[^\n]+)\nDecision: (?<decision>[^\n]+)\nEvidence: (?<quote>[^\n]+)"))
+                var chunk = JsonSerializer.Deserialize<JsonElement>(line);
+                if (chunk.GetProperty("source_role").GetString() != "document_hit") continue;
+                foreach (Match item in Regex.Matches(chunk.GetProperty("content").GetProperty("text").GetString()!, @"Item (?<id>(?:commitment|proposal)_[0-9]{3})\nDescription: (?<description>[^\n]+)\nOwner: (?<owner>[^\n]+)\nDue: (?<due>[^\n]+)\nDecision: (?<decision>[^\n]+)\nEvidence: (?<quote>[^\n]+)"))
                 {
                     var owner = item.Groups["owner"].Value; var date = item.Groups["due"].Value;
-                    candidates.Add(new(item.Groups["id"].Value, item.Groups["description"].Value, owner == "unassigned" ? null : owner, Workflow.Date(date) ? date : null, item.Groups["decision"].Value, item.Groups["quote"].Value, [mode == "bad-citation" ? "unserved/transcript" : chunk.Groups["label"].Value]));
+                    candidates.Add(new(item.Groups["id"].Value, item.Groups["description"].Value, owner == "unassigned" ? null : owner, Workflow.Date(date) ? date : null, item.Groups["decision"].Value, item.Groups["quote"].Value, [mode == "bad-citation" ? "unserved/transcript" : chunk.GetProperty("citation_id").GetString()!]));
                 }
             }
             return Results.Json(new { model = value.GetProperty("model").GetString(), done = true, done_reason = "stop", message = new { role = "assistant", content = JsonSerializer.Serialize(new CandidateList(candidates.ToArray()), Storage.Json) }, prompt_eval_count = 160, eval_count = 120 });

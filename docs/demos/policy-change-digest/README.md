@@ -4,7 +4,7 @@
 
 When purchasing, travel or equipment procedures change, process owners must find downstream checklists that may still describe the old rule. A company might build a scheduled digest to bring the exact policy change and supporting checklist passages into an existing review workflow. Plausible benefits include quicker identification of stale instructions and a clearer revision trail; the synthetic workload does not measure savings or productivity. Policy owners decide whether a candidate impact requires action, and existing document-management systems remain responsible for approving and publishing changes.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -16,7 +16,7 @@ The PNG is a Pillow rendering of actual captured Markdown output. Source, native
 
 ## Run locally
 
-Use local Docker with Linux containers and Compose. The build uses a digest-pinned Python 3.12 image, locked pip dependencies, the complete official Munarium checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`, Server 1.2.1 and pgvector. No host Python environment is required. The image includes a separate system Python/Pillow installation solely to render the output artifact.
+Use local Docker with Linux containers and Compose. The build uses a digest-pinned Python 3.12 image, locked pip dependencies, the complete official Munarium checkout at `eaa04ac6da25cb332b674c6535013a19b87fa0e7`, Server 1.3.0 and pgvector. No host Python environment is required. The image includes a separate system Python/Pillow installation solely to render the output artifact.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|

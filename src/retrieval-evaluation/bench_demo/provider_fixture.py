@@ -64,9 +64,16 @@ class Handler(BaseHTTPRequestHandler):
             if "private retention marker" in question
             else "lunar taxi"
         )
-        chunks = re.findall(
-            r"\[([^\]]+)\] (# Fictional .*?)(?=\n\n\[|\nQuestion:|\Z)", prompt, re.S
-        )
+        envelopes = [
+            json.loads(line)
+            for line in (line.removeprefix("Evidence: ") for line in prompt.splitlines())
+            if line.startswith("{")
+        ]
+        chunks = [
+            (item["citation_id"], item["content"]["text"])
+            for item in envelopes
+            if item.get("source_role") == "document_hit"
+        ]
         selected = [(label, text) for label, text in chunks if f"Topic: {topic}\n" in text]
         if mode == "irrelevant":
             selected = [(label, text) for label, text in chunks if f"Topic: {topic}\n" not in text][

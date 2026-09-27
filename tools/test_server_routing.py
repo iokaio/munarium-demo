@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Run the pinned SDK's nine controlled routing checks against Server 1.2.1.
+"""Run the pinned SDK's nine controlled routing checks against Server 1.3.0.
 
 The upstream test_server_111 module deliberately requires its historical release.
 Reuse its tests and transport fixture unchanged; only the local setup targets the
@@ -34,8 +34,8 @@ test_stream_exposes_actual_models = _sdk.test_stream_exposes_actual_models
 def routing() -> Iterator[dict[str, str]]:
     with MunariumClient.rest(ClientOptions(REST, token=TOKEN, uid="qualification")) as ops:
         version = ops.server_version()
-        assert (version.name, version.version) == ("munarium-server", "1.2.1")
-        prefix = "client121-" + uuid4().hex[:12]
+        assert (version.name, version.version) == ("munarium-server", "1.3.0")
+        prefix = "client130-" + uuid4().hex[:12]
         names = {
             key: prefix + "-" + key for key in ("baseline", "selected", "shape", "docs", "runbook")
         }

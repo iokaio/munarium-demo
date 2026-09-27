@@ -4,7 +4,7 @@
 
 A distributor or retailer can accumulate order holds caused by stock shortages, address problems, missing export documents or substitution requests. Staff must identify the right team and consult the relevant procedure before resolving each hold, and duplicate events can create repeated work. A similar consumer could turn those events into durable, cited review packets and route proposed work consistently. The business value is a clearer exception queue, fewer repeated investigations and traceable handoffs between fulfillment, procurement and customer service. People and existing order systems retain control of shipment and cancellation; the demo's synthetic results are not a measured throughput improvement.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -18,7 +18,7 @@ Source and harness: [src/order-exception-triage](../../../src/order-exception-tr
 
 ## Run locally
 
-Use Docker Desktop with Linux containers on Windows or macOS, or Docker Engine with Compose on Linux, plus Git. The image contains Java 21, Gradle, generators, and tests; no host JDK is needed. The full official Java client source is fetched at commit `705316332468c3c5eb50a96943f223f1bda1f09e`, including the Server protobuf definitions. Server 1.2.1, PostgreSQL/pgvector, and the Java base image are pinned by digest. Gradle resolves the application dependency graph using [gradle.lockfile](../../../src/order-exception-triage/gradle.lockfile).
+Use Docker Desktop with Linux containers on Windows or macOS, or Docker Engine with Compose on Linux, plus Git. The image contains Java 21, Gradle, generators, and tests; no host JDK is needed. The full official Java client source is fetched at commit `eaa04ac6da25cb332b674c6535013a19b87fa0e7`, including the Server protobuf definitions. Server 1.3.0, PostgreSQL/pgvector, and the Java base image are pinned by digest. Gradle resolves the application dependency graph using [gradle.lockfile](../../../src/order-exception-triage/gradle.lockfile).
 
 From the repository root:
 

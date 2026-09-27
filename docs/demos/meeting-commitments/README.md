@@ -4,7 +4,7 @@
 
 A company running projects across several teams may lose agreed actions among meeting notes, tentative suggestions and later corrections. A similar workflow could help a coordinator find the original passage, confirm the owner and date, and preserve the history of an accepted commitment. This could reduce manual follow-up and make handovers easier to inspect. People remain responsible for deciding what was agreed, approving records and delivering reminders. These fictional scenarios demonstrate the workflow; they do not establish productivity savings or the accuracy of unrestricted transcript interpretation.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -16,7 +16,7 @@ The image is a Pillow rendering of actual captured console output, not an operat
 
 ## Run and inspect
 
-Prerequisites are Git and local Docker with Compose and Linux containers. The Dockerfile fetches the complete official client checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`. Server 1.2.1, PostgreSQL/pgvector and .NET 10 images are pinned by digest; application and xUnit dependencies use committed lockfiles.
+Prerequisites are Git and local Docker with Compose and Linux containers. The Dockerfile fetches the complete official client checkout at `eaa04ac6da25cb332b674c6535013a19b87fa0e7`. Server 1.3.0, PostgreSQL/pgvector and .NET 10 images are pinned by digest; application and xUnit dependencies use committed lockfiles.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|

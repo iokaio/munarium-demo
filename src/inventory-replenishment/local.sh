@@ -22,7 +22,7 @@ git rev-parse HEAD > "$local_report/demo-revision.txt"
 docker info --format '{{.OSType}} {{.Architecture}} {{.NCPU}} {{.MemTotal}}' > "$local_report/host.txt"
 echo "POSIX local.sh $action $project; $(uname -s -m)" > "$local_report/command.txt"
 sh ../../tools/demo_preflight.sh inventory-replenishment "${DEMO_PROFILE:-default}"
-docker build -t munarium-inventory-matrix:local 'https://github.com/iokaio/munarium.git#705316332468c3c5eb50a96943f223f1bda1f09e:matrix'
+docker build -t munarium-inventory-matrix:local 'https://github.com/iokaio/munarium.git#eaa04ac6da25cb332b674c6535013a19b87fa0e7:matrix'
 docker image inspect munarium-inventory-matrix:local --format '{{.Id}} {{.Size}}' > "$local_report/matrix-image.txt"
 compose build tests
 docker image inspect munarium-inventory-runner:local --format '{{.Id}} {{.Size}}' > "$local_report/runner.txt"

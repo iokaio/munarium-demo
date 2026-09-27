@@ -4,7 +4,7 @@
 
 Office operations teams hand unresolved work and inspection milestones to colleagues across shifts. Notes scattered across messages make it difficult to distinguish what was known at handover from what was resolved later. A company might build a similar journal to retain reviewed observations, track commitments and reconstruct the exact evidence available at a shift boundary. Plausible benefits include clearer accountability and less repeated investigation; synthetic tests do not establish productivity or safety outcomes. Supervisors approve observations, people perform the work, and existing operational systems remain responsible for equipment control and scheduling.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -16,7 +16,7 @@ The image renders actual captured CLI output with Pillow; it is not an operating
 
 ## Run locally
 
-Use a local Docker context with Linux containers and Compose. The build downloads the digest-pinned Rust 1.98 image, Server 1.2.1, pgvector and complete official Munarium source revision `705316332468c3c5eb50a96943f223f1bda1f09e`. Cargo dependencies are locked; qualification runs offline after the build. No host Rust toolchain is needed.
+Use a local Docker context with Linux containers and Compose. The build downloads the digest-pinned Rust 1.98 image, Server 1.3.0, pgvector and complete official Munarium source revision `eaa04ac6da25cb332b674c6535013a19b87fa0e7`. Cargo dependencies are locked; qualification runs offline after the build. No host Rust toolchain is needed.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|
@@ -42,7 +42,7 @@ Wait for the daemon to checkpoint the three staged events before closing the shi
 docker compose --env-file ../../.env.local.sample -p shift-wave2 run --rm --no-deps --entrypoint sh app -c 'cat /inputs/shift-001-later.ndjson >> /work/manual/shift-001/arrivals.ndjson'
 ```
 
-Read the current and historical briefs again after the two new receipts arrive. The earlier promise remains open in the historical view. Use the same budget to compare composed content; changing the budget deliberately changes the excerpt. JSON sidecars retain full facts, anchors, promises, context hash and the pin even when the composed text omits material. Server 1.2.1 preserves locked details and open promises, so the minimum composition can exceed a tiny requested budget. The CLI and JSON explicitly report `budget_exceeded`; this token estimate is not a hard model-context limit.
+Read the current and historical briefs again after the two new receipts arrive. The earlier promise remains open in the historical view. Use the same budget to compare composed content; changing the budget deliberately changes the excerpt. JSON sidecars retain full facts, anchors, promises, context hash and the pin even when the composed text omits material. Server 1.3.0 preserves locked details and open promises, so the minimum composition can exceed a tiny requested budget. The CLI and JSON explicitly report `budget_exceeded`; this token estimate is not a hard model-context limit.
 
 ## Trust and recovery
 

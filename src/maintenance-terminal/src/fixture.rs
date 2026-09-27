@@ -21,13 +21,27 @@ struct Control {
     calls: AtomicU64,
 }
 fn answer(prompt: &str) -> Result<String> {
-    let evidence = prompt
+    let framed_evidence = prompt
         .split("EVIDENCE_START")
         .nth(1)
         .unwrap_or("")
         .split("EVIDENCE_END")
         .next()
         .unwrap_or("");
+    let documents: Vec<Value> = framed_evidence
+        .lines()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .filter(|item| item["source_role"] == "document_hit")
+        .collect();
+    let document = documents
+        .iter()
+        .find(|item| {
+            item["content"]["text"]
+                .as_str()
+                .is_some_and(|text| text.contains("Procedure code:"))
+        })
+        .ok_or_else(|| anyhow::anyhow!("No procedure evidence"))?;
+    let evidence = document["content"]["text"].as_str().unwrap();
     let index = evidence
         .find("Procedure code:")
         .ok_or_else(|| anyhow::anyhow!("No procedure evidence"))?;
@@ -37,14 +51,7 @@ fn answer(prompt: &str) -> Result<String> {
         .next()
         .unwrap()
         .trim();
-    let before = &evidence[..index];
-    let label = before
-        .rsplit('[')
-        .next()
-        .unwrap_or("")
-        .split(']')
-        .next()
-        .unwrap_or("");
+    let label = document["citation_id"].as_str().unwrap_or("");
     ensure!(
         label.contains('/') && !label.contains('\n'),
         "No source label"
@@ -182,8 +189,13 @@ mod tests {
     use super::*;
     #[test]
     fn historical_warning_does_not_change_selected_revision() {
-        let prompt = "EVIDENCE_START [scope/chunk] Fictional asset SIM-100 revision R1.\nHISTORICAL evidence only. Never apply this revision to current equipment.\nProcedure code: AMBER-12. Old indicator. EVIDENCE_END";
-        let value: Value = serde_json::from_str(&answer(prompt).unwrap()).unwrap();
+        let envelope = json!({
+            "source_role": "document_hit",
+            "citation_id": "scope/chunk",
+            "content": {"text": "Fictional asset SIM-100 revision R1.\nHISTORICAL evidence only. Never apply this revision to current equipment.\nProcedure code: AMBER-12. Old indicator."}
+        });
+        let prompt = format!("EVIDENCE_START\n{envelope}\nEVIDENCE_END");
+        let value: Value = serde_json::from_str(&answer(&prompt).unwrap()).unwrap();
         assert_eq!(value["revision"], "R1");
         assert_eq!(value["status"], "historical");
         assert_eq!(value["citations"], json!(["scope/chunk"]));

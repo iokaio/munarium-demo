@@ -2,11 +2,11 @@
 
 The thirteen applications have isolated Docker workflows. Their recorded results establish the tested fixture, application, client, service and host combination. A successful default workload does not establish stress capacity or native desktop behavior.
 
-The checked-in stacks use Server **1.2.1** and official SDK source
-`705316332468c3c5eb50a96943f223f1bda1f09e` (Server client packages 1.1.0).
-See [local upgrade qualification](releases/README.md#local-121-qualification)
+The checked-in stacks use Server **1.3.0** and official SDK source
+`eaa04ac6da25cb332b674c6535013a19b87fa0e7` (Server client packages 1.2.0).
+See [local upgrade qualification](releases/server-1.3.0.md)
 for the current controlled runs. The September 11 measurements below retain
-their original Server 1.1.1 and SDK baseline; they are not new 1.2.1 resource,
+their original Server 1.1.1 and SDK baseline; they are not new 1.3.0 resource,
 real-model or host-platform measurements.
 
 ## Capacity preflight

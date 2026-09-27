@@ -29,6 +29,7 @@ python tools/check_license.py
 pwsh ./Sync-Assets.ps1 -Check
 python tools/corpora/unpack.py --verify-only
 python tools/corpora/emit_history_yaml.py --check
+python tools/test_provider_evidence.py
 ```
 
 The revised financial-advisory, history-revolution and threat-intelligence

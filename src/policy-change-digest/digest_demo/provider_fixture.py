@@ -62,10 +62,25 @@ class Handler(BaseHTTPRequestHandler):
             "candidates": [],
         }
         if comparison["status"] == "candidate_impacts":
-            labels = re.findall(r"\[([^\]]+)\] # Fictional (?:policy|downstream checklist)", prompt)
-            ident = re.search(r"Checklist ID: (checklist-\d+)", prompt).group(1)
+            documents = [
+                json.loads(line)
+                for line in (line.removeprefix("Evidence: ") for line in prompt.splitlines())
+                if line.startswith("{")
+            ]
+            documents = [item for item in documents if item.get("source_role") == "document_hit"]
+            labels = [
+                item["citation_id"]
+                for item in documents
+                if re.match(r"# Fictional (?:policy|downstream checklist)", item["content"]["text"])
+            ]
+            evidence = "\n".join(item["content"]["text"] for item in documents)
+            ident = re.search(r"Checklist ID: (checklist-\d+)", evidence).group(1)
             if mode == "irrelevant":
-                labels = re.findall(r"\[([^\]]+)\] # Fictional unrelated checklist", prompt)
+                labels = [
+                    item["citation_id"]
+                    for item in documents
+                    if item["content"]["text"].startswith("# Fictional unrelated checklist")
+                ]
             answer["candidates"] = [
                 {
                     "checklist_id": ident,

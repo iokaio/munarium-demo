@@ -2,7 +2,6 @@
 """Controlled provider responses prove wiring, not model quality. No oracle access."""
 
 import json
-import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 
@@ -56,7 +55,15 @@ class Handler(BaseHTTPRequestHandler):
             return
         prompt = "\n".join(message["content"] for message in body["messages"])
         facts = json.JSONDecoder().raw_decode(prompt.split("DETERMINISTIC_FACTS=", 1)[1])[0]
-        paths = re.findall(r"\[([^\]]+)\] # Fictional purchasing policy", prompt)
+        paths = []
+        for line in (line.removeprefix("Evidence: ") for line in prompt.splitlines()):
+            if not line.startswith("{"):
+                continue
+            envelope = json.loads(line)
+            if envelope.get("source_role") == "document_hit" and envelope["content"][
+                "text"
+            ].startswith("# Fictional purchasing policy"):
+                paths.append(envelope["citation_id"])
         explanation = "Fictional policy review: " + ", ".join(facts["exceptions"] or ["matched"])
         if facts["receipt_status"] == "missing":
             explanation += (

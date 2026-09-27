@@ -2,7 +2,6 @@
 """Canned wire fixture; reads only the evidence supplied in the prompt."""
 
 import json
-import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 STATE = {"mode": "ok", "calls": 0}
@@ -43,19 +42,30 @@ class Handler(BaseHTTPRequestHandler):
             self.respond({"error": "Controlled provider outage"}, 503)
             return
         prompt = "\n".join(m["content"] for m in body["messages"])
-        evidence = re.search(r"evidence: (ev-[A-Za-z0-9-]+)", prompt)
-        procedure = re.search(r"\[(procedures/[^\]]+)\]", prompt)
+        envelopes = [
+            json.loads(line)
+            for line in (line.removeprefix("Evidence: ") for line in prompt.splitlines())
+            if line.startswith("{")
+        ]
+        procedure = next(
+            item["citation_id"]
+            for item in envelopes
+            if item.get("source_role") == "document_hit" and item.get("layer") == "procedures"
+        )
         actions = []
-        for line in prompt.splitlines():
-            cells = line.split(" | ")
-            if len(cells) == 6 and cells[0].startswith("SKU-"):
+        for envelope in envelopes:
+            if envelope.get("source_role") != "sealed_table":
+                continue
+            columns = envelope["content"]["columns"]
+            for row in envelope["content"]["rows"]:
+                cells = dict(zip(columns, row["cells"], strict=True))
                 actions.append(
                     {
-                        "sku": cells[1],
-                        "constraint_code": cells[4],
+                        "sku": cells["sku"],
+                        "constraint_code": cells["constraint_code"],
                         "citations": [
-                            f"evidence/{evidence.group(1)}#{cells[0]}",
-                            procedure.group(1),
+                            row["citation_id"],
+                            procedure,
                         ],
                     }
                 )

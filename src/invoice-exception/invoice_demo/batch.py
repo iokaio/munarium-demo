@@ -86,7 +86,7 @@ def export_packet(output: Path, facts: dict, result: TurnResult) -> dict:
     answer, errors = validate_answer(result, facts)
     evidence = result.model_dump(mode="json")
     if evidence.get("recovered_from_transcript"):
-        # 1.2.1 stores hits/envelopes but not the live response's skipped list.
+        # 1.3.0 stores hits/envelopes but not the live response's skipped list.
         evidence.pop("skipped", None)
     packet = {
         **facts,

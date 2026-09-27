@@ -26,7 +26,7 @@ def check_report(path, sdk=False):
         )
     ):
         raise RuntimeError("Missing, failed or unexpected skipped tests")
-    if sdk and len(cases) - len(skipped) != 188:
+    if sdk and len(cases) - len(skipped) != 231:
         raise RuntimeError("Unexpected SDK test count")
     save(
         path.with_suffix(".json"),

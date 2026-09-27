@@ -4,11 +4,13 @@ For the 1.2 upgrade, follow the [Server 1.2 procedure](../releases/server-1.2.md
 including the automatic vocabulary generation controls and required database
 restore for rollback to 1.1.
 
-Server 1.2.1 is published. Follow its [release and integration guide](../releases/server-1.2.1.md)
-for the verified digest and collection-governance behavior. The root web default
-and all thirteen additional demos pin 1.2.1.
-Upgrading an existing 1.2.0 database applies migration 0034; rolling back even
-this patch release requires the pre-upgrade database backup, not just the old image.
+The root web default and all thirteen additional demos pin Server 1.3.0. Follow
+the [1.3.0 upgrade guide](../releases/server-1.3.0.md) for the verified digest and
+migrations 0035–0040. Older binaries cannot open the new schema. Before policy
+activation or external effects, rollback requires the pre-upgrade backup and
+matching image. After activation or external effects, keep restores isolated
+until authoritative recovery and retention records are reconciled; prefer a
+compatible roll-forward fix. A backup alone does not restore current authority.
 
 Record the current web and Server image digests, source revision, runbook versions, provider configuration, and a verified backup before changing a deployment. Test the candidate in an isolated restored database with representative searches, chat, persona restrictions, and visitor login.
 
