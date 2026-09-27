@@ -29,8 +29,8 @@ def ready() -> None:
         try:
             with client("invoice-rw", "bootstrap") as ops:
                 version = ops.server_version()
-                if (version.name, version.version) != ("munarium-server", "1.2.1"):
-                    raise ValueError("This demo requires Munarium Server 1.2.1")
+                if (version.name, version.version) != ("munarium-server", "1.3.0"):
+                    raise ValueError("This demo requires Munarium Server 1.3.0")
                 return
         except ValueError:
             raise
@@ -66,13 +66,13 @@ def bootstrap(
     else:
         spec["credentialRef"] = {"env": provider.upper() + "_API_KEY"}
     report = {
-        "server_version": "1.2.1",
+        "server_version": "1.3.0",
         "fixture_manifest": manifest,
         "provider": provider,
         "model": model,
         "provider_budgets": spec["budgets"],
         "namespace": namespace,
-        "client_revision": "705316332468c3c5eb50a96943f223f1bda1f09e",
+        "client_revision": "eaa04ac6da25cb332b674c6535013a19b87fa0e7",
         "runs": {},
         "runbooks": {},
     }
@@ -131,7 +131,7 @@ def bootstrap(
         grant = issuer.tokens.mint(
             uid="invoice-reviewer",
             scopes=["query"],
-            # Server 1.2.1 checks the metadata name; sessions still pin name@version.
+            # Server 1.3.0 checks the metadata name; sessions still pin name@version.
             runbook_refs=[ref.rsplit("@", 1)[0] for ref in report["runbooks"].values()],
             ttl_secs=3600,
         )

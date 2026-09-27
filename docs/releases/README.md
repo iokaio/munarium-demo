@@ -1,38 +1,42 @@
 # Compatibility
 
-All fourteen demo stacks now pin published **Munarium Server 1.2.1**. The
-[1.2.1 release and integration guide](server-1.2.1.md) describes the new APIs,
-image verification, existing-installation acceptance and database-restore rollback.
-The [Server 1.2 guide](server-1.2.md) retains the earlier transition context.
+All fourteen demo stacks now pin published **Munarium Server 1.3.0**. The
+[1.3.0 upgrade guide](server-1.3.0.md) records the image identities, migration
+requirements and current validation. The [1.2.1 integration guide](server-1.2.1.md)
+and [Server 1.2 guide](server-1.2.md) retain the earlier transition context.
 
 ## Versions in this checkout
 
 | Surface | Version and integration |
 |---|---|
-| Root web Compose and restore-drill fallback | Server 1.2.1; custom HTTP adapter using `/v1` runbook sessions |
-| Thirteen additional demo Compose stacks | Server 1.2.1, each pinned by the same immutable image digest |
-| Additional demo SDK checkout | `705316332468c3c5eb50a96943f223f1bda1f09e`; latest upstream main reviewed on 2026-09-14 |
-| Official Server client packages | 1.1.0, targeting Server 1.2.1 and supporting minors 1.2/1.1 |
-| Rust wire crates | `munarium-api-types` and `munarium-proto` 1.2.1 |
-| Inventory Matrix source | Same source checkout; Matrix and Matrix clients retain their independent 1.0.0 version |
+| Root web Compose and restore-drill fallback | Server 1.3.0; custom HTTP adapter using `/v1` runbook sessions |
+| Thirteen additional demo Compose stacks | Server 1.3.0, each pinned by the same immutable image digest |
+| Additional demo SDK checkout | `eaa04ac6da25cb332b674c6535013a19b87fa0e7`; Server 1.3.0 public release source |
+| Official Server client source packages | 1.2.0, targeting Server 1.3.0 and supporting minors 1.3/1.2 |
+| Rust wire crates | `munarium-api-types` and `munarium-proto` 1.3.0 |
+| Inventory Matrix source | Same source checkout; Matrix 1.0.0 and Matrix client source 1.1.1 |
 | Web runtime/SDK | .NET 10 |
 | PostgreSQL image | pgvector PostgreSQL 16 |
 | Optional web Ollama baseline | 0.11.10, qwen3:1.7b and all-minilm:22m |
 
 Server index digest:
-`sha256:8c937f91b5ab952fa080bdfbc748e041fffd5b69270f5ea4052b96afdebb2df7`.
-The image was built from `c638a8e56fff45cef358ff2f4a5b5ba57957ba59`;
-its source identity is separate from the newer client checkout. Child manifests
-and upstream acceptance are recorded in the [release guide](server-1.2.1.md#published-artifact).
+`sha256:55078aa474c214dd68d84bfe92d7c6ce2d696fad0f36cc5dd270b160d8c1ec4f`.
+The image and client checkout use source `eaa04ac6da25cb332b674c6535013a19b87fa0e7`.
+The client packages remain independently versioned. Child manifests
+are recorded in the [release guide](server-1.3.0.md#published-artifact).
 
 The official clients are installed from a complete pinned public source checkout.
-Their complete `ServerApiClient` exposes 121 named REST/native-gRPC operations;
-the existing demos continue using their typed client workflows. The web app uses
+Their `ServerApiClient` exposes the REST/native-gRPC operation surface;
+the demos continue using their typed client workflows. The web app uses
 its own HTTP adapter and does not import an official client package. Changing
 `MUNARIUM_IMAGE` in the root stack does not change the thirteen literal Compose
 pins or rebuild their SDKs. Existing explicit image overrides remain effective.
 
 ## Local 1.2.1 qualification
+
+This section records the historical September 14 baseline. See
+[1.3.0 validation](server-1.3.0.md#local-validation) for the current upgrade.
+The routing fixture now targets 1.3.0; the results below describe its earlier revision.
 
 Qualification uses isolated `*-sdk121-review` Compose projects, the default
 synthetic profile, real Server 1.2.1 and controlled keyless provider fixtures on
@@ -98,20 +102,22 @@ The root Compose fallback already selects these bytes. To make an existing
 installation's choice explicit, set this in its ignored `.env`:
 
 ```dotenv
-MUNARIUM_IMAGE=iokaio/munarium@sha256:8c937f91b5ab952fa080bdfbc748e041fffd5b69270f5ea4052b96afdebb2df7
+MUNARIUM_IMAGE=iokaio/munarium@sha256:55078aa474c214dd68d84bfe92d7c6ce2d696fad0f36cc5dd270b160d8c1ec4f
 ```
 
 To build the same Server source locally:
 
 ```console
-docker build --build-arg SOURCE_REVISION=c638a8e56fff45cef358ff2f4a5b5ba57957ba59 --build-arg BUILD_VERSION=1.2.1 -t munarium-server:source https://github.com/iokaio/munarium.git#c638a8e56fff45cef358ff2f4a5b5ba57957ba59:server
+docker build --build-arg SOURCE_REVISION=eaa04ac6da25cb332b674c6535013a19b87fa0e7 --build-arg BUILD_VERSION=1.3.0 -t munarium-server:source https://github.com/iokaio/munarium.git#eaa04ac6da25cb332b674c6535013a19b87fa0e7:server
 ```
 
 Set `MUNARIUM_IMAGE=munarium-server:source` before starting. A local build has
 its own digest and is not the signed release artifact. Follow
 [upgrade/rollback](../ops/upgrade-rollback.md) before changing an existing database.
-Migration 0034 makes rollback to 1.2.0 require the pre-upgrade backup. Review
-automatic vocabulary generation and provider charges before processing collections.
+Migrations 0035–0040 prevent an image-only downgrade to 1.2.1. After governance
+activation or external effects, reconcile authoritative recovery and retention
+records before exposing a restored database. Review automatic vocabulary
+generation and provider charges before processing collections.
 
 ## Recorded 1.2.1 online acceptance
 

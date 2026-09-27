@@ -4,7 +4,7 @@
 
 A manufacturer may need to assemble inspection records, shift notes and applicable procedures before investigating a defective lot. Those records can disagree, and a search result can omit evidence that matters to the review. A similar batch application could reduce time spent gathering material and make missing observations and conflicting values easier to see. Inspectors still own their observations, and qualified reviewers determine root cause and disposition. The fictional data demonstrates evidence handling; it does not measure production quality improvements or establish that a process meets a regulatory standard.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -16,7 +16,7 @@ The image is rendered by Java2D from an actual exported packet. It is a terminal
 
 ## Run and inspect
 
-Install Git and local Docker with Compose and Linux containers. The pinned Java image fetches the complete official source checkout at `705316332468c3c5eb50a96943f223f1bda1f09e`; Gradle includes the official Java client as a composite build. The committed Gradle lockfile fixes application dependency versions. Server 1.2.1 and PostgreSQL/pgvector are also pinned by digest.
+Install Git and local Docker with Compose and Linux containers. The pinned Java image fetches the complete official source checkout at `eaa04ac6da25cb332b674c6535013a19b87fa0e7`; Gradle includes the official Java client as a composite build. The committed Gradle lockfile fixes application dependency versions. Server 1.3.0 and PostgreSQL/pgvector are also pinned by digest.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|
@@ -44,7 +44,7 @@ docker compose --env-file ../../.env.local.sample -p quality-manual run --rm --n
 docker compose --env-file ../../.env.local.sample -p quality-manual run --rm --no-deps app packet /work/manual/after case-001 corrected
 ```
 
-Open `packet.md`, `packet.json` and `journal.json` in the matching host directory. Research-profile document citations use the rendered `procedures/<chunk_id>` label; the packet resolves each label back to its returned collection, source path and hash. JSON retains direct observations with claim IDs, source paths and hashes, layer outcomes, completion identity and verification, the session ID, runbook revision, ledger version and positive pin. The trusted registry in the credential volume retains baseline/child bindings, reviewed correction intent, command bodies, keys and receipts. It contains tutorial query credentials separately in `query.json`; do not publish that credential file.
+Open `packet.md`, `packet.json` and `journal.json` in the matching host directory. Research-profile document citations use each envelope's `citation_id`, containing the actual collection and chunk ID; the packet resolves each label back to its returned collection, source path and hash. JSON retains direct observations with claim IDs, source paths and hashes, layer outcomes, completion identity and verification, the session ID, runbook revision, ledger version and positive pin. The trusted registry in the credential volume retains baseline/child bindings, reviewed correction intent, command bodies, keys and receipts. It contains tutorial query credentials separately in `query.json`; do not publish that credential file.
 
 ## Evidence and version boundaries
 
@@ -60,7 +60,7 @@ The app has a runbook-scoped query capability and a tutorial read-only ledger id
 
 The journal records a turn intent and session before the paid turn. Completed work is reused only when its exact input/configuration binding matches. An interrupted stream, network error or process crash leaves an uncertain journal; a normal invocation refuses to replay it. Use `app recover WORK CASE baseline|corrected` to inspect the saved session. Recovery requires exactly one matching completion and the expected identity and runbook.
 
-Server 1.2.1 transcripts do not preserve every live hierarchy or skipped-layer field. Recovery retains the completion and available citations, omits unavailable fields, and labels the packet incomplete pending review. It does not invent a successful hierarchy decision. An empty transcript remains uncertain. The coordinator saves failure logs and does not submit a replacement paid turn automatically.
+Server 1.3.0 transcripts do not preserve every live hierarchy or skipped-layer field. Recovery retains the completion and available citations, omits unavailable fields, and labels the packet incomplete pending review. It does not invent a successful hierarchy decision. An empty transcript remains uncertain. The coordinator saves failure logs and does not submit a replacement paid turn automatically.
 
 Ledger creation and claims also save intent before dispatch. A known completed receipt can be resumed; an uncertain version/claim outcome blocks further import for operator inspection. There is no blind command replay. Corrections have immutable review intent and use a file lease to serialize registry updates. Disputes retain their native findings and prevent the version from being frozen. Runbook activation records are separately inspectable.
 

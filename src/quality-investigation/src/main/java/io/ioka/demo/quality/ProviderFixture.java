@@ -19,7 +19,7 @@ public final class ProviderFixture {
             else if(path.startsWith("/mode/")) {mode.set(path.substring(6));response=Map.of("mode",mode.get());}
             else if(path.equals("/api/chat")) {
                 calls.incrementAndGet();if(mode.get().equals("unavailable")) {status=503;response=Map.of("error","Synthetic provider outage");}
-                else {var body=Json.MAPPER.readTree(exchange.getRequestBody());var prompt=new StringBuilder();for(var message:body.path("messages")) prompt.append(message.path("content").asText()).append('\n');String text=prompt.toString();
+                else {var body=Json.MAPPER.readTree(exchange.getRequestBody());var prompt=new StringBuilder();for(var message:body.path("messages")) prompt.append(message.path("content").asText()).append('\n');String text=evidenceText(prompt.toString());
                     var fact=Pattern.compile("lot_[0-9]{3}[^\\n]*?defects = ([0-9]+)").matcher(text);var note=Pattern.compile("Narrative defects: ([0-9]+)").matcher(text);var labels=new TreeSet<String>();var matcher=Pattern.compile("\\[([^\\[\\]\\s]+/[^\\[\\]\\s]+)\\]").matcher(text);while(matcher.find()) labels.add(matcher.group(1));
                     var answer=new TreeMap<String,Object>();answer.put("observed_defects",fact.find()?Integer.valueOf(fact.group(1)):null);answer.put("narrative_defects",note.find()?Integer.valueOf(note.group(1)):null);answer.put("action","Hold the lot for quality review.");answer.put("root_cause","not determined");answer.put("hypothesis","requires investigation");answer.put("citations",mode.get().equals("bad-citation")?List.of("unserved/secret"):labels);
                     response=Map.of("model",body.path("model").asText(),"done",true,"done_reason","stop","message",Map.of("role","assistant","content",FilesUtil.json(answer)),"prompt_eval_count",100,"eval_count",90);
@@ -27,5 +27,25 @@ public final class ProviderFixture {
             }else {status=404;response=Map.of("error","Unknown route");}
             byte[] bytes=FilesUtil.json(response).getBytes(StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","application/json");exchange.sendResponseHeaders(status,bytes.length);exchange.getResponseBody().write(bytes);
         }catch(Exception e) {exchange.sendResponseHeaders(500,-1);}finally {exchange.close();}});server.start();System.out.println("Canned quality protocol fixture; no model inference");
+    }
+    // Decode model-only evidence before applying this canned fixture's business rules.
+    static String evidenceText(String prompt) throws Exception {
+        var text = new StringBuilder();
+        for (String line : prompt.split("\\n")) {
+            if (line.startsWith("{")) {
+                var envelope = Json.MAPPER.readTree(line);
+                if (envelope.path("source_role").asText().equals("document_hit")) {
+                    text.append('[').append(envelope.path("citation_id").asText()).append("] ")
+                        .append(envelope.path("content").path("text").asText()).append('\n');
+                } else if (envelope.path("source_role").asText().equals("ledger_context")) {
+                    for (var section : envelope.path("content").path("sections")) {
+                        text.append(section.get(0).asText()).append(" = ").append(section.get(1).asText()).append('\n');
+                    }
+                }
+            } else {
+                text.append(line).append('\n');
+            }
+        }
+        return text.toString();
     }
 }

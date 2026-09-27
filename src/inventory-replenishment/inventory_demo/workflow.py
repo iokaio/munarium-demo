@@ -146,7 +146,7 @@ def export(api, inputs, work, journal, result, config):
         )
     ):
         stock["status"], stock["exact_count"] = "incomplete", None
-    labels = {f"procedures/{hit.chunk_id}": hit for hit in result.hits}
+    labels = {f"{hit.collection}/{hit.chunk_id}": hit for hit in result.hits}
     expected_sha = digest((Path(inputs) / journal["case"] / "procedure.md").read_bytes())
     if any(
         hit.source_content_hash != expected_sha

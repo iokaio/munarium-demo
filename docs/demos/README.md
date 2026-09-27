@@ -2,9 +2,9 @@
 
 Each new demo has its own code, Docker setup, and tests under `src/<demo-name>/`. Each `docs/demos/<demo-name>/` folder contains a `README.md` walkthrough, recorded validation, and a linked `application.png` rendering. Every walkthrough begins with a business case explaining why a company might build a similar solution.
 
-All thirteen stacks pin Server **1.2.1** and official clients from
-`705316332468c3c5eb50a96943f223f1bda1f09e` (Server client packages **1.1.0**).
-The [current compatibility record](../releases/README.md#local-121-qualification)
+All thirteen stacks pin Server **1.3.0** and official clients from
+`eaa04ac6da25cb332b674c6535013a19b87fa0e7` (Server client packages **1.2.0**).
+The [current compatibility record](../releases/server-1.3.0.md)
 separates local upgrade qualification from the dated stress, native and online
 results in each walkthrough. The root web stack's `MUNARIUM_IMAGE` override
 does not change these independently pinned Compose files.

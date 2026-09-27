@@ -14,6 +14,7 @@
 - [Configuration reference](configuration.md)
 - [Security boundaries](security.md)
 - [Release compatibility](releases/README.md)
+- [Server 1.3.0 demo upgrade and validation](releases/server-1.3.0.md)
 - [Server 1.2.1 release and demo integration](releases/server-1.2.1.md)
 
 ## Build and customize

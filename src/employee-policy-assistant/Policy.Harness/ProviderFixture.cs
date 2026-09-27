@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 using System.Net;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Policy.Harness;
 
@@ -36,10 +35,13 @@ public static class ProviderFixture
                         var question = prompt.Split("QUESTION_START").Last().Split("QUESTION_END")[0].ToLowerInvariant();
                         var evidence = prompt.Split("EVIDENCE_START").Last().Split("EVIDENCE_END")[0];
                         var topic = new[] { "moonbase", "retention", "commute", "training", "equipment", "leave" }.FirstOrDefault(question.Contains) ?? "scope";
-                        var blocks = Regex.Matches(evidence, @"\[([^\[\]\s]+/[^\[\]\s]+)\]([^\[]*)", RegexOptions.Singleline);
-                        var selected = blocks.Cast<Match>().FirstOrDefault(m => m.Groups[2].Value.Contains("TOPIC:" + topic));
-                        var fallback = blocks.Cast<Match>().FirstOrDefault();
-                        answer = selected is null ? "The requested answer is not available in the supplied documents. " + (fallback?.Groups[1].Value is string label ? "[" + label + "]" : "") : selected.Groups[2].Value.Split("TOPIC:" + topic).Last().Trim() + " [" + selected.Groups[1].Value + "]";
+                        var blocks = evidence.Split('\n').Where(line => line.StartsWith("{"))
+                            .Select(line => JsonSerializer.Deserialize<JsonElement>(line))
+                            .Where(item => item.GetProperty("source_role").GetString() == "document_hit")
+                            .Select(item => (Label: item.GetProperty("citation_id").GetString()!, Text: item.GetProperty("content").GetProperty("text").GetString()!)).ToArray();
+                        var selected = blocks.FirstOrDefault(item => item.Text.Contains("TOPIC:" + topic));
+                        var fallback = blocks.FirstOrDefault();
+                        answer = selected.Text is null ? "The requested answer is not available in the supplied documents. " + (fallback.Label is string label ? "[" + label + "]" : "") : selected.Text.Split("TOPIC:" + topic).Last().Trim() + " [" + selected.Label + "]";
                     }
                     response = new { model = body.GetProperty("model").GetString(), done = true, done_reason = "stop", message = new { role = "assistant", content = answer }, prompt_eval_count = 12, eval_count = 8 };
                 }

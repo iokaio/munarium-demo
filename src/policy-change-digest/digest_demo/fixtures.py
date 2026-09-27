@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from uuid import uuid4
 
-REVISION = "705316332468c3c5eb50a96943f223f1bda1f09e"
+REVISION = "eaa04ac6da25cb332b674c6535013a19b87fa0e7"
 
 
 def digest(raw):

@@ -38,20 +38,27 @@ async fn chat(
         .map(|m| m["content"].as_str().unwrap_or(""))
         .collect::<Vec<_>>()
         .join("\n");
-    let evidence = prompt
+    let framed_evidence = prompt
         .split("EVIDENCE_START")
         .nth(1)
         .unwrap_or("")
         .split("EVIDENCE_END")
         .next()
         .unwrap_or("");
-    let mut citations = vec![];
-    for part in evidence.split('[').skip(1) {
-        let label = part.split(']').next().unwrap_or("");
-        if label.contains('/') && !label.contains(char::is_whitespace) {
-            citations.push(label.to_string());
-        }
-    }
+    let documents: Vec<Value> = framed_evidence
+        .lines()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .filter(|item| item["source_role"] == "document_hit")
+        .collect();
+    let citations: Vec<String> = documents
+        .iter()
+        .filter_map(|item| item["citation_id"].as_str().map(str::to_owned))
+        .collect();
+    let evidence = documents
+        .iter()
+        .filter_map(|item| item["content"]["text"].as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
     let field = |prefix: &str| {
         evidence
             .lines()

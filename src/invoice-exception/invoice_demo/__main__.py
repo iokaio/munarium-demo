@@ -24,7 +24,7 @@ def check_report(path: Path, sdk: bool = False) -> None:
             sdk and case.get("name", "").startswith("test_gates_chronology_certain_only[")
         ):
             raise RuntimeError("Unexpected skipped test: " + case.get("name", "unknown"))
-    if sdk and sum(case.find("skipped") is None for case in cases) != 188:
+    if sdk and sum(case.find("skipped") is None for case in cases) != 231:
         raise RuntimeError("Pinned Python SDK qualification did not execute all required cases")
 
 

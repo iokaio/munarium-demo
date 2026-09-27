@@ -4,7 +4,7 @@
 
 A company receiving procedures and office records in shared folders needs to make approved revisions searchable without exposing incomplete uploads or unfinished indexes. Manual copying and ad hoc rebuilds can leave staff searching obsolete material, while an automatic cutover can publish an unintended revision. A similar background service could track each arrival and replacement, resume interrupted work, and give an operator a clear approval checkpoint. The expected business value is more dependable document availability and a traceable publishing process. Department owners retain responsibility for document content and activation decisions; this synthetic demo does not measure cost savings or compliance outcomes.
 
-Current runtime: Server **1.2.1**, official Server client packages **1.1.0**. See the [September 14 upgrade qualification](../../releases/README.md#local-121-qualification) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
+Current runtime: Server **1.3.0**, official Server client packages **1.2.0**. See the [1.3.0 upgrade and validation record](../../releases/server-1.3.0.md) for current checks. Dated runs, screenshots, stress measurements and online results below retain their original Server 1.1.1 baseline.
 
 ## Application
 
@@ -16,7 +16,7 @@ The image is rendered from actual captured worker status using Pillow and contai
 
 ## Run and inspect
 
-Prerequisites are Git and local Docker with Compose and Linux containers. The runner contains .NET 10 and the complete official client checkout pinned at `705316332468c3c5eb50a96943f223f1bda1f09e`. Server 1.2.1, PostgreSQL/pgvector and the SDK base image are pinned by digest. Application and test NuGet graphs use committed lockfiles. Tests execute without package restoration after provisioning.
+Prerequisites are Git and local Docker with Compose and Linux containers. The runner contains .NET 10 and the complete official client checkout pinned at `eaa04ac6da25cb332b674c6535013a19b87fa0e7`. Server 1.3.0, PostgreSQL/pgvector and the SDK base image are pinned by digest. Application and test NuGet graphs use committed lockfiles. Tests execute without package restoration after provisioning.
 
 | Action | PowerShell from repository root | POSIX from repository root |
 |---|---|---|

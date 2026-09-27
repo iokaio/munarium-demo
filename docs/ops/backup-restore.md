@@ -16,11 +16,17 @@ containers/network, and retains its dump and evidence privately under `.local/`.
 It does not replace the separate visitor SQLite backup or restore your provider
 credentials. No model endpoint is required for its database/index checks.
 
-The drill reads `MUNARIUM_IMAGE` from settings and otherwise starts Server 1.2.1;
+The drill reads `MUNARIUM_IMAGE` from settings and otherwise starts Server 1.3.0;
 it does not discover the source deployment's Server image. Set it to the
-matching digest when restoring a database already migrated to 1.2.1. Vocabulary
+matching digest for the database being restored. Vocabulary
 defaults, terms and revisions, pinned chunk provenance, and publication-governance
 snapshots are part of the Server PostgreSQL backup.
+
+Server 1.3.0 adds migrations 0035–0040. A pre-upgrade backup alone is insufficient
+after governance activation or external effects: keep restored databases isolated
+until authoritative recovery and retention records are reconciled. Follow the
+[1.3.0 upgrade procedure](../releases/server-1.3.0.md#web-stack-upgrade-and-acceptance)
+and prefer a compatible roll-forward fix.
 
 Rollback from 1.2.1 to 1.2.0 requires a backup taken before migration 0034.
 Restoring a 1.2.1 backup into a new database does not make it compatible with

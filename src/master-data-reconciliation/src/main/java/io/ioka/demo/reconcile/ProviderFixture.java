@@ -26,7 +26,7 @@ public final class ProviderFixture {
                     if(fail.get()) {status=503;response=Map.of("error","controlled provider outage");}
                     else {
                         var body=Json.MAPPER.readTree(exchange.getRequestBody());StringBuilder prompt=new StringBuilder();for(var message:body.path("messages")) prompt.append(message.path("content").asText()).append('\n');
-                        String evidence=prompt.toString().split("EVIDENCE_START")[1].split("EVIDENCE_END")[0];
+                        String evidence=evidenceText(prompt.toString()).split("EVIDENCE_START")[1].split("EVIDENCE_END")[0];
                         var citation=Pattern.compile("\\[([^\\[\\]\\s]+/[^\\[\\]\\s]+)\\]").matcher(evidence);var recommendation=Pattern.compile("Recommendation: ([a-z_]+)").matcher(evidence);
                         if(!citation.find() || !recommendation.find()) throw new IllegalStateException("No policy evidence");
                         String answer=FilesUtil.json(Map.of("explanation",evidence.substring(evidence.indexOf("Policy revision:")).replaceAll("\\[[^]]+\\]","").trim(),"recommendation",recommendation.group(1),"disposition","review_required","citations",List.of(citation.group(1))));
@@ -36,5 +36,25 @@ public final class ProviderFixture {
                 byte[] bytes=FilesUtil.json(response).getBytes(StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","application/json");exchange.sendResponseHeaders(status,bytes.length);exchange.getResponseBody().write(bytes);
             } catch(Exception error) {exchange.sendResponseHeaders(500,-1);} finally {exchange.close();}
         });server.start();System.out.println("Controlled stewardship fixture; no model inference.");
+    }
+    // Decode model-only evidence before applying this canned fixture's business rules.
+    static String evidenceText(String prompt) throws Exception {
+        var text = new StringBuilder();
+        for (String line : prompt.split("\\n")) {
+            if (line.startsWith("{")) {
+                var envelope = Json.MAPPER.readTree(line);
+                if (envelope.path("source_role").asText().equals("document_hit")) {
+                    text.append('[').append(envelope.path("citation_id").asText()).append("] ")
+                        .append(envelope.path("content").path("text").asText()).append('\n');
+                } else if (envelope.path("source_role").asText().equals("ledger_context")) {
+                    for (var section : envelope.path("content").path("sections")) {
+                        text.append(section.get(0).asText()).append(" = ").append(section.get(1).asText()).append('\n');
+                    }
+                }
+            } else {
+                text.append(line).append('\n');
+            }
+        }
+        return text.toString();
     }
 }

@@ -13,15 +13,15 @@ python tools/setup.py verify --corpus support
 Open <http://localhost:5310/support>. Initialization creates ignored `.env` with
 six independent random secrets only when that file does not already exist. If
 it exists, `init` leaves it unchanged, including any missing or empty settings.
-Starting creates PostgreSQL, Server 1.2.1, Ollama, and the web app, then downloads
+Starting creates PostgreSQL, Server 1.3.0, Ollama, and the web app, then downloads
 the completion and embedding models. Loading verifies source hashes, applies
 the provider and shapes, binds runbook default models to your selected provider,
 uploads documents, and builds indexes. `--approve` authorizes cutover only for
 runs recorded by this checkout.
 
-These defaults pin the published Server 1.2.1 digest. Existing installations
+These defaults pin the published Server 1.3.0 digest. Existing installations
 should preserve their settings and follow the
-[upgrade and acceptance guide](../releases/server-1.2.1.md#web-stack-upgrade-and-acceptance).
+[upgrade and acceptance guide](../releases/server-1.3.0.md#web-stack-upgrade-and-acceptance).
 Review automatic vocabulary generation before starting an upgraded installation
 with provider credentials. Existing session-based search/chat remains the UI path.
 
