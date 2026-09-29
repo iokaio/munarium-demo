@@ -54,6 +54,9 @@ jobs:
       - name: public configuration security checks
         run: node tools/test-public-config.cjs
 
+      - name: provider evidence envelope regressions
+        run: python3 tools/test_provider_evidence.py
+
       - name: lint PowerShell
         shell: pwsh
         run: |
