@@ -15,6 +15,7 @@
     --editorial-cyan: var(--dm-teal);
     --editorial-silver: #c3d0d0;
     --dm-nav-height: 68px;
+    --dm-version-height: 28px;
 }
 body.dm-app { background: var(--dm-paper); color: var(--dm-ink); font-size: 15px; line-height: 1.65; }
 .dm-app h1, .dm-app h2, .dm-app h4 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.025em; color: var(--dm-ink); }
@@ -51,10 +52,14 @@ body.dm-app { background: var(--dm-paper); color: var(--dm-ink); font-size: 15px
 .dm-outline:hover { background: var(--dm-wash); color: var(--dm-ink); border-color: var(--dm-teal); }
 .dm-site-footer { display: flex; gap: 24px; justify-content: space-between; align-items: center; padding: 26px max(32px, calc((100vw - 1192px) / 2)); border-top: 1px solid var(--dm-line); font-size: 12px; color: var(--dm-muted); }
 .dm-site-footer > a:first-child { font-family: Georgia, serif; font-size: 22px; color: var(--dm-ink); }
+.dm-site-footer { flex-wrap: wrap; }
+.dm-server-version { color: var(--dm-muted); font-size: 11px; line-height: 1.4; }
+.dm-site-footer .dm-server-version { flex-basis: 100%; text-align: center; }
+.dm-workspace-footer { height: var(--dm-version-height); display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--dm-line); background: var(--dm-paper); }
 
 /* Viewport grid: only the transcript and question list scroll, not the composer. */
 .dm-workspace-page { height: var(--dm-viewport-height, 100dvh); overflow: hidden; }
-.dm-workspace { height: calc(var(--dm-viewport-height, 100dvh) - var(--dm-nav-height)); display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.dm-workspace { height: calc(var(--dm-viewport-height, 100dvh) - var(--dm-nav-height) - var(--dm-version-height)); display: grid; grid-template-rows: auto minmax(0, 1fr); }
 .dm-workspace-heading { min-height: 100px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 19px 32px; border-bottom: 1px solid var(--dm-line); }
 .dm-workspace-heading .dm-eyebrow { margin-bottom: 6px; font-size: 10px; }
 .dm-workspace-heading h1 { font-size: clamp(25px, 2.55vw, 36px); line-height: 1.12; margin: 0; }

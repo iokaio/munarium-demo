@@ -22,6 +22,12 @@ demo expects. Both search and chat use `/v1` runbook sessions; search submits
 `complete:false`, while chat may stream a completing turn over REST.
 Matrix is not part of the local Compose stack.
 
+Every Razor page includes a footer showing the connected Server's `/version`
+response. The web backend reads this public endpoint without credentials, with a
+one-second timeout, on each page render. Only a validated Server version is shown;
+an unavailable or malformed response displays “Munarium Server · version unavailable”.
+This identifies the responding Server, not the web build or configured image pin.
+
 Server 1.4.0 preserves that API. Its collection query,
 publication governance and original-file authorization operations are separate
 interfaces that this web adapter does not call. Installing the image does not

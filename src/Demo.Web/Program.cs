@@ -136,6 +136,7 @@ builder.Services.AddSingleton<TokenCache>();
 builder.Services.AddSingleton<ModelCatalogCache>();
 builder.Services.AddSingleton(new ModelTierPolicy(builder.Configuration.GetValue<bool>("DEMO_FAST_ONLY")));
 builder.Services.AddHttpClient<OllamaAvailability>();
+builder.Services.AddHttpClient<ServerVersionClient>(http => http.Timeout = TimeSpan.FromSeconds(1));
 
 var app = builder.Build();
 
