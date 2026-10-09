@@ -17,17 +17,17 @@ Raw documents and indexes live in PostgreSQL in the supplied Compose deployment.
 
 The application uses its own HTTP client in `src/Demo.Web/Services/MunariumClient.cs`;
 it does not depend on a published Munarium SDK package. The root Compose stack
-pins Server 1.3.0. Server 1.1.1 and later supply the model-routing behavior this
+pins Server 1.4.0, including Haiku 5.5 compatibility. Server 1.1.1 and later supply the model-routing behavior this
 demo expects. Both search and chat use `/v1` runbook sessions; search submits
 `complete:false`, while chat may stream a completing turn over REST.
 Matrix is not part of the local Compose stack.
 
-Server 1.3.0 is published and preserves that API. Its collection query,
+Server 1.4.0 preserves that API. Its collection query,
 publication governance and original-file authorization operations are separate
 interfaces that this web adapter does not call. Installing the image does not
 add those workflows or a vocabulary editor to the UI. Session retrieval on
 Server 1.2 can apply collection vocabulary while retaining runbook model policy.
-See [the 1.3.0 integration guide](releases/server-1.3.0.md).
+See [the 1.4.0 web integration guide](releases/server-1.4.0.md).
 
 The thirteen additional applications have separate Compose files and SDK builds:
 they pin Server 1.3.0 and the official clients at

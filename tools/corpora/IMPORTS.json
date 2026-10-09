@@ -52,12 +52,13 @@
       "path": "vendor/providers/demo-anthropic.yaml",
       "source_path": "server/runbooks/providers/example-anthropic.yaml",
       "source_sha256": "d9afc621e062d5272434c70e11e187a0e283e2e00d5a4d763af988ec5dd7cf66",
-      "sha256": "e0f6ab7c9fea1e89a6531e158376ff4bae8b9f530b1efcac10e566888f08c253",
+      "sha256": "4ca1795f31dfa984656c6fc813deb798326ea090be2bdd7aff1b3790d3821187",
       "changes": [
         "Provider name aligned to demo model selection.",
         "Added Apache source header.",
         "Normalized text to LF for portable checksums.",
-        "Pinned current Claude effort explicitly; requires Server Claude policy support."
+        "Pinned current Claude effort explicitly; requires Server Claude policy support.",
+        "Pin Fast to Haiku 5.5; requires Server 1.4.0 sampling compatibility."
       ]
     },
     {
@@ -75,11 +76,12 @@
       "path": "vendor/providers/demo-openrouter.yaml",
       "source_path": "server/runbooks/providers/example-openrouter.yaml",
       "source_sha256": "72e6592281330a6a20f59a554ae53e4b676ab465632948b234f045aa23202776",
-      "sha256": "a66acdb407d7b31d8e8743550e1be14d3b769991d4eb5a722e2510bc22cc23e6",
+      "sha256": "dab2f78173d943704450e2ecfc8724a7717024605a8a40d94b1fcdef4082c759",
       "changes": [
         "Provider name aligned to demo model selection.",
         "Added Apache source header.",
-        "Normalized text to LF for portable checksums."
+        "Normalized text to LF for portable checksums.",
+        "Disable reasoning for the exact Fast model using Server 1.4.0 support."
       ]
     },
     {

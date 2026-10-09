@@ -12,13 +12,15 @@ are selectable demonstration roles; they are not assigned to visitors by an
 organization's identity system. Local model results should be evaluated against
 your own questions and acceptance criteria.
 
-The default deployment uses **Munarium Server 1.3.0**, PostgreSQL 16, **.NET 10**
+The default web deployment uses **Munarium Server 1.4.0**, PostgreSQL 16, **.NET 10**
 and optional **Ollama 0.11.10**. The web app is built from this checkout; this
 repository has no published GitHub release as of **2026-09-14**. See
 [release compatibility](docs/releases/README.md) for the pinned Server digest
 and recorded validation.
 
-**All fourteen demo stacks pin Server 1.3.0.** The thirteen additional apps
+The web starts with **Claude / Fast**, using Haiku 5.5. See the
+[1.4.0 web upgrade guide](docs/releases/server-1.4.0.md) for provider settings,
+streaming behavior and migrations. **The thirteen additional apps retain Server 1.3.0** and
 use official client source packages 1.2.0 from the Server 1.3.0 release checkout. The [1.3.0 integration and upgrade guide](docs/releases/server-1.3.0.md)
 explains the new APIs, the pinned image, and the acceptance and database
 restore needed for an upgrade. The web application continues to use runbook sessions.

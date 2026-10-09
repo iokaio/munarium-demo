@@ -1,6 +1,8 @@
 # Compatibility
 
-All fourteen demo stacks now pin published **Munarium Server 1.3.0**. The
+The root web stack pins published **Munarium Server 1.4.0**; see the
+[1.4.0 web integration guide](server-1.4.0.md). The thirteen additional stacks
+retain **Server 1.3.0**. The
 [1.3.0 upgrade guide](server-1.3.0.md) records the image identities, migration
 requirements and current validation. The [1.2.1 integration guide](server-1.2.1.md)
 and [Server 1.2 guide](server-1.2.md) retain the earlier transition context.
@@ -9,7 +11,7 @@ and [Server 1.2 guide](server-1.2.md) retain the earlier transition context.
 
 | Surface | Version and integration |
 |---|---|
-| Root web Compose and restore-drill fallback | Server 1.3.0; custom HTTP adapter using `/v1` runbook sessions |
+| Root web Compose and restore-drill fallback | Server 1.4.0; custom HTTP adapter using `/v1` runbook sessions |
 | Thirteen additional demo Compose stacks | Server 1.3.0, each pinned by the same immutable image digest |
 | Additional demo SDK checkout | `eaa04ac6da25cb332b674c6535013a19b87fa0e7`; Server 1.3.0 public release source |
 | Official Server client source packages | 1.2.0, targeting Server 1.3.0 and supporting minors 1.3/1.2 |
@@ -19,7 +21,7 @@ and [Server 1.2 guide](server-1.2.md) retain the earlier transition context.
 | PostgreSQL image | pgvector PostgreSQL 16 |
 | Optional web Ollama baseline | 0.11.10, qwen3:1.7b and all-minilm:22m |
 
-Server index digest:
+Additional-demo Server 1.3.0 index digest:
 `sha256:55078aa474c214dd68d84bfe92d7c6ce2d696fad0f36cc5dd270b160d8c1ec4f`.
 The image and client checkout use source `eaa04ac6da25cb332b674c6535013a19b87fa0e7`.
 The client packages remain independently versioned. Child manifests
@@ -102,19 +104,19 @@ The root Compose fallback already selects these bytes. To make an existing
 installation's choice explicit, set this in its ignored `.env`:
 
 ```dotenv
-MUNARIUM_IMAGE=iokaio/munarium@sha256:55078aa474c214dd68d84bfe92d7c6ce2d696fad0f36cc5dd270b160d8c1ec4f
+MUNARIUM_IMAGE=iokaio/munarium@sha256:800a7b19cd3e2b82a3fb8f0b33e86e3f21fc3ea71ac12a81d6a9a18a816f556a
 ```
 
 To build the same Server source locally:
 
 ```console
-docker build --build-arg SOURCE_REVISION=eaa04ac6da25cb332b674c6535013a19b87fa0e7 --build-arg BUILD_VERSION=1.3.0 -t munarium-server:source https://github.com/iokaio/munarium.git#eaa04ac6da25cb332b674c6535013a19b87fa0e7:server
+docker build --build-arg SOURCE_REVISION=25012c22087fbaa8ce29ddd68d2880d6e9499b1c --build-arg BUILD_VERSION=1.4.0 -t munarium-server:source https://github.com/iokaio/munarium.git#25012c22087fbaa8ce29ddd68d2880d6e9499b1c:server
 ```
 
 Set `MUNARIUM_IMAGE=munarium-server:source` before starting. A local build has
 its own digest and is not the signed release artifact. Follow
 [upgrade/rollback](../ops/upgrade-rollback.md) before changing an existing database.
-Migrations 0035–0040 prevent an image-only downgrade to 1.2.1. After governance
+Migrations 0041–0042 prevent an image-only downgrade to 1.3.0. After governance
 activation or external effects, reconcile authoritative recovery and retention
 records before exposing a restored database. Review automatic vocabulary
 generation and provider charges before processing collections.

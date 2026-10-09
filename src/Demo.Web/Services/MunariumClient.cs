@@ -185,15 +185,10 @@ public sealed class MunariumClient
         req.Content = new StringContent(
             JsonSerializer.Serialize(body, Wire), Encoding.UTF8, "application/json");
 
-        HttpResponseMessage resp;
-        try
-        {
-            resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        {
-            throw new MunariumUnreachableException(_options.BaseUrl, ex);
-        }
+        // Once submitted, even a failure before response headers has an unknown
+        // outcome. Preserve timeout/transport errors for the stream's terminal
+        // error instead of classifying the backend as asleep and suggesting retry.
+        var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
 
         using (resp)
         {
@@ -219,7 +214,13 @@ public sealed class MunariumClient
                     }
                     continue;
                 }
-                if (line.StartsWith(':')) continue; // SSE keep-alive comment
+                if (line.StartsWith(':'))
+                {
+                    // The browser connection needs the upstream liveness too:
+                    // dropping comments leaves long completions silent at ingress.
+                    yield return new TurnStreamEvent("heartbeat", "{}");
+                    continue;
+                }
                 if (line.StartsWith("event:", StringComparison.Ordinal))
                     eventName = line[6..].Trim();
                 else if (line.StartsWith("data:", StringComparison.Ordinal))
