@@ -1,5 +1,9 @@
 @* SPDX-License-Identifier: Apache-2.0 *@
 @inject Demo.Web.Services.DemoIdentity Identity
+@inject Demo.Web.Services.ServerVersionClient ServerVersion
+@{
+    var serverVersion = await ServerVersion.GetAsync(Context.RequestAborted);
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,14 +25,15 @@
 <body class="dm-app @(ViewData["Workspace"] is true ? "dm-workspace-page" : "dm-document-page")">
     <a class="dm-skip-link" href="@(ViewData["Workspace"] is true ? "#chat-question" : "#main-content")">Skip to content</a>
     @RenderBody()
-    @if (ViewData["Workspace"] is not true)
-    {
-        <footer class="dm-site-footer">
+    <footer class="@(ViewData["Workspace"] is true ? "dm-workspace-footer" : "dm-site-footer")">
+        @if (ViewData["Workspace"] is not true)
+        {
             <a href="https://ioka.io">Ioka.io</a>
             <span>© @DateTime.UtcNow.Year Ioka LLC · Apache-2.0 application source</span>
             <a href="/logout">Log out <i class="mdi mdi-arrow-top-right" aria-hidden="true"></i></a>
-        </footer>
-    }
+        }
+        <small class="dm-server-version">Munarium Server @(serverVersion is null ? "· version unavailable" : serverVersion)</small>
+    </footer>
     <script src="/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

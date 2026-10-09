@@ -13,7 +13,16 @@ const { once } = require('node:events');
   let backendStatus = 200;
   let backendBody = '{"ok":true}';
   let lastPath;
+  let versionBody = '{"name":"munarium-server","version":"9.8.7"}';
+  let versionAuthorization;
+  let versionDelay = 0;
   const backend = http.createServer((request, response) => {
+    if (request.url === '/version') {
+      versionAuthorization = request.headers.authorization;
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      setTimeout(() => response.end(versionBody), versionDelay);
+      return;
+    }
     lastPath = request.url;
     response.writeHead(backendStatus, { 'Content-Type': 'application/json' });
     response.end(backendBody);
@@ -48,6 +57,25 @@ const { once } = require('node:events');
     assert(base, `Demo did not start: ${log}`);
     const gated = await fetch(base + '/dataroom', { redirect: 'manual' });
     assert.equal(gated.status, 302, 'Visitor pages must remain gated');
+    for (const [body, expected] of [
+      ['{"name":"munarium-server","version":"9.8.7"}', 'Munarium Server 9.8.7'],
+      ['{"name":"munarium-server","version":"9.8.8-rc.1"}', 'Munarium Server 9.8.8-rc.1'],
+      ['{"name":"another-service","version":"9.8.7"}', 'Munarium Server · version unavailable'],
+      ['{"name":"munarium-server","version":"<script>private-origin</script>"}', 'Munarium Server · version unavailable'],
+      ['not-json', 'Munarium Server · version unavailable'],
+    ]) {
+      versionBody = body;
+      const page = await (await fetch(base + '/gate')).text();
+      assert(page.includes(expected.replace('·', '&#xB7;')), expected);
+      assert(!page.includes('private-origin'));
+      assert.equal(versionAuthorization, undefined, 'Public version reads must not send the management token');
+    }
+    versionBody = '{"name":"munarium-server","version":"9.8.7"}';
+    versionDelay = 4000;
+    const started = performance.now();
+    assert.match(await (await fetch(base + '/gate')).text(), /Munarium Server &#xB7; version unavailable/);
+    assert(performance.now() - started < 3000, 'Slow version reads must not hold the page for the backend delay');
+    versionDelay = 0;
     for (const [status, body, expected] of [
       [200, '{"ok":true}', 200],
       [503, '{"ok":false}', 503],
@@ -67,6 +95,7 @@ const { once } = require('node:events');
     await once(backend, 'close');
     assert.equal((await fetch(base + '/readyz')).status, 503, 'Unreachable backend');
     assert.equal((await fetch(base + '/livez')).status, 200, 'Backend failure must not restart the web app');
+    assert.match(await (await fetch(base + '/gate')).text(), /Munarium Server &#xB7; version unavailable/);
     console.log('PASS: ungated readiness, backend failure/body validation, visitor gate, independent liveness');
   } finally {
     app.kill();

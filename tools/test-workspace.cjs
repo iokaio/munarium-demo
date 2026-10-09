@@ -108,10 +108,14 @@ async function check(fastOnly) {
       const dimensions = await page.evaluate(() => ({ height: innerHeight, scroll: document.documentElement.scrollHeight,
         width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
         composerBottom: document.querySelector('.dm-composer').getBoundingClientRect().bottom,
+        footerTop: document.querySelector('footer').getBoundingClientRect().top,
+        footerBottom: document.querySelector('footer').getBoundingClientRect().bottom,
         transcriptHeight: document.querySelector('.dm-transcript').clientHeight }));
       assert(dimensions.scroll <= dimensions.height + 1, corpus + ': page must not scroll');
       assert(dimensions.scrollWidth <= dimensions.width + 1, corpus + ': horizontal overflow');
-      assert(Math.abs(dimensions.composerBottom - dimensions.height) <= 1, corpus + ': composer must anchor to viewport bottom');
+      assert(Math.abs(dimensions.composerBottom - dimensions.footerTop) <= 1, corpus + ': composer must end above version footer');
+      assert(Math.abs(dimensions.footerBottom - dimensions.height) <= 1, corpus + ': version footer must anchor to viewport bottom');
+      assert.match(await page.locator('.dm-server-version').innerText(), /Munarium Server/);
       assert(dimensions.transcriptHeight > 500, corpus + ': transcript must fill available height');
       await page.getByRole('button', { name: 'About this collection' }).click();
       await page.locator('#collection-briefing.show').waitFor();
@@ -261,7 +265,9 @@ async function check(fastOnly) {
       await page.goto(base + '/revolution');
       const composer = await page.locator('.dm-composer').boundingBox();
       await page.screenshot({ path: path.join(output, `mobile-${size.width}-${size.height}.png`) });
-      assert(Math.abs(composer.y + composer.height - size.height) <= 1, 'Mobile composer anchored: ' + JSON.stringify({ size, composer }));
+      const footer = await page.locator('footer').boundingBox();
+      assert(Math.abs(composer.y + composer.height - footer.y) <= 1, 'Mobile composer ends above footer');
+      assert(Math.abs(footer.y + footer.height - size.height) <= 1, 'Mobile version footer stays visible');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Mobile horizontal overflow');
       await page.getByRole('button', { name: 'Explore', exact: true }).click();
       await page.locator('#collection-sidebar.show').waitFor();
