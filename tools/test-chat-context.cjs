@@ -12,6 +12,7 @@ async function check(fastOnly) {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'demo-chat-context-'));
   const turns = [];
   let controlledError;
+  let streamScenario;
   let sessions = 0;
   let backendCalls = 0;
   const backend = http.createServer(async (request, response) => {
@@ -48,7 +49,18 @@ async function check(fastOnly) {
       const turn = { session_id: request.url.split('/')[3], ordinal: 1, collections_searched: ['letters'], hits: [],
         completion: { provider: 'test', model: 'test', text: 'Controlled answer', input_tokens: 1, output_tokens: 1, was_override: true } };
       if (request.url.endsWith('/stream')) {
+        if (streamScenario === 'headers-timeout') return;
         response.setHeader('Content-Type', 'text/event-stream');
+        if (streamScenario) {
+          response.write(': keepalive\n\n');
+          if (streamScenario === 'eof') response.end();
+          else if (streamScenario === 'disconnect') setTimeout(() => response.destroy(), 25);
+          else if (streamScenario === 'heartbeat-timeout') {
+            const timer = setInterval(() => response.write(': keepalive\n\n'), 100);
+            response.on('close', () => clearInterval(timer));
+          }
+          return;
+        }
         response.end('event: done\ndata: ' + JSON.stringify(turn) + '\n\n');
       } else response.end(JSON.stringify(turn));
     } else { response.statusCode = 404; response.end('{}'); }
@@ -58,7 +70,8 @@ async function check(fastOnly) {
   const app = spawn('dotnet', [path.resolve(__dirname, '../src/Demo.Web/bin/Release/net10.0/Demo.Web.dll')], {
     cwd: path.resolve(__dirname, '../src/Demo.Web'), windowsHide: true,
     env: { ...process.env, ASPNETCORE_ENVIRONMENT: 'Development', ASPNETCORE_URLS: 'http://127.0.0.1:0',
-      Gate__Disabled: 'true', DEMO_FAST_ONLY: String(fastOnly), MUNARIUM_BASE_URL: `http://127.0.0.1:${backend.address().port}`,
+      Gate__Disabled: 'true', DEMO_FAST_ONLY: String(fastOnly), DEMO_CHAT_TIMEOUT_SECONDS: '1',
+      MUNARIUM_BASE_URL: `http://127.0.0.1:${backend.address().port}`,
       MUNARIUM_MGMT_TOKEN: 'test-only', DEMO_GATE_SECRET: 'test-only', DEMO_STORE_PATH: path.join(scratch, 'demo.sqlite') },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -81,7 +94,7 @@ async function check(fastOnly) {
       });
       assert.equal(response.status, 200);
       assert.match(await response.text(), /Controlled answer/);
-      assert.equal(turns.at(-1).body.model_override.provider, 'demo-openrouter');
+      assert.equal(turns.at(-1).body.model_override.provider, 'demo-anthropic');
       assert.equal(turns.at(-1).body.model_override.tier, 'fast');
     }
     if (fastOnly) {
@@ -163,10 +176,31 @@ async function check(fastOnly) {
       }
     }
     console.log('PASS: unary/streaming chat context, fresh runbooks, daily-cap/rate-limit guidance and private-error redaction.');
+    controlledError = null;
+    for (const scenario of ['eof', 'disconnect', 'headers-timeout', 'heartbeat-timeout']) {
+      streamScenario = scenario;
+      const previousTurns = turns.length;
+      const started = Date.now();
+      const response = await fetch(base + '/api/chat/revolution/stream', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: question }), signal: AbortSignal.timeout(7000),
+      });
+      const body = await response.text();
+      assert.equal(response.status, 200, body);
+      const payload = JSON.parse(body.match(/event: error\r?\ndata: ([^\r\n]+)/)?.[1]);
+      assert.equal(payload.error, scenario.endsWith('timeout') ? 'timeout' : 'stream');
+      assert.match(payload.message, /outcome is unknown|outcome.*unknown/);
+      assert.match(payload.message, /resubmitting.*immediately/);
+      assert.equal(turns.length, previousTurns + 1, 'Unknown outcomes must not trigger a new paid turn');
+      assert(Date.now() - started < 5000, 'Heartbeats must not extend the absolute deadline');
+      if (scenario !== 'headers-timeout') assert.match(body, /event: heartbeat/);
+    }
+    console.log('PASS: keepalives, pre-header timeout, absolute deadline, interruption and EOF refusals without resubmission.');
   } finally {
     app.kill();
     if (app.exitCode === null) await once(app, 'exit');
     backend.close();
+    backend.closeAllConnections();
   }
 }
 check(false).then(() => check(true)).catch(error => { console.error(error); process.exitCode = 1; });

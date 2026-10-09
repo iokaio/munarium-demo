@@ -13,7 +13,7 @@ services:
       timeout: 3s
       retries: 30
   server:
-    image: ${MUNARIUM_IMAGE:-iokaio/munarium@sha256:55078aa474c214dd68d84bfe92d7c6ce2d696fad0f36cc5dd270b160d8c1ec4f}
+    image: ${MUNARIUM_IMAGE:-iokaio/munarium@sha256:800a7b19cd3e2b82a3fb8f0b33e86e3f21fc3ea71ac12a81d6a9a18a816f556a}
     depends_on:
       postgres:
         condition: service_healthy

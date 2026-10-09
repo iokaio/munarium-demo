@@ -4,7 +4,10 @@ For the 1.2 upgrade, follow the [Server 1.2 procedure](../releases/server-1.2.md
 including the automatic vocabulary generation controls and required database
 restore for rollback to 1.1.
 
-The root web default and all thirteen additional demos pin Server 1.3.0. Follow
+The root web default pins Server 1.4.0; follow the
+[web upgrade guide](../releases/server-1.4.0.md) before applying the Haiku 5.5
+provider configuration. Migrations 0041–0042 prevent image-only downgrades.
+The thirteen additional demos retain Server 1.3.0. Follow
 the [1.3.0 upgrade guide](../releases/server-1.3.0.md) for the verified digest and
 migrations 0035–0040. Older binaries cannot open the new schema. Before policy
 activation or external effects, rollback requires the pre-upgrade backup and

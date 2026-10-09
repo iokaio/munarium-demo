@@ -75,7 +75,7 @@ async function check(fastOnly) {
       for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
         await page.goto(base + '/' + corpus);
         await page.locator('[data-dm-family="ollama"]').waitFor({ state: 'visible' });
-        assert.equal(await page.locator('[data-dm-family="openrouter"]').getAttribute('aria-pressed'), 'true');
+        assert.equal(await page.locator('[data-dm-family="claude"]').getAttribute('aria-pressed'), 'true');
         assert.equal(await page.locator('[data-dm-tier]').count(), 1);
         assert.equal(await page.locator('[data-dm-tier="fast"]').count(), 1);
         for (const family of ['claude', 'gpt', 'openrouter', 'ollama']) {
@@ -91,7 +91,7 @@ async function check(fastOnly) {
       await page.locator('.dm-bubble-assistant').waitFor();
       assert.equal(sent.length, 1);
       assert.equal(sent[0].tier, 'fast');
-      assert.equal(sent[0].family, 'openrouter');
+      assert.equal(sent[0].family, 'claude');
       assert.deepEqual(errors, []);
       console.log('PASS: Fast-only controls on six pages, provider switching and submitted tier.');
       return;
@@ -100,7 +100,7 @@ async function check(fastOnly) {
     for (const corpus of ['revolution', 'support', 'dataroom', 'advisory', 'patents', 'intel']) {
       const response = await page.goto(base + '/' + corpus);
       assert.equal(response.status(), 200, corpus + ' must render');
-      assert.equal(await page.locator('[data-dm-family="openrouter"]').getAttribute('aria-pressed'), 'true');
+      assert.equal(await page.locator('[data-dm-family="claude"]').getAttribute('aria-pressed'), 'true');
       await page.locator('[data-dm-family="ollama"]').waitFor({ state: 'visible' });
       assert.equal(await page.locator('.dm-sidebar [data-dm-family]').count(), 4);
       assert.equal(await page.locator('.dm-sidebar [data-dm-tier]').count(), 3);
@@ -142,6 +142,8 @@ async function check(fastOnly) {
     await page.locator('[data-dm-input]').press('Enter');
     await page.locator('.dm-bubble-assistant').waitFor();
     assert.equal(sent.length, 1, 'Enter sends exactly one question');
+    assert.equal((await page.locator('.dm-badge-verified').first().innerText()).trim(), 'citation references checked');
+    assert.match(await page.locator('.dm-badge-verified').first().getAttribute('title'), /do not establish factual correctness/);
     assert.match(await page.locator('[data-dm-progress="expansion"]').textContent(), /Search preparation via ollama \/ qwen3\.8:27b/);
     assert.match(await page.locator('[data-dm-progress="model"]').textContent(), /Answer model resolved: ollama \/ qwen3\.8:27b \(your selection\)/);
     assert.match(await page.locator('[data-dm-model-note]').innerText(), /Answer model:.*qwen3\.8:27b/);
@@ -195,6 +197,59 @@ async function check(fastOnly) {
     await budgetFailure.waitFor();
     assert.match(await budgetFailure.innerText(), /Choose another available model.*midnight UTC/);
     assert(!(await budgetFailure.innerText()).includes('Try the Fast or Capable tier'));
+    for (const scenario of ['crlf-open', 'eof', 'disconnect', 'timeout']) {
+      await page.evaluate(scenario => {
+        const originalFetch = window.fetch, originalTimer = window.setTimeout;
+        window.streamProbe = { calls: 0, cancelled: false };
+        window.restoreStreamProbe = () => { window.fetch = originalFetch; window.setTimeout = originalTimer; };
+        // Accelerate only the browser's production deadline, preserving all other timers.
+        window.setTimeout = (callback, delay, ...args) => originalTimer(callback, delay === 195000 ? 250 : delay, ...args);
+        window.fetch = async (url, options) => {
+          if (!String(url).includes('/api/chat/') || !String(url).endsWith('/stream')) return originalFetch(url, options);
+          window.streamProbe.calls++;
+          const body = new ReadableStream({
+            start(controller) {
+              options.signal.addEventListener('abort', () => {
+                window.streamProbe.cancelled = true;
+                try { controller.error(new DOMException('Aborted', 'AbortError')); } catch { /* terminal stream */ }
+              });
+              if (scenario === 'crlf-open') {
+                const data = { answer: 'Split café terminal answer', model: 'test', provider: 'test',
+                  inputTokens: 1, outputTokens: 1, hits: [] };
+                const bytes = new TextEncoder().encode('event: done\r\ndata: ' + JSON.stringify(data) + '\r\n\r\n');
+                const split = bytes.indexOf(0xc3) + 1;
+                controller.enqueue(bytes.slice(0, split));
+                originalTimer(() => controller.enqueue(bytes.slice(split)), 5);
+                // Deliberately never close: terminal events must finish the UI.
+              } else if (scenario === 'eof') controller.close();
+              else if (scenario === 'disconnect') controller.error(new TypeError('Controlled transport interruption'));
+            },
+            cancel() { window.streamProbe.cancelled = true; },
+          });
+          return new Response(body, { headers: { 'Content-Type': 'text/event-stream' } });
+        };
+      }, scenario);
+      try {
+        const previousErrors = await page.locator('.dm-bubble-error').count();
+        await page.locator('[data-dm-input]').fill('Stream scenario ' + scenario);
+        await page.locator('[data-dm-send]').click();
+        if (scenario === 'crlf-open') {
+          await page.locator('.dm-bubble-assistant').filter({ hasText: 'Split café terminal answer' }).waitFor();
+        } else {
+          const error = page.locator('.dm-bubble-error').nth(previousErrors);
+          await error.filter({ hasText: /outcome is unknown|server may still complete/ }).waitFor();
+          assert.match(await error.innerText(), /resubmitting.*immediately/);
+          assert.match(await error.innerText(), scenario === 'timeout' ? /timed out/
+            : scenario === 'eof' ? /ended without a result/ : /connection was interrupted/);
+        }
+        await page.waitForFunction(() => !document.querySelector('[data-dm-send]').disabled);
+        assert.equal(await page.evaluate(() => window.streamProbe.calls), 1);
+        assert.equal(await page.evaluate(() => window.streamProbe.cancelled), true);
+      } finally {
+        await page.evaluate(() => window.restoreStreamProbe());
+      }
+    }
+    console.log('PASS: split UTF-8/CRLF frames, terminal result without EOF, stream failures and deadline without automatic retry.');
     await page.getByRole('tab', { name: 'Search sources' }).click();
     await page.locator('[data-dm-search-input]').fill('source');
     await page.locator('[data-dm-search-form] button').click();

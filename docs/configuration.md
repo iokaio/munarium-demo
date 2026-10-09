@@ -24,12 +24,13 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 | `DEMO_SENDGRID_API_KEY`, `DEMO_MAIL_FROM`, `DEMO_MAIL_NAME` | Optional mail credentials, verified sender, and display name |
 | `Demo__Name`, `Demo__ContactEmail`, `Demo__LogoUrl` | Branding; neutral default name and bundled original logo |
 | `DEMO_TURN_DAILY_CAP` | In-memory daily visitor turn allowance; default 50 |
+| `DEMO_CHAT_TIMEOUT_SECONDS` | Absolute streaming deadline including session setup and repairs; default/maximum 180 seconds, minimum 1. Heartbeats do not extend it. |
 | `DEMO_FAST_ONLY` | `true` offers only Fast models in web controls and the model catalog, and rejects Capable/Frontier requests in both chat APIs before contacting Server. Default `false` retains all supported tiers. |
 | `DEMO_GATE_MAX_AGE_HOURS` | Optional cookie age ceiling, also bounded by next UTC midnight |
 | `DEMO_TRUSTED_PROXIES` | Comma-separated ingress IP addresses permitted to supply forwarding headers |
 | `OperatorConsole__Enabled` | Optional Server/Matrix console proxy; false by default and requires operator authentication |
 | `OperatorConsole__VisitorAccess` | `true` lets any admitted visitor read the Server console passthrough at `/admin/console` without the operator session; false by default, requires `OperatorConsole__Enabled`, and does not apply to the Matrix console |
-| `MUNARIUM_IMAGE` | Root web Compose and restore-drill image override; fallback is the signed 1.2.1 digest. Additional demo stacks have separate literal pins. See [1.2.1 selection](releases/server-1.2.1.md#web-stack-upgrade-and-acceptance). |
+| `MUNARIUM_IMAGE` | Root web Compose and restore-drill image override; fallback is the signed 1.4.0 digest. Additional demo stacks have separate literal pins. See [1.4.0 compatibility](releases/server-1.4.0.md). |
 | `DEMO_HOST_PORT`, `SERVER_HOST_PORT` | Compose host ports; default 5310 and 8080, bound to loopback |
 | `DEMO_OLLAMA_MODE` | `direct` for local Ollama; otherwise authenticated readiness gateway |
 | `DEMO_OLLAMA_URL`, `DEMO_OLLAMA_KEY` | Backend-only model readiness endpoint; key is required in gateway mode and not sent in direct mode |
@@ -37,9 +38,22 @@ explicit `Environment.GetEnvironmentVariable` aliases used in code still win.
 
 Cloud-provider keys are configured on Server: `MUNARIUM_SECRET_ANTHROPIC`, `MUNARIUM_SECRET_OPENAI`, or `MUNARIUM_SECRET_OPENROUTER`. Provider YAML files contain secret references, never values. On Server 1.1.1 and later, including 1.2.1, an allowed chat model override controls expansion and completion. Search uses the runbook's configured expansion model.
 
-The web chat starts with **OpenRouter / Fast** selected. Both chat APIs use the
-same default when the request omits its provider family and tier. Visitors can
+The web chat starts with **Claude / Fast** selected. Both chat APIs use the
+same default when the request omits its provider family and tier. The bundled
+`demo-anthropic` provider pins Fast to `claude-haiku-5-5`; apply it to Server
+after upgrading Server to 1.4.0 or later. Visitors can
 select another configured provider; `DEMO_FAST_ONLY` controls available tiers.
+
+Streaming chat forwards Server keepalives and reports interrupted or timed-out
+requests as unknown outcomes without automatic resubmission. The browser stops
+waiting after 195 seconds and renders terminal events without waiting for EOF.
+Server work may still finish after a timeout; avoid immediately resubmitting it.
+Citation and quote badges describe the checks performed, not factual correctness.
+
+The bundled OpenRouter configuration explicitly disables reasoning for
+`deepseek/deepseek-v4-flash`. This requires Server 1.4.0. Reapply provider settings
+after upgrading every Server replica, preserving operator credentials, budgets
+and routing; updating the web app alone does not change deployed configurations.
 
 Server 1.2 enables automatic vocabulary generation by default, including for
 eligible existing collections. Configure vocabulary defaults through Server's

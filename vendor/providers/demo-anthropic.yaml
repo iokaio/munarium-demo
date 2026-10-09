@@ -4,8 +4,8 @@
 #
 # A front end maps its "Claude" family choice to
 # `model_override: { provider: demo-anthropic, tier: fast|capable|frontier }`
-# on each session turn; the built-in tier table resolves
-# fast -> claude-haiku-4-5, capable -> claude-sonnet-5 and
+# on each session turn; the explicit Fast model and built-in tiers resolve
+# fast -> claude-haiku-5-5, capable -> claude-sonnet-5 and
 # frontier -> claude-fable-5-1. A runbook lists this config in
 # `models.allowOverrides`. The credential is the same env var the synthesized
 # default uses — this config exists so the override policy can name a family
@@ -26,6 +26,8 @@ kind: ProviderConfig
 metadata: { name: demo-anthropic }
 spec:
   provider: anthropic
+  models:
+    fast: claude-haiku-5-5
   # Pin current effort; calibrate quality and token use before lowering it.
   # Requires Server Claude policy support; older binaries ignore this block.
   anthropic:

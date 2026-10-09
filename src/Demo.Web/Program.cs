@@ -123,6 +123,9 @@ builder.Services.AddSingleton(sp => new MailSender(
 
 builder.Services.AddSingleton<TurnBudget>();
 builder.Services.AddSingleton<ConversationCondenser>();
+var chatTimeoutSeconds = builder.Configuration.GetValue<int?>("DEMO_CHAT_TIMEOUT_SECONDS") ?? 180;
+if (chatTimeoutSeconds is < 1 or > 180)
+    throw new InvalidOperationException("DEMO_CHAT_TIMEOUT_SECONDS must be between 1 and 180.");
 builder.Services.AddHttpClient<MunariumClient>(http =>
 {
     // Completions on the capable tier can take a while; retrieval-only calls
@@ -180,7 +183,7 @@ static string ProviderConfigFor(string? family) => (family ?? "").ToLowerInvaria
     "openrouter" => "demo-openrouter",
     "ollama" => "demo-ollama",
     "claude" => "demo-anthropic",
-    _ => "demo-openrouter",
+    _ => "demo-anthropic",
 };
 
 // Per-email attribution (2026-09-01; per-code 2026-08-25, per-visitor
@@ -209,6 +212,16 @@ static string ModelLimitMessage(bool dailyCap) => dailyCap
 
 static (int Status, object Payload)? Unavailable(Exception ex) => ex switch
 {
+    OperationCanceledException => (504, new
+    {
+        error = "timeout",
+        message = "The answer wait timed out. The server may still complete the request; its outcome is unknown. Avoid resubmitting it immediately.",
+    }),
+    HttpRequestException or IOException => (502, new
+    {
+        error = "stream",
+        message = "The answer connection was interrupted. The server may still complete the request; its outcome is unknown. Avoid resubmitting it immediately.",
+    }),
     MunariumUnreachableException => (503, new
     {
         error = "asleep",
@@ -491,6 +504,9 @@ app.MapPost("/api/chat/{corpus}/stream", async (
     async IAsyncEnumerable<System.Net.ServerSentEvents.SseItem<string>> Stream(
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken token)
     {
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
+        deadline.CancelAfter(TimeSpan.FromSeconds(chatTimeoutSeconds));
+        token = deadline.Token;
         string sessionId = "";
         string jwt = "";
         object? fatal = null;
@@ -536,7 +552,11 @@ app.MapPost("/api/chat/{corpus}/stream", async (
                         errorPayload = mapped.Payload;
                         break;
                     }
-                    if (ev.Event == "progress")
+                    if (ev.Event == "heartbeat")
+                    {
+                        yield return new("{}", eventType: "heartbeat");
+                    }
+                    else if (ev.Event == "progress")
                     {
                         yield return new(ev.Data, eventType: "progress");
                     }
@@ -639,6 +659,14 @@ app.MapPost("/api/chat/{corpus}/stream", async (
                     },
                 });
                 yield return new(done, eventType: "done");
+            }
+            else
+            {
+                yield return SseError(new
+                {
+                    error = "stream",
+                    message = "The answer stream ended without a result. Its outcome is unknown; avoid resubmitting it immediately.",
+                });
             }
             yield break;
         }
@@ -901,7 +929,7 @@ app.MapGet("/readyz", async (MunariumClient munarium, CancellationToken ct) =>
 
 static async Task<IResult?> ValidateModelSelection(ChatApiRequest request, OllamaAvailability ollama, ModelTierPolicy modelTiers, CancellationToken ct)
 {
-    var family = (request.Family ?? "openrouter").ToLowerInvariant();
+    var family = (request.Family ?? "claude").ToLowerInvariant();
     var tier = (request.Tier ?? "fast").ToLowerInvariant();
     if (family is not ("claude" or "gpt" or "openrouter" or "ollama") || tier is not ("fast" or "capable" or "frontier"))
         return Results.BadRequest(new { error = "unknown-model-selection", message = "Choose an available provider and tier." });

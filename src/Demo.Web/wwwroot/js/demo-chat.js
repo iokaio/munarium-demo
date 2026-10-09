@@ -71,7 +71,7 @@
         corpus: panel ? panel.getAttribute('data-corpus') : null,
         sessionId: null,
         history: [],
-        family: 'openrouter',
+        family: 'claude',
         tier: 'fast',
         persona: null,
         busy: false,
@@ -136,9 +136,12 @@
     function verificationBadge(v) {
         if (!v) return '';
         if (v.verified) {
-            let label = 'verified';
+            const checks = v.checks || [];
+            let label = checks.length === 1 && checks[0] === 'citations' ? 'citation references checked'
+                : checks.length === 1 && checks[0] === 'quotes' ? 'quoted text checked'
+                : checks.length ? 'configured checks passed' : 'no checks reported';
             if (v.retries > 0) label += ' after ' + v.retries + ' repair' + (v.retries > 1 ? 's' : '');
-            return '<span class="badge dm-badge-verified" title="Deterministic checks: ' + esc((v.checks || []).join(', ')) + '">' +
+            return '<span class="badge dm-badge-verified" title="These checks do not establish factual correctness. Deterministic checks: ' + esc((v.checks || []).join(', ')) + '">' +
                 '<i class="mdi mdi-check-decagram"></i> ' + esc(label) + '</span>';
         }
         const n = (v.violations || []).length;
@@ -308,55 +311,68 @@
     // POST + read an SSE response. Calls onEvent(name, parsedData) per frame.
     // Resolves {done: data} | {error: data} | {fallback: {ok,status,data}}.
     async function streamPost(url, body, onEvent) {
-        let resp;
+        const controller = new AbortController();
+        // Slightly longer than the BFF's bounded wait, including setup/transport.
+        const timeout = setTimeout(function () { controller.abort(); }, 195000);
+        let reader;
+        function failed(message) {
+            return { fallback: { ok: false, status: 0, data: { error: 'stream', message: message } } };
+        }
         try {
-            resp = await fetch(url, {
-                method: 'POST',
+            const resp = await fetch(url, {
+                method: 'POST', signal: controller.signal,
                 headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
                 body: JSON.stringify(body || {}),
             });
+            const ctype = resp.headers.get('content-type') || '';
+            if (!resp.ok || ctype.indexOf('text/event-stream') === -1 || !resp.body) {
+                let data = null;
+                try { data = await resp.json(); } catch (e) { /* non-JSON */ }
+                return { fallback: { ok: resp.ok, status: resp.status, data: data || {} } };
+            }
+            reader = resp.body.getReader();
+            const decoder = new TextDecoder();
+            let buf = '';
+            let outcome = null;
+            function handleFrame(frame) {
+                let name = 'message';
+                const dataLines = [];
+                frame.split(/\r?\n/).forEach(function (line) {
+                    if (line.indexOf('event:') === 0) name = line.slice(6).trim();
+                    else if (line.indexOf('data:') === 0) dataLines.push(line.slice(5).replace(/^ /, ''));
+                });
+                if (!dataLines.length) return;
+                let parsed;
+                try { parsed = JSON.parse(dataLines.join('\n')); } catch (e) { return; }
+                if (name === 'done') outcome = { done: parsed };
+                else if (name === 'error') outcome = { error: parsed };
+                else onEvent(name, parsed);
+            }
+            while (!outcome) {
+                const chunk = await reader.read();
+                buf += decoder.decode(chunk.value, { stream: !chunk.done });
+                let boundary;
+                while (!outcome && (boundary = /\r?\n\r?\n/.exec(buf))) {
+                    handleFrame(buf.slice(0, boundary.index));
+                    buf = buf.slice(boundary.index + boundary[0].length);
+                }
+                if (chunk.done) break;
+            }
+            return outcome || failed('The answer stream ended without a result. The server may still complete the request; avoid resubmitting it immediately.');
         } catch (e) {
-            return { fallback: { ok: false, status: 0, data: { error: 'network', message: 'Network error — check your connection and try again.' } } };
-        }
-        const ctype = resp.headers.get('content-type') || '';
-        if (!resp.ok || ctype.indexOf('text/event-stream') === -1 || !resp.body) {
-            let data = null;
-            try { data = await resp.json(); } catch (e) { /* non-JSON */ }
-            return { fallback: { ok: resp.ok, status: resp.status, data: data || {} } };
-        }
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder();
-        let buf = '';
-        let outcome = null;
-        function handleFrame(frame) {
-            let name = 'message';
-            const dataLines = [];
-            frame.split(/\r?\n/).forEach(function (line) {
-                if (line.indexOf('event:') === 0) name = line.slice(6).trim();
-                else if (line.indexOf('data:') === 0) dataLines.push(line.slice(5).replace(/^ /, ''));
-            });
-            if (!dataLines.length) return;
-            let parsed = null;
-            try { parsed = JSON.parse(dataLines.join('\n')); } catch (e) { return; }
-            if (name === 'done') outcome = { done: parsed };
-            else if (name === 'error') outcome = { error: parsed };
-            else onEvent(name, parsed);
-        }
-        for (;;) {
-            let chunk;
-            try { chunk = await reader.read(); } catch (e) { break; }
-            if (chunk.done) break;
-            buf += decoder.decode(chunk.value, { stream: true });
-            let idx;
-            while ((idx = buf.indexOf('\n\n')) !== -1) {
-                handleFrame(buf.slice(0, idx));
-                buf = buf.slice(idx + 2);
+            return failed(controller.signal.aborted
+                ? 'The answer wait timed out. Its outcome is unknown; avoid resubmitting it immediately.'
+                : 'The answer connection was interrupted. Its outcome is unknown; avoid resubmitting it immediately.');
+        } finally {
+            clearTimeout(timeout);
+            // A terminal event is sufficient; do not wait indefinitely for EOF.
+            // Aborting also releases a body whose network connection has failed.
+            controller.abort();
+            if (reader) {
+                reader.cancel().catch(function () { /* transport already closed */ });
+                reader.releaseLock();
             }
         }
-        if (!outcome) {
-            outcome = { fallback: { ok: false, status: 0, data: { error: 'stream', message: 'The answer stream ended unexpectedly. Try again.' } } };
-        }
-        return outcome;
     }
 
     function updateRemaining(n) {
@@ -462,7 +478,7 @@
         clearTimeout(ollamaExpiryTimer);
         if (available) ollamaExpiryTimer = setTimeout(function () { applyOllamaAvailability(null); }, Math.min(expires - Date.now(), 10800000));
         if (!available && state.family === 'ollama') {
-            state.family = ['openrouter', 'claude', 'gpt'].find(function (name) {
+            state.family = ['claude', 'openrouter', 'gpt'].find(function (name) {
                 return state.modelCatalog && state.modelCatalog[name];
             }) || '';
             panel.querySelectorAll('[data-dm-family]').forEach(function (b) {
@@ -701,7 +717,7 @@
                     sessionId: session.data.sessionId,
                     message: question,
                     history: [],
-                    family: state.family || 'openrouter',
+                    family: state.family || 'claude',
                     tier: state.tier || 'fast',
                 });
                 if (!result.ok) {

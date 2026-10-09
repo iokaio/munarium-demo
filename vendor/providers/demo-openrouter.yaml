@@ -24,6 +24,9 @@ metadata: { name: demo-openrouter }
 spec:
   provider: openrouter
   credentialRef: { env: MUNARIUM_SECRET_OPENROUTER }
+  # Requires Server 1.4.0; preserve Fast output budgets for visible answers.
+  openrouterReasoning:
+    deepseek/deepseek-v4-flash: { enabled: false }
   budgets:
     rpm: 30
     dailyTokens: { fast: 1000000, capable: 500000, frontier: 250000 }  # placeholders: size to your own keys
