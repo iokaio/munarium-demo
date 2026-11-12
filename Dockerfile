@@ -9,7 +9,7 @@ RUN dotnet restore src/Demo.Web/Demo.Web.csproj --locked-mode \
  && test ! -e /app/publish/appsettings.Secrets.json \
  && test "$(find /app/publish/wwwroot/downloads/runbooks -name '*.yaml' | wc -l)" -eq 12
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:11.0
 WORKDIR /app
 ARG SOURCE_REVISION=unknown
 LABEL org.opencontainers.image.revision=$SOURCE_REVISION
