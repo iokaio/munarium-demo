@@ -16,3 +16,11 @@ updates:
   - package-ecosystem: docker
     directory: /
     schedule: {interval: weekly}
+    # Every .NET project targets net10.0 (LTS). A major image bump puts the
+    # app on a runtime without .NET 10, so the container cannot start. Move
+    # to a new major .NET only as a deliberate migration of all projects.
+    ignore:
+      - dependency-name: dotnet/sdk
+        update-types: [version-update:semver-major]
+      - dependency-name: dotnet/aspnet
+        update-types: [version-update:semver-major]
